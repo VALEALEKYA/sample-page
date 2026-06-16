@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Engineering Curriculum</title>
+    <style>
+        :root {
+            --primary-color: #1e3a8a;
+            --secondary-color: #2563eb;
+            --text-color: #334155;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .course-card {
+            background-color: var(--card-bg);
+            border-left: 5px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-number {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--secondary-color);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .course-title {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin: 0 0 12px 0;
+        }
+
+        .course-description {
+            margin: 0;
+            color: #475569;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Prompt Engineering & AI Orchestration</h1>
+            <p class="subtitle">120-Hour Professional Training Program Curriculum</p>
+        </header>
+
+        <main class="course-list">
+            <!-- Course 1 -->
+            <div class="course-card">
+                <div class="course-number">C#</div>
+                <h2 class="course-title">Foundations of LLMs & Baseline Prompting</h2>
+                <p class="course-description">Master tokenization mechanics, context windows, and model configurations like Temperature while learning foundational Zero-Shot, Few-Shot, and Persona prompting strategies.</p>
+            </div>
+
+            <!-- Course 2 -->
+            <div class="course-card">
+                <div class="course-number">C</div>
+                <h2 class="course-title">Advanced Reasoning & Cognitive Strategies</h2>
+                <p class="course-description">Unlock deep computational logic within AI models using structured sequence paradigms like Chain-of-Thought (CoT) and Tree-of-Thought (ToT) frameworks.</p>
+            </div>
+
+            <!-- Course 3 -->
+            <div class="course-card">
+                <div class="course-number">java</div>
+                <h2 class="course-title">The Iterative Optimization Workflow</h2>
+                <p class="course-description">Develop engineering pipelines to build, test, and tune prompts systematically, eliminating semantic drift and maximizing target reliability.</p>
+            </div>
+
+            <!-- Course 4 -->
+            <div class="course-card">
+                <div class="course-number">c++</div>
+                <h2 class="course-title">Domain-Specific Practical Applications</h2>
+                <p class="course-description">Deploy custom prompts across high-value enterprise industries for programmatic code generation, massive data extraction, and structured JSON output shaping.</p>
+            </div>
+
+            <!-- Course 5 -->
+            <div class="course-card">
+                <div class="course-number">python</div>
+                <h2 class="course-title">Prompt Security, Ethics & Portfolio Architecture</h2>
+                <p class="course-description">Build rigorous defenses against prompt injections and jailbreaks while creating a benchmarked, production-ready capstone project portfolio.</p>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
