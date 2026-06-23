@@ -1,135 +1,412 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prompt Engineering Curriculum</title>
-    <style>
-        :root {
-            --primary-color: #1e3a8a;
-            --secondary-color: #2563eb;
-            --text-color: #334155;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Management System by Vale Alekya</title>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            margin: 0;
-            padding: 40px 20px;
-        }
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+<style>
 
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
 
-        h1 {
-            color: var(--primary-color);
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
+body{
+    background:#f4f7ff;
+}
 
-        p.subtitle {
-            color: #64748b;
-            font-size: 1.1rem;
-        }
+/* Header */
+header{
+    background:linear-gradient(135deg,#0f4c81,#2196f3);
+    color:white;
+    padding:20px 60px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
 
-        .course-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+.logo{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
 
-        .course-card {
-            background-color: var(--card-bg);
-            border-left: 5px solid var(--secondary-color);
-            border-radius: 8px;
-            padding: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+.logo i{
+    font-size:45px;
+    color:#ffd700;
+}
 
-        .course-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        }
+.logo-text h1{
+    font-size:28px;
+}
 
-        .course-number {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--secondary-color);
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
+.logo-text p{
+    font-size:14px;
+}
 
-        .course-title {
-            font-size: 1.4rem;
-            color: var(--primary-color);
-            margin: 0 0 12px 0;
-        }
+/* Navigation */
 
-        .course-description {
-            margin: 0;
-            color: #475569;
-            font-size: 1rem;
-        }
-    </style>
+nav ul{
+    list-style:none;
+    display:flex;
+}
+
+nav ul li{
+    position:relative;
+}
+
+nav ul li a{
+    text-decoration:none;
+    color:white;
+    padding:15px 20px;
+    display:block;
+    font-weight:600;
+}
+
+nav ul li a:hover{
+    background:rgba(255,255,255,0.2);
+    border-radius:5px;
+}
+
+/* Dropdown */
+
+.dropdown-content{
+    display:none;
+    position:absolute;
+    background:white;
+    min-width:220px;
+    top:100%;
+    left:0;
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    z-index:100;
+}
+
+.dropdown-content a{
+    color:#333;
+    padding:12px 15px;
+}
+
+.dropdown-content a:hover{
+    background:#e3f2fd;
+}
+
+.dropdown:hover .dropdown-content{
+    display:block;
+}
+
+/* Hero Section */
+
+.hero{
+    height:500px;
+    background:
+    linear-gradient(rgba(173, 125, 125, 0.5),
+    rgba(0,0,0,0.5)),
+    url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f');
+    background-size:cover;
+    background-position:center;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    color:white;
+}
+
+.hero-content h2{
+    font-size:50px;
+    margin-bottom:15px;
+}
+
+.hero-content p{
+    font-size:22px;
+}
+
+.btn{
+    margin-top:25px;
+    display:inline-block;
+    padding:12px 25px;
+    background:#ffd700;
+    color:black;
+    text-decoration:none;
+    border-radius:30px;
+    font-weight:bold;
+}
+
+/* About Section */
+
+section{
+    padding:60px 10%;
+}
+
+.section-title{
+    text-align:center;
+    margin-bottom:40px;
+    color:#0f4c81;
+    font-size:35px;
+}
+
+.about{
+    display:flex;
+    gap:40px;
+    align-items:center;
+}
+
+.about img{
+    width:45%;
+    border-radius:15px;
+}
+
+.about-text{
+    width:55%;
+    font-size:18px;
+    line-height:1.8;
+}
+
+/* Subject Cards */
+
+.subjects{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:30px;
+}
+
+.card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    transition:0.4s;
+}
+
+.card:hover{
+    transform:translateY(-10px);
+}
+
+.card i{
+    font-size:50px;
+    color:#2196f3;
+    margin-bottom:15px;
+}
+
+.card h3{
+    color:#0f4c81;
+    margin-bottom:15px;
+}
+
+/* Contact */
+
+.contact{
+    background:#0f4c81;
+    color:white;
+    text-align:center;
+}
+
+.contact p{
+    margin:10px;
+    font-size:18px;
+}
+
+/* Footer */
+
+footer{
+    background:#082a45;
+    color:white;
+    text-align:center;
+    padding:15px;
+}
+
+/* Responsive */
+
+@media(max-width:768px){
+
+header{
+    flex-direction:column;
+}
+
+.about{
+    flex-direction:column;
+}
+
+.about img,
+.about-text{
+    width:100%;
+}
+
+.hero-content h2{
+    font-size:35px;
+}
+
+nav ul{
+    flex-direction:column;
+    align-items:center;
+}
+
+}
+
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Prompt Engineering & AI Orchestration</h1>
-            <p class="subtitle">120-Hour Professional Training Program Curriculum</p>
-        </header>
+<!-- Header -->
 
-        <main class="course-list">
-            <!-- Course 1 -->
-            <div class="course-card">
-                <div class="course-number">C#</div>
-                <h2 class="course-title">Foundations of LLMs & Baseline Prompting</h2>
-                <p class="course-description">Master tokenization mechanics, context windows, and model configurations like Temperature while learning foundational Zero-Shot, Few-Shot, and Persona prompting strategies.</p>
-            </div>
+<header>
 
-            <!-- Course 2 -->
-            <div class="course-card">
-                <div class="course-number">C</div>
-                <h2 class="course-title">Advanced Reasoning & Cognitive Strategies</h2>
-                <p class="course-description">Unlock deep computational logic within AI models using structured sequence paradigms like Chain-of-Thought (CoT) and Tree-of-Thought (ToT) frameworks.</p>
-            </div>
-
-            <!-- Course 3 -->
-            <div class="course-card">
-                <div class="course-number">java</div>
-                <h2 class="course-title">The Iterative Optimization Workflow</h2>
-                <p class="course-description">Develop engineering pipelines to build, test, and tune prompts systematically, eliminating semantic drift and maximizing target reliability.</p>
-            </div>
-
-            <!-- Course 4 -->
-            <div class="course-card">
-                <div class="course-number">c++</div>
-                <h2 class="course-title">Domain-Specific Practical Applications</h2>
-                <p class="course-description">Deploy custom prompts across high-value enterprise industries for programmatic code generation, massive data extraction, and structured JSON output shaping.</p>
-            </div>
-
-            <!-- Course 5 -->
-            <div class="course-card">
-                <div class="course-number">python</div>
-                <h2 class="course-title">Prompt Security, Ethics & Portfolio Architecture</h2>
-                <p class="course-description">Build rigorous defenses against prompt injections and jailbreaks while creating a benchmarked, production-ready capstone project portfolio.</p>
-            </div>
-        </main>
+<div class="logo">
+    <i class="fas fa-graduation-cap"></i>
+    <div class="logo-text">
+        <h1>Learning Management System</h1>
+        <p>By Alekya Vale</p>
     </div>
+</div>
+
+<nav>
+<ul>
+
+<li><a href="#home">Home</a></li>
+
+<li><a href="#about">About Us</a></li>
+
+<li class="dropdown">
+<a href="#subjects">Subjects ▾</a>
+
+<div class="dropdown-content">
+<a href="#software">Data Science</a>
+<a href="#datamining">Data Mining & Warehousing</a>
+</div>
+
+</li>
+
+<li><a href="#contact">Contact</a></li>
+
+</ul>
+</nav>
+
+</header>
+
+<!-- Hero Section -->
+
+<section class="hero" id="home">
+
+<div class="hero-content">
+<h2>Welcome to LMS</h2>
+<p>Enhancing Learning Through Technology and Innovation</p>
+<a href="#subjects" class="btn">Explore Courses</a>
+</div>
+
+</section>
+
+<!-- About -->
+
+<section id="about">
+
+<h2 class="section-title">About Us</h2>
+
+<div class="about">
+
+<img src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655" alt="Education">
+
+<div class="about-text">
+
+<p>
+The Learning Management System (LMS) by Vale Alekya provides
+high-quality educational resources, interactive learning materials,
+and course management facilities for students and professionals.
+</p>
+
+<br>
+
+<p>
+Our mission is to make learning engaging, accessible, and effective
+through modern teaching methodologies and digital technologies.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- Subjects -->
+
+<section id="subjects">
+
+<h2 class="section-title">Subjects Offered</h2>
+
+<div class="subjects">
+
+<div class="card" id="Data Science ">
+<i class="fas fa-laptop-code"></i>
+<h3>Software Engineering</h3>
+<p>
+Learn software development life cycle, requirements engineering,
+design patterns, testing methodologies, and project management.
+<br>
+    <a href="https://docs.google.com/document/d/12r2kHDn4-5-KFL4JO3DCf_5UHc23asyH/edit?usp=drive_link&ouid=101354710087285014342&rtpof=true&sd=true" class="btn" target="_blank">
+        Syllabus
+    </a>
+
+    <a href="https://mail.google.com/mail/u/0/#inbox/FMfcgzQgMVkXwlDCGhHRdGMWqTtdkzTj" class="btn">
+        Materials
+    </a>
+
+    <a href="SE Q bank.pdf" class="btn">
+        Questions
+    </a>
+</p>
+</div>
+
+<div class="card" id="datamining & warehousing">
+<i class="fas fa-database"></i>
+<h3>Data Mining and Warehousing</h3>
+<p>
+Explore classification, clustering, association rule mining,
+predictive analytics, and machine learning techniques.
+    <br>
+    <a href="DWDM Syllabus.pdf" class="btn" target="_blank">
+        Syllabus
+    </a>
+
+    <a href="data_mining/materials.html" class="btn">
+        Materials
+    </a>
+
+    <a href="data mining Q bank.pdf" class="btn">
+        Questions
+    </a>
+</p>
+</div>
+
+
+</div>
+
+</section>
+
+<!-- Contact -->
+
+<section class="contact" id="contact">
+
+<h2 class="section-title" style="color:lavenderblush;">
+Contact Information
+</h2>
+
+<p><i class="fas fa-user"></i>  V Alekya </p>
+<p><i class="fas fa-envelope"></i> alekya.it@anits.edu.in</p>
+<p><i class="fas fa-phone"></i> +91 7793939269</p>
+<p><i class="fas fa-map-marker-alt"></i> Andhra Pradesh, India</p>
+
+</section>
+
+<footer>
+© 2026 Learning Management System by  Alekya vale |  beyound Expections
+</footer>
 
 </body>
 </html>
