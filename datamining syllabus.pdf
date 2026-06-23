@@ -1,0 +1,196 @@
+DATA MINING
+(PROFESSIONAL ELECTIVE-1)
+
+COURSE CODE: 23IT5111(B)                                                             CREDITS 3
+L T P S                                                                                                    Sessional Marks: 40
+3 0 0 0                                                                                                     End Exam: 3 Hours
+                                                                                                                End Exam Marks: 60
+
+Prerequisite(s):
+
+∙ Overview on Probability and statistics
+∙ Knowledge on Database management systems concepts
+
+Course Objectives:
+
+∙ To understand the principles of Data Mining.
+∙ To understand the Architecture and concepts of a Data mining system.
+∙ To perform classification, association, clustering and prediction of data.
+
+Course Outcomes:
+
+After completion of the course, the students will be able to:
+CO-1: Understanding the basics knowledge on Data mining topics. Apply KDD process for
+finding interesting pattern from Data. Analyze the kinds of patterns that can be discovered by
+association rule mining.
+CO-2: Evaluate interesting patterns from large amounts of data to analyze for predictions and
+Classification.
+CO-3: Apply clustering techniques and Spatial, Multimedia on real time data.
+CO-4: Understand the concepts of Text mining and web data on real time.
+
+Mapping of Course Outcomes with POs and PSOs
+
+
+COs/
+POs/
+PSOs
+PO1
+PO2
+PO3
+PO4
+PO5
+PO6
+PO7
+PO8
+PO9
+PO10
+PO11
+PO12
+PSO1
+PSO2
+CO-1
+3
+3
+2
+3
+3
+1
+1
+1
+
+
+
+
+
+
+1
+3
+2
+CO-2
+3
+3
+3
+3
+2
+1
+1
+1
+
+
+
+
+
+
+1
+3
+2
+CO-3
+3
+3
+3
+2
+3
+1
+1
+1
+
+
+
+
+
+
+1
+3
+3
+CO-4
+3
+3
+2
+3
+2
+1
+1
+1
+
+
+
+
+
+
+3
+3
+3
+
+
+Correlation levels 1: Slight (Low) 2: Moderate (Medium) 3: Substantial (High)
+
+
+
+
+UNIT I:                                                                                                              9 Lectures
+
+Data Mining: - Introduction, Knowledge Discovery in Databases (KDD), KDD Process, Data
+Mining Functionalities – Data Preprocessing – Data Cleaning – Data Integration – Data Reduction – Data Transformation and Data Discretization and Concept Hierarchy Generation- Architecture of A Typical Data Mining Systems- Classification Of Data Mining Systems.
+Association Rule Mining: - Efficient and Scalable Frequent Item set Mining Methods –
+Mining Various Kinds of Association Rules – Association Mining to Correlation Analysis –
+Constraint-Based Association Mining.
+
+Learning outcomes: At the end of the unit, the students will be able to
+∙ Understand the basic concepts of Data Mining and KDD process.
+∙ Implement the Data Pre-processing techniques when building new datasets.
+∙ Demonstrate Association Rule mining basket market analysis.
+
+UNIT II:                                                                                                                 9 Lectures
+
+Classification and Prediction: - Basic concepts, Issues Regarding Classification and Prediction – Classification by Decision Tree Introduction – Bayesian Classification – Rule Based Classification – Classification by Back propagation – Associative Classification –Prediction – Accuracy and Error Measures – Evaluating the Accuracy of a Classifier or Predictor – Model Section.
+Knowledge Representation: Ontological Engineering, Categories and Objects, Events.
+
+Learning outcomes: At the end of the unit, the students will be able to
+∙ Apply Classification and Prediction techniques on data to develop systems.
+∙ Utilize Existing Evaluating metrics to measure the Accuracy of a Classifier or Predictor.
+
+UNIT III:                    								9 Lectures
+
+Cluster Analysis: - Types of Data in Cluster Analysis – A Categorization of Major Clustering Methods – Partitioning Methods – Hierarchical methods – Density-Based Methods – Clustering High-Dimensional Data – Constraint-Based Cluster Analysis – Outlier Analysis.
+
+Learning outcomes: At the end of the unit, the students will be able to
+∙ Describe the principles of Cluster Analysis and Outlier Analysis in DM.
+∙ Evaluate different Clustering Methods and their applications in real-world scenarios.
+
+UNIT IV: 										9 Lectures
+
+Mining Object, Spatial, Multimedia: Multidimensional Analysis and Descriptive Mining of
+Complex Data Objects – Spatial Data Mining – Multimedia Data Mining.
+
+Learning outcomes: At the end of the unit, the students will be able to
+∙ Explain the fundamentals of Spatial, Multimedia in DM.
+∙ Construct Data mining Applications according to new challenges in DM.
+
+UNIT V: 										9 Lectures
+Introduction to Text mining and web mining: Definition and scope of text mining, Differences between structured, semi-structured, and unstructured data, Applications of text mining in various domains (business, healthcare, social media, etc.). Text Mining on the Web and Social Media. Definition and importance of web mining, Types of web mining. Opinion Mining and Sentiment Analysis on the Web.
+
+Learning outcomes: At the end of the unit, the students will be able to
+∙ Explain the fundamentals of Text mining, web mining w.r.t datamining.
+∙ Utilize Data mining concepts and applications for the benefit of Society.
+Textbooks:
+
+1. J. Han, M. Kamber, and J. Pei, Data Mining Concepts and Techniques, 3rd ed.
+Amsterdam, The Netherlands: Elsevier, 2011.
+
+References:
+
+1. A. Berson and S. J. Smith, Data Warehousing, Data Mining & OLAP, 10th Reprint.
+New Delhi, India: Tata McGraw-Hill, 2007.
+2. K. P. Soman, S. Diwakar, and V. Ajay, Insight into Data Mining Theory and Practice,
+Eastern Economy Edition. New Delhi, India: Prentice Hall of India, 2006.
+3. G. K. Gupta, Introduction to Data Mining with Case Studies, Eastern Economy
+Edition. New Delhi, India: Prentice Hall of India, 2006.
+4. P.-N. Tan, M. Steinbach, and V. Kumar, Introduction to Data Mining. Upper Saddle
+River, NJ: Pearson Education, 2007.
+
+e-Resources:
+
+1. https://nptel.ac.in/courses/106/106/106106093/
+2. https://nptel.ac.in/courses/110/107/110107092/
+3. https://nptel.ac.in/courses/106/105/106105174/
+
