@@ -3,186 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unit-I Data Science Quiz</title>
+    <title>Unit-I Data Science Mega Quiz</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap');
 
         body {
-            font-family: 'Nunito', sans-serif;
-            background: #0f2027; /* fallback for old browsers */
-            background: -webkit-linear-gradient(to right, #2c5364, #203a43, #0f2027);
-            background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
-            color: white;
+            font-family: 'Poppins', sans-serif;
+            background: #0f172a;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #f8fafc;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .quiz-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
             padding: 40px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 750px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
 
         h1 {
-            color: #00d2ff;
+            color: #38bdf8;
+            font-size: 2.5em;
             margin-top: 0;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 25px;
+            font-size: 1em;
+        }
+
+        /* Progress Bar Visualization */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            transition: width 0.4s ease;
         }
 
         #question-text {
-            font-size: 1.4em;
-            margin-bottom: 30px;
+            font-size: 1.35em;
+            margin-bottom: 25px;
             font-weight: 700;
+            line-height: 1.5;
+            text-align: left;
+            color: #f1f5f9;
         }
 
         .btn-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 25px;
         }
 
         .btn {
-            background: #ffffff;
-            color: #333;
-            border: none;
-            padding: 15px;
-            font-size: 1.1em;
-            font-family: 'Nunito', sans-serif;
-            border-radius: 10px;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 2px solid #334155;
+            padding: 16px 20px;
+            font-size: 1.05em;
+            font-family: 'Poppins', sans-serif;
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: left;
+            font-weight: 600;
         }
 
-        .btn:hover {
-            background: #00d2ff;
-            color: #000;
-            transform: scale(1.02);
+        .btn:hover:not(:disabled) {
+            background: #334155;
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
         }
 
         .btn.correct {
-            background: #4CAF50;
-            color: white;
+            background: #059669 !important;
+            color: white !important;
+            border-color: #34d399 !important;
+            animation: pulseSuccess 0.4s ease;
         }
 
         .btn.wrong {
-            background: #f44336;
-            color: white;
+            background: #dc2626 !important;
+            color: white !important;
+            border-color: #f87171 !important;
+        }
+
+        /* Professor's Insight Window */
+        .insight-box {
+            background: rgba(56, 189, 248, 0.08);
+            border-left: 4px solid #38bdf8;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            text-align: left;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .insight-title {
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+            text-transform: uppercase;
+        }
+
+        .insight-text {
+            font-size: 0.95em;
+            color: #cbd5e1;
+            line-height: 1.5;
         }
 
         #next-btn {
-            background: #f39c12;
+            background: linear-gradient(135deg, #38bdf8 0%, #4f46e5 100%);
             color: white;
             border: none;
-            padding: 10px 30px;
-            font-size: 1.2em;
-            border-radius: 8px;
+            padding: 14px 40px;
+            font-size: 1.1em;
+            border-radius: 12px;
             cursor: pointer;
             display: none;
             margin: 0 auto;
-            font-weight: bold;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            transition: transform 0.2s;
         }
 
         #next-btn:hover {
-            background: #e67e22;
+            transform: scale(1.03);
         }
 
-        .score-board {
-            margin-top: 20px;
-            font-size: 1.2em;
-            color: #bdc3c7;
+        .footer-metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            font-size: 1em;
+            color: #64748b;
+            font-weight: 600;
+            border-top: 1px solid #334155;
+            padding-top: 15px;
         }
 
-        .hide {
-            display: none;
+        .hide { display: none; }
+
+        @keyframes pulseSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
 
     <div class="quiz-container">
-        <h1>🚀 Data Science Quiz</h1>
+        <h1>🚀 Data Science Arena</h1>
+        <div class="subtitle">Unit-I Comprehensive Final Year Challenge</div>
         
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
         <div id="quiz-screen">
-            <div id="question-text">Question goes here</div>
-            <div class="btn-grid" id="answer-buttons">
-                </div>
-            <button id="next-btn">Next Question ➔</button>
+            <div id="question-text">Loading Engineering Challenge...</div>
+            <div class="btn-grid" id="answer-buttons"></div>
+            
+            <div class="insight-box" id="insight-box">
+                <div class="insight-title">🎓 Professor's Insight:</div>
+                <div class="insight-text" id="insight-text"></div>
+            </div>
+
+            <button id="next-btn">Next Challenge ➔</button>
         </div>
 
         <div id="result-screen" class="hide">
-            <h2>🎉 Quiz Completed!</h2>
-            <p style="font-size: 1.5em;">Your Score: <span id="final-score" style="color:#00d2ff; font-weight:bold;">0</span> / 5</p>
-            <button class="btn" style="background:#00d2ff; color:#000; width:50%; margin-top:20px;" onclick="location.reload()">Restart Quiz</button>
+            <h2>🏆 Arena Results</h2>
+            <p style="font-size: 1.8em; margin: 20px 0;">Final Score: <span id="final-score" style="color:#38bdf8; font-size: 1.4em;">0</span> / <span id="total-questions-lbl">0</span></p>
+            <p id="feedback-msg" style="font-size: 1.15em; margin-bottom: 30px; color: #94a3b8; line-height: 1.5;"></p>
+            <button class="btn" style="background:#38bdf8; color:#0f172a; text-align: center; width: 50%; margin: 0 auto; display: block;" onclick="location.reload()">🔄 Re-Enter Arena</button>
         </div>
         
-        <div class="score-board" id="score-tracker">Score: 0</div>
+        <div class="footer-metrics" id="footer-metrics">
+            <div id="question-counter">Question: 1/13</div>
+            <div id="score-tracker">Score: 0</div>
+        </div>
     </div>
 
     <script>
         const questions = [
             {
-                question: "Which step in the Data Science Life Cycle ensures you are solving the right business issue?",
+                question: "What primary characteristic defines Data Science as an academic/industrial discipline?",
                 answers: [
-                    { text: "A) Data Cleaning", correct: false },
-                    { text: "B) Model Evaluation", correct: false },
-                    { text: "C) Problem Definition", correct: true },
-                    { text: "D) Data Exploration", correct: false }
-                ]
+                    { text: "A) It is solely a sub-branch of advanced software engineering", correct: false },
+                    { text: "B) It is an interdisciplinary field merging CS, Math/Stats, and Domain Expertise", correct: true },
+                    { text: "C) It focuses exclusively on database hardware optimization", correct: false },
+                    { text: "D) It is another word for standard data entry operations", correct: false }
+                ],
+                insight: "Data Science sits at the sweet spot where Computer Science, Statistics, and deep Domain Knowledge interact to discover unseen value inside raw data!"
             },
             {
-                question: "If you are fixing missing values and removing duplicates, you are doing...",
+                question: "In the Data Science Life Cycle, why must 'Problem Definition' always happen first?",
                 answers: [
-                    { text: "A) Model Building", correct: false },
-                    { text: "B) Data Cleaning", correct: true },
-                    { text: "C) Deployment", correct: false },
-                    { text: "D) ANOVA Testing", correct: false }
-                ]
+                    { text: "A) To decide which cloud computation hardware to rent", correct: false },
+                    { text: "B) To make sure engineering efforts align directly with measurable goals", correct: true },
+                    { text: "C) To write the machine learning model immediately", correct: false },
+                    { text: "D) To clear out system cache buffers before collection", correct: false }
+                ],
+                insight: "If you don't define the target problem clearly, you run the risk of building a beautiful machine learning model that accurately answers the completely wrong question!"
             },
             {
-                question: "What does ANOVA (Analysis of Variance) primarily help us do?",
+                question: "During 'Data Collection', what major risk must data engineers proactively mitigate?",
                 answers: [
-                    { text: "A) Compare means of 3 or more groups", correct: true },
-                    { text: "B) Build a web application", correct: false },
-                    { text: "C) Scrape data from a website", correct: false },
-                    { text: "D) Define the problem", correct: false }
-                ]
+                    { text: "A) High mathematical variance in training metrics", correct: false },
+                    { text: "B) Selection bias and sampling errors hidden in source systems", correct: true },
+                    { text: "C) Using lists instead of tuples in the ingestion engine", correct: false },
+                    { text: "D) Automatically dropping all columns containing strings", correct: false }
+                ],
+                insight: "Garbage In, Garbage Out! If your sample data collection is biased or broken from the source, no advanced machine learning algorithm can save it."
             },
             {
-                question: "Plotting histograms to spot outliers falls under which category?",
+                question: "Which of the following operations is categorized explicitly as 'Data Cleaning'?",
                 answers: [
-                    { text: "A) Data Collection", correct: false },
-                    { text: "B) Exploratory Data Analysis (EDA)", correct: true },
-                    { text: "C) Model Deployment", correct: false },
-                    { text: "D) ANOVA", correct: false }
-                ]
+                    { text: "A) Implementing a Flask API routing protocol", correct: false },
+                    { text: "B) Imputing structural missing values and eliminating duplicated records", correct: true },
+                    { text: "C) Plotting multi-variable scatter plot trends", correct: false },
+                    { text: "D) Tuning hyperparameters on deep neural networks", correct: false }
+                ],
+                insight: "Data Cleaning is the vital hygiene phase. It handles missing NaN entries, string inconsistencies, and identical duplicates so the pipeline stays clean."
             },
             {
-                question: "Statistical Thinking in Big Data requires understanding that...",
+                question: "What separates Exploratory Data Analysis (EDA) fundamentally from Data Cleaning?",
                 answers: [
-                    { text: "A) All data is perfectly clean", correct: false },
-                    { text: "B) Variation exists in all processes", correct: true },
-                    { text: "C) You don't need math anymore", correct: false },
-                    { text: "D) Models never make errors", correct: false }
-                ]
+                    { text: "A) Cleaning fixes structural issues; EDA investigates anomalies and visual trends", correct: true },
+                    { text: "B) EDA is done after deploying the model to production clusters", correct: false },
+                    { text: "C) Cleaning requires math while EDA only uses standard SQL scripts", correct: false },
+                    { text: "D) EDA drops all columns while cleaning changes data types", correct: false }
+                ],
+                insight: "Think of Cleaning as the janitorial setup and EDA as the actual detective work! EDA uses plots and statistical tables to extract visual properties."
+            },
+            {
+                question: "When entering the 'Model Building' stage, what is the best practice approach for splitting data?",
+                answers: [
+                    { text: "A) Test on the entire dataset, then train on 20% of it", correct: false },
+                    { text: "B) Train on historical records and evaluate model accuracy on an unexposed test set", correct: true },
+                    { text: "C) Shuffle the targets randomly after training completes", correct: false },
+                    { text: "D) Train and test on the exact same data data arrays", correct: false }
+                ],
+                insight: "Never let your model see the exam questions! Training and testing on the identical subset causes overfitting, giving a false sense of real performance."
+            },
+            {
+                question: "What is the ultimate objective of the 'Model Evaluation' step in the pipeline?",
+                answers: [
+                    { text: "A) To test if the code compiles without running syntax errors", correct: false },
+                    { text: "B) To mathematically assess if performance satisfies operational criteria", correct: true },
+                    { text: "C) To automatically write documentation templates", correct: false },
+                    { text: "D) To spin up web servers on AWS or Azure", correct: false }
+                ],
+                insight: "Evaluation helps us weigh model metrics (like precision, recall, or error bounds) to verify if the model is robust enough for real deployment."
+            },
+            {
+                question: "What does 'Deployment' imply in real-world data science engineering?",
+                answers: [
+                    { text: "A) Deleting raw code files to save system space", correct: false },
+                    { text: "B) Integrating the predictive model into an accessible live system environment", correct: true },
+                    { text: "C) Starting back at the problem definition stage immediately", correct: false },
+                    { text: "D) Writing box plot code in locally stored scripts", correct: false }
+                ],
+                insight: "Deployment takes your local model out of Jupyter notebooks and drops it into interactive APIs, websites, or software pipelines where users can fetch insights live!"
+            },
+            {
+                question: "How does Inferential Statistics differ from Descriptive Statistics?",
+                answers: [
+                    { text: "A) Descriptive generalizes populations; Inferential only summarizes current samples", correct: false },
+                    { text: "B) Descriptive presents parameters of current data; Inferential tests hypotheses to generalize on populations", correct: true },
+                    { text: "C) Inferential statistics doesn't require any calculation methods", correct: false },
+                    { text: "D) Descriptive statistics only applies to unstructured big text blocks", correct: false }
+                ],
+                insight: "Descriptive tells you exactly what is in front of you (like a data summary). Inferential acts like a data oracle, letting you infer broad rules about large populations based on small sample tests!"
+            },
+            {
+                question: "When should an engineer run an Analysis of Variance (ANOVA) test?",
+                answers: [
+                    { text: "A) When building a production recommendation system framework", correct: false },
+                    { text: "B) When evaluating whether the statistical means of three or more independent groups differ significantly", correct: true },
+                    { text: "C) When removing null column rows inside pandas", correct: false },
+                    { text: "D) When calculating a model's operational deployment execution latency", correct: false }
+                ],
+                insight: "ANOVA is your go-to statistical test when comparing three or more distinct experimental groups to see if variance variations reveal true underlying changes or just random noise!"
+            },
+            {
+                question: "In the context of the Data Science Process, what core principle guides 'Statistical Thinking'?",
+                answers: [
+                    { text: "A) Assuming that variation is non-existent when working with massive data", correct: false },
+                    { text: "B) Understanding that variation exists in all processes and requires systematic tracking", correct: true },
+                    { text: "C) Focusing on raw computation speeds instead of tracking sampling biases", correct: false },
+                    { text: "D) Blindly trusting the largest volume data blocks without question", correct: false }
+                ],
+                insight: "Statistical thinking forces us to respect natural variation. Big data doesn't automatically mean clean data; we must systematically control errors."
+            },
+            {
+                question: "What is the core threat of ignoring statistical variations in the Age of Big Data?",
+                answers: [
+                    { text: "A) Running into algorithmic syntax runtime issues", correct: false },
+                    { text: "B) Generating highly precise, confident predictions that are completely systematically biased", correct: true },
+                    { text: "C) Using too many box plots inside data science reporting structures", correct: false },
+                    { text: "D) Slowing down network pipeline data parsing operations", correct: false }
+                ],
+                insight: "Without statistical thinking, you run the risk of scaling up bias. Having billions of records from a broken sampling frame gives you highly confident wrong answers!"
+            },
+            {
+                question: "Which geometric plot is most useful during EDA to visually map out quartiles and spot outliers?",
+                answers: [
+                    { text: "A) Simple linear line series tracking", correct: false },
+                    { text: "B) A standard five-number summary Box Plot", correct: true },
+                    { text: "C) Raw text spreadsheets lists formatting", correct: false },
+                    { text: "D) HTML layout grid design models", correct: false }
+                ],
+                insight: "A Box Plot relies on the Interquartile Range (IQR) method to display minimum, Q1, median, Q3, and maximum parameters, keeping outliers safely flagged outside the whiskers!"
             }
         ];
 
         const questionElement = document.getElementById('question-text');
         const answerButtonsElement = document.getElementById('answer-buttons');
         const nextButton = document.getElementById('next-btn');
+        const progressFill = document.getElementById('progress-bar');
+        const questionCounter = document.getElementById('question-counter');
         const scoreTracker = document.getElementById('score-tracker');
         const quizScreen = document.getElementById('quiz-screen');
         const resultScreen = document.getElementById('result-screen');
-        const finalScore = document.getElementById('final-score');
+        const finalScoreLbl = document.getElementById('final-score');
+        const totalQuestionsLbl = document.getElementById('total-questions-lbl');
+        const feedbackMsg = document.getElementById('feedback-msg');
+        const insightBox = document.getElementById('insight-box');
+        const insightText = document.getElementById('insight-text');
+        const footerMetrics = document.getElementById('footer-metrics');
 
         let currentQuestionIndex = 0;
         let score = 0;
@@ -190,6 +377,7 @@
         function startQuiz() {
             currentQuestionIndex = 0;
             score = 0;
+            totalQuestionsLbl.innerText = questions.length;
             nextButton.style.display = 'none';
             showQuestion();
         }
@@ -197,7 +385,12 @@
         function showQuestion() {
             resetState();
             let currentQuestion = questions[currentQuestionIndex];
-            questionElement.innerText = `Q${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+            questionElement.innerText = `Q${currentQuestionIndex + 1}: ${currentQuestion.question}`;
+            
+            // Progress Bar & Counter update
+            const progressPercent = ((currentQuestionIndex) / questions.length) * 100;
+            progressFill.style.width = `${progressPercent}%`;
+            questionCounter.innerText = `Question: ${currentQuestionIndex + 1}/${questions.length}`;
 
             currentQuestion.answers.forEach(answer => {
                 const button = document.createElement('button');
@@ -213,6 +406,7 @@
 
         function resetState() {
             nextButton.style.display = 'none';
+            insightBox.style.display = 'none';
             while (answerButtonsElement.firstChild) {
                 answerButtonsElement.removeChild(answerButtonsElement.firstChild);
             }
@@ -228,18 +422,19 @@
                 scoreTracker.innerText = `Score: ${score}`;
             } else {
                 selectedButton.classList.add("wrong");
-                // Highlight correct answer
-                Array.from(answerButtonsElement.children).forEach(button => {
-                    if (button.dataset.correct === "true") {
-                        button.classList.add("correct");
-                    }
-                });
             }
 
-            // Disable all buttons after guess
+            // Lock options and illuminate the true answer
             Array.from(answerButtonsElement.children).forEach(button => {
+                if (button.dataset.correct === "true") {
+                    button.classList.add("correct");
+                }
                 button.disabled = true;
             });
+
+            // Populate and showcase Professor's Insight window
+            insightText.innerText = questions[currentQuestionIndex].insight;
+            insightBox.style.display = 'block';
 
             nextButton.style.display = 'block';
         }
@@ -254,10 +449,21 @@
         });
 
         function showResults() {
+            progressFill.style.width = '100%';
             quizScreen.classList.add('hide');
-            scoreTracker.classList.add('hide');
+            footerMetrics.classList.add('hide');
             resultScreen.classList.remove('hide');
-            finalScore.innerText = score;
+            finalScoreLbl.innerText = score;
+            
+            if (score === questions.length) {
+                feedbackMsg.innerText = "Absolute Perfection! You have mastered the Data Science lifecycle and statistical process foundations. Ready for high-scale enterprise engineering! 🌟";
+            } else if (score >= 9) {
+                feedbackMsg.innerText = "Excellent Job! You hold strong command over statistical inference, lifecycle concepts, and pipeline tracking. 🚀";
+            } else if (score >= 6) {
+                feedbackMsg.innerText = "Good effort! Take a quick run through the Question Bank to brush up on specific blocks like ANOVA and lifecycle variations. 📚";
+            } else {
+                feedbackMsg.innerText = "Keep reviewing! The Data Science lifecycle and inference tools take time to master. Re-examine the process model loop and try again! 🔧";
+            }
         }
 
         startQuiz();

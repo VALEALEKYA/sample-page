@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNIT-1Data Science Question Bank</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #141E30, #243B55);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            color: #4facfe;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-in;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 5px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .header p {
+            color: #ccc;
+            font-size: 1.1em;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            padding: 30px;
+        }
+
+        h2.category-title {
+            color: #141E30;
+            border-bottom: 3px solid #4facfe;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        h2.category-title:first-child {
+            margin-top: 0;
+        }
+
+        .faq {
+            margin-bottom: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .faq:hover {
+            border-color: #4facfe;
+        }
+
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #141E30;
+        }
+
+        .question::after {
+            content: '▼';
+            font-size: 1.2em;
+            color: #4facfe;
+            transition: transform 0.3s;
+        }
+
+        .faq.active .question::after {
+            transform: rotate(180deg);
+        }
+
+        .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, padding 0.5s ease;
+            background: white;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        .faq.active .answer {
+            max-height: 2500px;
+            padding: 20px;
+        }
+
+        .highlight {
+            background: #ffeaa7;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #d35400;
+            font-weight: bold;
+        }
+
+        pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.05em;
+        }
+
+        .code-comment { color: #5c6370; font-style: italic; }
+        .code-keyword { color: #c678dd; }
+        .code-string { color: #98c379; }
+        .code-function { color: #61afef; }
+
+        /* Flowchart CSS */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .flow-node {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 80%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .flow-arrow {
+            font-size: 2em;
+            color: #4facfe;
+            margin: 5px 0;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>📚 UNIT-1 Data Science Question Bank</h1>
+        <p>Your ultimate combined study guide. Click the questions to reveal answers, code, and diagrams!</p>
+    </div>
+
+    <div class="container">
+        
+        <h2 class="category-title">🎯 Core Concepts</h2>
+        
+        <div class="faq">
+            <div class="question">1. What is Data Science?</div>
+            <div class="answer">
+                <p>Data Science is the interdisciplinary field that acts as a bridge between raw data and actionable business decisions. For an engineer, it is the intersection of:</p>
+                <ul>
+                    <li><strong>Computer Science:</strong> Programming (Python/R) and databases to handle large-scale data.</li>
+                    <li><strong>Mathematics & Statistics:</strong> Calculus, Linear Algebra, and Probability to understand <i>why</i> algorithms work.</li>
+                    <li><strong>Domain Expertise:</strong> Understanding the actual business problem to ensure insights are useful.</li>
+                </ul>
+                <p><em>In short: It is the art of extracting meaningful, predictive insights from noisy, structured, and unstructured data.</em></p>
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">2. What is Data Science in the context of modern engineering?</div>
+            <div class="answer">
+                Data science is an interdisciplinary field that uses scientific methods, processes, algorithms, and systems to extract <span class="highlight">knowledge and insights from noisy, structured, and unstructured data</span>. For an engineer, it's the toolkit used to apply actionable insights from data across a broad range of application domains.
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">3. What does "Statistical Thinking in the Age of Big Data" mean?</div>
+            <div class="answer">
+                It means recognizing that all work occurs in interconnected processes and that <span class="highlight">variation exists everywhere</span>. In the era of Big Data, statistical thinking is the mindset required to understand this variation, avoid biases, and make informed decisions rather than just blindly trusting large volumes of data.
+            </div>
+        </div>
+
+        <h2 class="category-title">🔄 The Life Cycle</h2>
+
+        <div class="faq">
+            <div class="question">4. Why is "Problem Definition" the most critical step in the Life Cycle?</div>
+            <div class="answer">
+                Without a clear problem definition, you might build a brilliant model that solves the <span class="highlight">wrong problem</span>. This step aligns the engineering efforts with actual business or research needs, defining the scope, goals, and success metrics before any code is written.
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">5. Differentiate between Data Cleaning and Data Exploration (EDA).</div>
+            <div class="answer">
+                <p><strong>Data Cleaning</strong> is the janitorial work: removing duplicates, handling missing values, and fixing formats.</p>
+                <p><strong>Data Exploration (EDA)</strong> is the detective work: using statistics and visualizations to find patterns, spot anomalies, and form hypotheses about the cleaned data.</p>
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">6. Explain the Data Science Process Model with a diagram.</div>
+            <div class="answer">
+                <p>We commonly use the <strong>OSEMN</strong> (Obtain, Scrub, Explore, Model, Interpret) framework. It is a continuous loop!</p>
+                
+                <div class="flowchart">
+                    <div class="flow-node">📥 1. OBTAIN: Gather data (Web scraping, SQL, APIs)</div>
+                    <div class="flow-arrow">⬇</div>
+                    <div class="flow-node">🧽 2. SCRUB: Clean data, handle missing values (70% of the work!)</div>
+                    <div class="flow-arrow">⬇</div>
+                    <div class="flow-node">🕵️ 3. EXPLORE (EDA): Find trends, plot graphs</div>
+                    <div class="flow-arrow">⬇</div>
+                    <div class="flow-node">🧠 4. MODEL: Train Machine Learning algorithms</div>
+                    <div class="flow-arrow">⬇</div>
+                    <div class="flow-node">📈 5. INTERPRET: Evaluate accuracy & Deploy!</div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="category-title">📐 Math & Statistics</h2>
+
+        <div class="faq">
+            <div class="question">7. Explain Inferential vs Descriptive Statistics.</div>
+            <div class="answer">
+                <p>Think of statistics as a camera.</p>
+                <p>📸 <strong>Descriptive Statistics (The Photograph):</strong> Describes or summarizes the data you <em>currently have</em>. It doesn't guess anything outside of the dataset. <br>
+                <em>Tools:</em> Mean, Median, Mode, Standard Deviation.<br>
+                <em>Example:</em> Calculating the average GPA of the 50 students in your classroom.</p>
+                
+                <p>🔮 <strong>Inferential Statistics (The Crystal Ball):</strong> Uses a small sample to make predictions or generalizations about a much <em>larger population</em>.<br>
+                <em>Tools:</em> Hypothesis Testing, ANOVA, T-tests.<br>
+                <em>Example:</em> Asking 50 students who they will vote for, and using that to predict the national election.</p>
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">8. What is ANOVA and why is it used?</div>
+            <div class="answer">
+                <span class="highlight">Analysis of Variance (ANOVA)</span> is a statistical formula used to compare variances across the means (or average) of different groups. A range of scenarios use it to determine if there is any statistically significant difference between the means of three or more independent (unrelated) groups.
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">9. Program to find outliers & Box Plot for given sample.</div>
+            <div class="answer">
+                <p>We use the <span class="highlight">Interquartile Range (IQR) Method</span>. An outlier falls below <code>Q1 - 1.5*IQR</code> or above <code>Q3 + 1.5*IQR</code>.</p>
+<pre>
+<span class="code-keyword">import</span> numpy <span class="code-keyword">as</span> np
+<span class="code-keyword">import</span> matplotlib.pyplot <span class="code-keyword">as</span> plt
+
+<span class="code-comment"># The Dataset</span>
+sample = [15, 101, 18, 7, 13, 16, 11, 50, 23, 44, 35, 21, 5, 15, 10, 9]
+
+<span class="code-comment"># Step 1: Calculate Q1 and Q3</span>
+Q1 = np.<span class="code-function">percentile</span>(sample, 25)
+Q3 = np.<span class="code-function">percentile</span>(sample, 75)
+
+<span class="code-comment"># Step 2: Calculate IQR</span>
+IQR = Q3 - Q1
+
+<span class="code-comment"># Step 3: Define Bounds</span>
+lower_bound = Q1 - (1.5 * IQR)
+upper_bound = Q3 + (1.5 * IQR)
+
+<span class="code-comment"># Step 4: Identify Outliers (List Comprehension)</span>
+outliers = [x <span class="code-keyword">for</span> x <span class="code-keyword">in</span> sample <span class="code-keyword">if</span> x < <span class="code-function">lower_bound</span> <span class="code-keyword">or</span> x > <span class="code-function">upper_bound</span>]
+
+<span class="code-function">print</span>(<span class="code-string">f"Outliers: {outliers}"</span>) <span class="code-comment"># Spoiler: 101 is the outlier!</span>
+
+<span class="code-comment"># Step 5: Draw Box Plot</span>
+plt.<span class="code-function">boxplot</span>(sample, vert=<span class="code-keyword">False</span>)
+plt.<span class="code-function">title</span>(<span class="code-string">"Box Plot of Sample Data"</span>)
+plt.<span class="code-function">show</span>()
+</pre>
+            </div>
+        </div>
+
+        <h2 class="category-title">💻 Practical Implementation</h2>
+
+        <div class="faq">
+            <div class="question">10. Perform EDA on Titanic Dataset (Code Implementation).</div>
+            <div class="answer">
+                <p>Task: Read data, Overview, Drop 'Cabin', Create Dummies for 'Sex', Split X and Y.</p>
+<pre>
+<span class="code-keyword">import</span> pandas <span class="code-keyword">as</span> pd
+
+<span class="code-comment"># a) Read the dataset</span>
+df = pd.<span class="code-function">read_csv</span>(<span class="code-string">'titanic.csv'</span>)
+
+<span class="code-comment"># b) Display overview</span>
+<span class="code-function">print</span>(df.<span class="code-function">info</span>())
+
+<span class="code-comment"># d) Drop the 'Cabin' feature (axis=1 means column)</span>
+df = df.<span class="code-function">drop</span>(<span class="code-string">'Cabin'</span>, axis=1) 
+
+<span class="code-comment"># e) Create dummy variables for 'Sex' (drop_first avoids dummy trap)</span>
+df = pd.<span class="code-function">get_dummies</span>(df, columns=[<span class="code-string">'Sex'</span>], drop_first=<span class="code-keyword">True</span>)
+
+<span class="code-comment"># c) Split into dependent (Y) and independent (X)</span>
+Y = df[<span class="code-string">'Survived'</span>] 
+X = df.<span class="code-function">drop</span>(<span class="code-string">'Survived'</span>, axis=1)
+</pre>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const faqs = document.querySelectorAll('.faq');
+        faqs.forEach(faq => {
+            faq.querySelector('.question').addEventListener('click', () => {
+                // Close all others
+                faqs.forEach(item => {
+                    if(item !== faq) item.classList.remove('active');
+                });
+                // Toggle current
+                faq.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
