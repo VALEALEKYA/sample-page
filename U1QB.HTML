@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit-I Question Bank | Data Science</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap');
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            padding: 30px;
+        }
+
+        h2 {
+            color: #1e3c72;
+            border-bottom: 2px solid #1e3c72;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .faq {
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .question {
+            background: #f4f4f9;
+            padding: 15px 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .question:hover {
+            background: #e0eaf5;
+        }
+
+        .question::after {
+            content: '+';
+            font-size: 1.5em;
+            color: #1e3c72;
+            transition: transform 0.3s;
+        }
+
+        .faq.active .question::after {
+            transform: rotate(45deg);
+        }
+
+        .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease;
+            background: white;
+            padding: 0 20px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .faq.active .answer {
+            max-height: 500px;
+            padding: 15px 20px;
+        }
+
+        .highlight {
+            color: #d35400;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🧠 Unit-I: Ultimate Question Bank</h1>
+        <p>Click on the questions to reveal the answers! Test your knowledge before the exam.</p>
+    </div>
+
+    <div class="container">
+        
+        <h2>🎯 Core Concepts</h2>
+        
+        <div class="faq">
+            <div class="question">1. What is Data Science in the context of modern engineering?</div>
+            <div class="answer">
+                Data science is an interdisciplinary field that uses scientific methods, processes, algorithms, and systems to extract <span class="highlight">knowledge and insights from noisy, structured, and unstructured data</span>. For an engineer, it's the toolkit used to apply actionable insights from data across a broad range of application domains.
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">2. What does "Statistical Thinking in the Age of Big Data" mean?</div>
+            <div class="answer">
+                It means recognizing that all work occurs in interconnected processes and that <span class="highlight">variation exists everywhere</span>. In the era of Big Data, statistical thinking is the mindset required to understand this variation, avoid biases, and make informed decisions rather than just blindly trusting large volumes of data.
+            </div>
+        </div>
+
+        <h2>🔄 The Life Cycle</h2>
+
+        <div class="faq">
+            <div class="question">3. Why is "Problem Definition" the most critical step in the Life Cycle?</div>
+            <div class="answer">
+                Without a clear problem definition, you might build a brilliant model that solves the <span class="highlight">wrong problem</span>. This step aligns the engineering efforts with actual business or research needs, defining the scope, goals, and success metrics before any code is written.
+            </div>
+        </div>
+
+        <div class="faq">
+            <div class="question">4. Differentiate between Data Cleaning and Data Exploration (EDA).</div>
+            <div class="answer">
+                <strong>Data Cleaning</strong> is the janitorial work: removing duplicates, handling missing values, and fixing formats. <br><br>
+                <strong>Data Exploration (EDA)</strong> is the detective work: using statistics and visualizations to find patterns, spot anomalies, and form hypotheses about the cleaned data.
+            </div>
+        </div>
+
+        <h2>📐 Math & Statistics</h2>
+
+        <div class="faq">
+            <div class="question">5. What is ANOVA and why is it used?</div>
+            <div class="answer">
+                <span class="highlight">Analysis of Variance (ANOVA)</span> is a statistical formula used to compare variances across the means (or average) of different groups. A range of scenarios use it to determine if there is any statistically significant difference between the means of three or more independent (unrelated) groups.
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const faqs = document.querySelectorAll('.faq');
+        faqs.forEach(faq => {
+            faq.querySelector('.question').addEventListener('click', () => {
+                faq.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

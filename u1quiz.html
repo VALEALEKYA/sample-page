@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit-I Data Science Quiz</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap');
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #0f2027; /* fallback for old browsers */
+            background: -webkit-linear-gradient(to right, #2c5364, #203a43, #0f2027);
+            background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        h1 {
+            color: #00d2ff;
+            margin-top: 0;
+        }
+
+        #question-text {
+            font-size: 1.4em;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: #ffffff;
+            color: #333;
+            border: none;
+            padding: 15px;
+            font-size: 1.1em;
+            font-family: 'Nunito', sans-serif;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #00d2ff;
+            color: #000;
+            transform: scale(1.02);
+        }
+
+        .btn.correct {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn.wrong {
+            background: #f44336;
+            color: white;
+        }
+
+        #next-btn {
+            background: #f39c12;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none;
+            margin: 0 auto;
+            font-weight: bold;
+        }
+
+        #next-btn:hover {
+            background: #e67e22;
+        }
+
+        .score-board {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #bdc3c7;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1>🚀 Data Science Quiz</h1>
+        
+        <div id="quiz-screen">
+            <div id="question-text">Question goes here</div>
+            <div class="btn-grid" id="answer-buttons">
+                </div>
+            <button id="next-btn">Next Question ➔</button>
+        </div>
+
+        <div id="result-screen" class="hide">
+            <h2>🎉 Quiz Completed!</h2>
+            <p style="font-size: 1.5em;">Your Score: <span id="final-score" style="color:#00d2ff; font-weight:bold;">0</span> / 5</p>
+            <button class="btn" style="background:#00d2ff; color:#000; width:50%; margin-top:20px;" onclick="location.reload()">Restart Quiz</button>
+        </div>
+        
+        <div class="score-board" id="score-tracker">Score: 0</div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Which step in the Data Science Life Cycle ensures you are solving the right business issue?",
+                answers: [
+                    { text: "A) Data Cleaning", correct: false },
+                    { text: "B) Model Evaluation", correct: false },
+                    { text: "C) Problem Definition", correct: true },
+                    { text: "D) Data Exploration", correct: false }
+                ]
+            },
+            {
+                question: "If you are fixing missing values and removing duplicates, you are doing...",
+                answers: [
+                    { text: "A) Model Building", correct: false },
+                    { text: "B) Data Cleaning", correct: true },
+                    { text: "C) Deployment", correct: false },
+                    { text: "D) ANOVA Testing", correct: false }
+                ]
+            },
+            {
+                question: "What does ANOVA (Analysis of Variance) primarily help us do?",
+                answers: [
+                    { text: "A) Compare means of 3 or more groups", correct: true },
+                    { text: "B) Build a web application", correct: false },
+                    { text: "C) Scrape data from a website", correct: false },
+                    { text: "D) Define the problem", correct: false }
+                ]
+            },
+            {
+                question: "Plotting histograms to spot outliers falls under which category?",
+                answers: [
+                    { text: "A) Data Collection", correct: false },
+                    { text: "B) Exploratory Data Analysis (EDA)", correct: true },
+                    { text: "C) Model Deployment", correct: false },
+                    { text: "D) ANOVA", correct: false }
+                ]
+            },
+            {
+                question: "Statistical Thinking in Big Data requires understanding that...",
+                answers: [
+                    { text: "A) All data is perfectly clean", correct: false },
+                    { text: "B) Variation exists in all processes", correct: true },
+                    { text: "C) You don't need math anymore", correct: false },
+                    { text: "D) Models never make errors", correct: false }
+                ]
+            }
+        ];
+
+        const questionElement = document.getElementById('question-text');
+        const answerButtonsElement = document.getElementById('answer-buttons');
+        const nextButton = document.getElementById('next-btn');
+        const scoreTracker = document.getElementById('score-tracker');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const finalScore = document.getElementById('final-score');
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            nextButton.style.display = 'none';
+            showQuestion();
+        }
+
+        function showQuestion() {
+            resetState();
+            let currentQuestion = questions[currentQuestionIndex];
+            questionElement.innerText = `Q${currentQuestionIndex + 1}. ${currentQuestion.question}`;
+
+            currentQuestion.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('btn');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtonsElement.appendChild(button);
+            });
+        }
+
+        function resetState() {
+            nextButton.style.display = 'none';
+            while (answerButtonsElement.firstChild) {
+                answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+            }
+        }
+
+        function selectAnswer(e) {
+            const selectedButton = e.target;
+            const isCorrect = selectedButton.dataset.correct === "true";
+            
+            if (isCorrect) {
+                selectedButton.classList.add("correct");
+                score++;
+                scoreTracker.innerText = `Score: ${score}`;
+            } else {
+                selectedButton.classList.add("wrong");
+                // Highlight correct answer
+                Array.from(answerButtonsElement.children).forEach(button => {
+                    if (button.dataset.correct === "true") {
+                        button.classList.add("correct");
+                    }
+                });
+            }
+
+            // Disable all buttons after guess
+            Array.from(answerButtonsElement.children).forEach(button => {
+                button.disabled = true;
+            });
+
+            nextButton.style.display = 'block';
+        }
+
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        });
+
+        function showResults() {
+            quizScreen.classList.add('hide');
+            scoreTracker.classList.add('hide');
+            resultScreen.classList.remove('hide');
+            finalScore.innerText = score;
+        }
+
+        startQuiz();
+    </script>
+</body>
+</html>
