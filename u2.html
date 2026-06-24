@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit II: Advanced Analytics Mastery Center</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --panel-bg: rgba(30, 41, 59, 0.7);
+            --primary-accent: #38bdf8;
+            --secondary-accent: #818cf8;
+            --highlight-yellow: #f59e0b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-glow: rgba(56, 189, 248, 0.2);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            width: 100%;
+            max-width: 1100px;
+            box-sizing: border-box;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin: 0 0 10px 0;
+            color: var(--primary-accent);
+            text-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        /* Interactive Navigation Tabs */
+        .tab-navigation {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--primary-accent);
+            color: #0f172a;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .main-container {
+            width: 92%;
+            max-width: 1100px;
+            margin-bottom: 60px;
+        }
+
+        .dashboard-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .dashboard-panel.active {
+            display: block;
+        }
+
+        /* Video Hub Styling */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .video-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--secondary-accent);
+            box-shadow: 0 10px 20px rgba(129, 140, 248, 0.15);
+        }
+
+        .video-card h4 {
+            margin: 0 0 12px 0;
+            font-size: 1.05em;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        .video-link-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            gap: 8px;
+            transition: opacity 0.2s;
+        }
+
+        .video-link-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Material Content Styling */
+        h2 {
+            color: var(--secondary-accent);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
+            margin-top: 40px;
+            font-size: 1.8em;
+        }
+
+        h2:first-of-type { margin-top: 0; }
+
+        p, li {
+            line-height: 1.7;
+            color: #cbd5e1;
+            font-size: 1.05em;
+        }
+
+        .highlight {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary-accent);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .formula-box {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 24px;
+            border-left: 4px solid var(--primary-accent);
+            border-radius: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.15em;
+            margin: 25px 0;
+            overflow-x: auto;
+            color: #38bdf8;
+            font-weight: bold;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .concept-card {
+            background: rgba(255,255,255,0.03);
+            padding: 24px;
+            border-radius: 14px;
+            margin-top: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* Question Bank Styling */
+        .faq {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .faq:hover {
+            border-color: var(--primary-accent);
+        }
+
+        .question {
+            padding: 20px 24px;
+            font-size: 1.15em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .question::after {
+            content: '▼';
+            font-size: 0.9em;
+            color: var(--primary-accent);
+            transition: transform 0.3s ease;
+        }
+
+        .faq.active .question::after {
+            transform: rotate(180deg);
+        }
+
+        .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0,0,0,0.15);
+            padding: 0 24px;
+        }
+
+        .faq.active .answer {
+            max-height: 2500px;
+            padding: 24px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        pre {
+            background: #090d16;
+            color: #a7f3d0;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 14px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(129, 140, 248, 0.15);
+            color: var(--secondary-accent);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.2em; }
+            .tab-navigation { flex-direction: column; width: 100%; }
+            .dashboard-panel { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Data Science Learning Hub</h1>
+        <p>Unit II Mastery Portal: Correlation, Regression, and Machine Learning Evaluation</p>
+    </header>
+
+    <div class="tab-navigation">
+        <button class="tab-btn active" onclick="switchTab('material')">📖 Study Guide</button>
+        <button class="tab-btn" onclick="switchTab('qbank')">🛠️ Problem-Solving Bank</button>
+        <button class="tab-btn" onclick="switchTab('videos')">🎥 Video Toolkits</button>
+    </div>
+
+    <div class="main-container">
+
+        <div id="material" class="dashboard-panel active">
+        
+            <a href="u2notes.html" class="btn" target="_blank"><button class="tab-btn active" onclick="switchTab('material')">📖 MORE Study Guide </button>    </a>
+         
+            <h2>1. Bivariate Foundations: Correlation & Scatter Plots</h2>
+            <p>Before executing predictions, spatial models must establish patterns. <span class="highlight">Correlation</span> evaluates the scale strength and linear vector orientation between continuous feature metrics.</p>
+            <ul>
+                <li><strong>Scatter Plots:</strong> Two-dimensional feature coordinates mapped instantly across space. Clusters mapping along an ascending vector express positive attributes, whereas descending alignments confirm strict reverse relationships.</li>
+            </ul>
+            <div class="formula-box">
+Pearson's Correlation Coefficient (r) Computational Formula:
+r = [ n(∑XY) - (∑X)(∑Y) ] / √[ {n∑X² - (∑X)²} * {n∑Y² - (∑Y)²} ]
+            </div>
+            <p><em>Boundary Conditions: The 'r' configuration restricts strictly between -1.0 and +1.0. A score of absolute 0 indicates complete non-linear variance distribution.</em></p>
+
+            <h2>2. Optimization Framework: Linear Regression & Least Squares</h2>
+            <p>Linear <span class="highlight">Regression</span> builds downstream systems over basic correlation by projecting data onto a continuous trend line equation modeled as: <code>Y = mX + c</code>.</p>
+            <div class="concept-card">
+                <h3>📐 The Least Squares Criterion</h3>
+                <p>The mathematical mechanism fits the optimized vector line by minimizing the continuous sum of squared residuals (differences between spatial observations and predicted track coordinates).</p>
+            </div>
+            
+            <h2>3. Quality Assessment & Error Metrics</h2>
+            <div class="concept-card">
+                <h3>🎯 Standard Error of Estimate</h3>
+                <p>Measures precise residual standard deviation around your calculated line. It reveals the exact dispersion metric of expected system prediction errors.</p>
+            </div>
+            <div class="concept-card">
+                <h3>📊 Decoupling Coefficient of Determination (R²)</h3>
+                <p>R² presents the exact proportion of variance within the output variable explained by the input data model features. An R² metric of 0.85 validates that 85% of downstream structural changes are completely captured by your input feature sets.</p>
+            </div>
+
+            <h2>4. Multi-Variable Extensions & System Mean Reversion</h2>
+            <p><strong>Multiple Regression Equations:</strong> Systems projecting variables by combining several input parameters over a multidimensional plane: <code>Y = β₀ + β₁X₁ + β₂X₂ + ... + βₙXₙ</code>.</p>
+            <p><strong>Regression Towards the Mean:</strong> A fundamental statistical phenomenon where extreme initial sample runs natively pull back closer toward standard average baselines on subsequent measurement tracks.</p>
+          
+        </div>
+
+        <div id="qbank" class="dashboard-panel">
+            <h2>Calculated Applications & Comparative Architectures</h2>
+            <p style="margin-bottom: 25px; color: var(--text-muted);">Expand each question component below to check mathematical processes and engineering implementations.</p>
+
+            <div class="faq">
+                <div class="question">Q1. Apply Linear Regression for a sample dataset and calculate the R² Value.</div>
+                <div class="answer">
+                    <p><strong>Step-by-Step Analytical Process:</strong></p>
+                    <p>Given Sample Set: X = [1, 2, 3, 4, 5], Y = [3, 4, 2, 4, 5].</p>
+                    <p>1. Compute Means: X̄ = 3, Ȳ = 3.6<br>
+                    2. Calculate Slope (m): Sum((X - X̄)(Y - Ȳ)) / Sum((X - X̄)²) = 3 / 10 = 0.3<br>
+                    3. Calculate Intercept (c): Ȳ - mX̄ = 3.6 - (0.3 * 3) = 2.7<br>
+                    4. Model Equation: <strong>Y_pred = 2.7 + 0.3X</strong></p>
+                    <p>Using predicted steps, calculate sum of squared residuals (SS_res) and total variance (SS_tot) to establish <strong>R² ≈ 0.1735</strong>.</p>
+<pre>
+import numpy as np
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import r2_score
+
+X = np.array([1, 2, 3, 4, 5]).reshape(-1, 1)
+Y = np.array([3, 4, 2, 4, 5])
+model = LinearRegression().fit(X, Y)
+print("Calculated R2 Score:", r2_score(Y, model.predict(X)))
+</pre>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="question">Q2. Compare and Contrast KNN and K-means Algorithm with Real-World Examples.</div>
+                <div class="answer">
+                    <table>
+                        <tr>
+                            <th>Structural Criterion</th>
+                            <th>K-Nearest Neighbors (KNN)</th>
+                            <th>K-Means Clustering</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Paradigm Classification</strong></td>
+                            <td>Supervised Learning Architecture</td>
+                            <td>Unsupervised Learning Pipeline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Primary Objective</strong></td>
+                            <td>Predicts label class/value from spatial neighbors.</td>
+                            <td>Groups data into discrete density spaces.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Production Example</strong></td>
+                            <td>Classifying transactions as fraud based on similarity vectors.</td>
+                            <td>Segmenting structural user accounts into spending groups.</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="question">Q3. Calculate the Error Rate (Least Squared Error) for the following Time Series Data: X = {20,10,5,8,32,6,7}, Y = {4,11,6,12,16,9,14}</div>
+                <div class="answer">
+                    <p><strong>Analytical Computation Sequence:</strong></p>
+                    <p>Dataset Parameters: N = 7. ΣX = 88, ΣY = 72, ΣXY = 835, ΣX² = 1778, ΣY² = 858.</p>
+                    <p>1. Compute Slope Coefficient (m):<br>
+                    <code>m = (NΣXY - ΣXΣY) / (NΣX² - (ΣX)²)</code><br>
+                    <code>m = (7*835 - 88*72) / (7*1778 - 88²) = -0.1265</code></p>
+                    <p>2. Intercept Mapping (c):<br>
+                    <code>c = Ȳ - mX̄ = 10.2857 - (-0.1265 * 12.5714) = 11.876</code></p>
+                    <p>3. Sum of Squared Errors (SSE): Calculate <code>Σ(Y_actual - Y_predicted)²</code> for all iterations.<br>
+                    <strong>Sum of Squared Residual Errors (SSE) ≈ 100.06</strong></p>
+                </div>
+            </div>
+
+            <div class="faq">
+                <div class="question">Q4. Compare and Contrast Naïve Bayes Classifier and KNN Algorithm with Examples.</div>
+                <div class="answer">
+                    <p><strong>Naïve Bayes Classifier:</strong> A generative probabilistic algorithm utilizing Bayes' Theorem. It assumes strict feature independence.</p>
+                    <p><em>Example:</em> Real-time text spam detection engine analyzing token frequencies independent of layout positioning.</p>
+                    <br>
+                    <p><strong>K-Nearest Neighbors (KNN):</strong> A non-parametric instance-based lazy learning engine that predicts target points by measuring geometric distance fields.</p>
+                    <p><em>Example:</em> Medical diagnostic recommendations matched against the closest matching clinical historical histories.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="videos" class="dashboard-panel">
+            <h2>🎥 Curated Video Reference Hub</h2>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">Click any button below to open specialized video lectures and computational walkthroughs from world-class instructional channels.</p>
+            
+            <div class="video-grid">
+                <div class="video-card">
+                    <h4>Correlation & Scatter Plots</h4>
+                    <a href="https://www.youtube.com/watch?v=-Y-M9aD_ccQ" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+                <div class="video-card">
+                    <h4>Correlation Coefficient Induction</h4>
+                    <a href="https://www.youtube.com/watch?v=u4ugaNo6v1Q" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+                <div class="video-card">
+                    <h4>Computational Formula for r</h4>
+                    <a href="https://www.youtube.com/watch?v=u4ugaNo6v1Q" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+                <div class="video-card">
+                    <h4>Regression Line & Least Squares</h4>
+                    <a href="https://www.youtube.com/watch?v=7ArmBVF2dCs" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+                <div class="video-card">
+                    <h4>Standard Error of Estimate</h4>
+                    <a href="https://www.youtube.com/watch?v=7ArmBVF2dCs" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+                <div class="video-card">
+                    <h4>Interpretation of R² Metric</h4>
+                    <a href="https://www.youtube.com/watch?v=7ArmBVF2dCs" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+                <div class="video-card">
+                    <h4>Multiple Regression Equations</h4>
+                    <a href="https://www.youtube.com/watch?v=7ArmBVF2dCs" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+                <div class="video-card">
+                    <h4>Regression Towards the Mean</h4>
+                    <a href="https://www.youtube.com/watch?v=XIdZ6_yZfXo" target="_blank" class="video-link-btn">▶ Play Reference</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tabId) {
+            // Remove active tags everywhere
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.dashboard-panel').forEach(panel => panel.classList.remove('active'));
+            
+            // Set targets active
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Accordion functionality for Problem-Solving Bank
+        document.querySelectorAll('.question').forEach(item => {
+            item.addEventListener('click', () => {
+                const parent = item.parentElement;
+                parent.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
