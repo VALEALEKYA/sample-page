@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit III: Financial Modelling & Machine Learning Classification Mastery Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-main: #0b0f19;
+            --panel-bg: rgba(17, 24, 39, 0.75);
+            --primary: #00f2fe;
+            --secondary: #9d4edf;
+            --accent: #390099;
+            --success: #00b894;
+            --warning: #ffb703;
+            --danger: #ff4d6d;
+            --text-light: #f8fafc;
+            --text-dark: #64748b;
+            --border: rgba(255, 255, 255, 0.08);
+            --glow: rgba(0, 242, 254, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(157, 78, 223, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(0, 242, 254, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-light);
+            min-height: 100vh;
+            padding-bottom: 60px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px 30px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #000;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            padding: 6px 16px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3.2em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 30%, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            color: var(--text-dark);
+            font-size: 1.2em;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Dashboard Navigation Controls */
+        .navigation-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            background: rgba(11, 15, 25, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            gap: 8px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-dark);
+            padding: 14px 24px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-light);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--primary), #00c6ff);
+            color: #0b0f19;
+            font-weight: 700;
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        /* App Layout Container */
+        .app-container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .app-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 45px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            display: none;
+            animation: panelFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-panel.active {
+            display: block;
+        }
+
+        @keyframes panelFadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Specific Styles */
+        h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--primary);
+            font-size: 2em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--secondary);
+            font-size: 1.4em;
+            margin: 30px 0 15px 0;
+        }
+
+        p {
+            line-height: 1.75;
+            color: #cbd5e1;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            margin-left: 25px;
+            margin-bottom: 25px;
+        }
+
+        li {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: #cbd5e1;
+            font-size: 1.05em;
+        }
+
+        .highlight-box {
+            background: rgba(0, 242, 254, 0.05);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 25px 0;
+        }
+
+        .highlight-text {
+            color: var(--primary);
+            font-weight: 600;
+            background: rgba(0, 242, 254, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .formula-card {
+            background: #060913;
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 16px;
+            font-family: 'Space Grotesk', sans-serif;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: inset 0 4px 12px rgba(0,0,0,0.8);
+        }
+
+        .formula-math {
+            font-size: 1.8em;
+            color: #fff;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .formula-desc {
+            color: var(--text-dark);
+            font-size: 0.95em;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        @media (max-width: 850px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            header h1 { font-size: 2.3em; }
+            .nav-container { flex-direction: column; width: 100%; }
+            .app-panel { padding: 25px; }
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
+            background: rgba(157, 78, 223, 0.03);
+        }
+
+        /* Comparative Matrix Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 1em;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: rgba(157, 78, 223, 0.1);
+            color: var(--secondary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.01);
+        }
+
+        /* Question Bank Accordions */
+        .accordion-item {
+            background: rgba(15, 23, 42, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .accordion-item:hover {
+            border-color: var(--primary);
+        }
+
+        .accordion-trigger {
+            padding: 22px 30px;
+            font-size: 1.15em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            background: rgba(255,255,255,0.01);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .accordion-trigger::after {
+            content: '＋';
+            color: var(--primary);
+            font-size: 1.3em;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-item.active .accordion-trigger::after {
+            content: '－';
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 3000px;
+            padding: 30px;
+            border-top: 1px solid var(--border);
+        }
+
+        code-block {
+            display: block;
+            background: #05070f;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            color: #a7f3d0;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255,255,255,0.03);
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        /* Video Hub Hub Layout */
+        .video-grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .video-resource-box {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(255, 77, 109, 0.05);
+            border: 1px solid rgba(255, 77, 109, 0.15);
+            padding: 24px;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .video-resource-box:hover {
+            transform: translateY(-3px);
+            border-color: var(--danger);
+            background: rgba(255, 77, 109, 0.08);
+        }
+
+        .video-info {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .video-btn {
+            background: linear-gradient(135deg, #ff4d6d, #ff758f);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-align: center;
+            transition: transform 0.2s;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .video-btn:hover {
+            transform: scale(1.02);
+        }
+
+        /* Quiz Implementation Layout */
+        .quiz-intro {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .quiz-start-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0b0f19;
+            padding: 16px 40px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 242, 254, 0.3);
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 242, 254, 0.5);
+        }
+
+        .quiz-card {
+            display: none;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 35px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.4s ease;
+        }
+
+        .quiz-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-dark);
+            font-size: 0.95em;
+            margin-bottom: 15px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .quiz-question-text {
+            font-size: 1.35em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            color: var(--text-light);
+            padding: 18px 25px;
+            border-radius: 12px;
+            text-align: left;
+            font-size: 1.05em;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct {
+            background: rgba(0, 184, 148, 0.15) !important;
+            border-color: var(--success) !important;
+            color: #55efc4 !important;
+            font-weight: 600;
+        }
+
+        .option-btn.wrong {
+            background: rgba(255, 77, 109, 0.15) !important;
+            border-color: var(--danger) !important;
+            color: #ff758f !important;
+        }
+
+        .quiz-controls {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .action-btn {
+            background: var(--text-light);
+            color: var(--bg-main);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: 700;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .quiz-results-screen {
+            text-align: center;
+            padding: 40px 0;
+            display: none;
+        }
+
+        .results-score-circle {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 100%);
+            border: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px auto;
+            font-size: 2.8em;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="badge">Undergraduate Engineering Analytics Masterclass</div>
+        <h1>Unit III: Financial Modelling & Logistic Classifiers</h1>
+        <p>An interactive digital learning hub designed to simplify discrete evaluation architectures, time-locked backtesting, and production credit risk classification.</p>
+    </header>
+
+    <div class="navigation-wrap">
+        <div class="nav-container">
+            <button class="nav-btn active" onclick="navigateTabs(event, 'study-material')">📖 Study Guide</button>
+            <button class="nav-btn" onclick="navigateTabs(event, 'question-bank')">🛠️ Industrial Q-Bank</button>
+            <button class="nav-btn" onclick="navigateTabs(event, 'interactive-quiz')">🕹️ Arena Quiz</button>
+            <button class="nav-btn" onclick="navigateTabs(event, 'learn-more-notes')" style="border: 1px dashed rgba(0, 242, 254, 0.4);">🚀 Learn More</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+
+        <div id="study-material" class="app-panel active">
+            <h2>🎯 Core Classifier Concepts Made Simple</h2>
+            <p>While standard machine learning algorithms try to predict continuous values (like forecasting exactly how many dollars a house will sell for), <span class="highlight-text">Classifiers</span> step in when we need to place data into clean, discrete categories (e.g., "Will this transaction fail or succeed?").</p>
+            
+            <div class="highlight-box">
+                <p><strong>The Golden Rule:</strong> In classification engineering, we calculate the mathematical <em>probability</em> (ranging precisely between 0% and 100%) that an application falls into a target class bucket.</p>
+            </div>
+
+            <h3>📊 The Magic S-Curve (The Sigmoid Mapping Function)</h3>
+            <p>To make sure our predictions never shoot off to positive or negative infinity, we feed our traditional linear mathematical inputs into the classic <strong>Sigmoid Function</strong>. This maps out a perfectly bounded mathematical profile:</p>
+
+            <div class="formula-card">
+                <div class="formula-math">P(Y=1) = 1 / (1 + e⁻ᶻ)</div>
+                <div class="formula-desc">Where z represents your baseline data weights: β₀ + β₁X₁ + β₂X₂</div>
+            </div>
+
+            <h2>🕰️ Working with Timestamps in Financial Environments</h2>
+            <p>Financial metrics are highly fragile because they exist inside streaming, chronological history. A standard single timestamp represents the exact microsecond an economic event took place. Engineers must handle this data with care:</p>
+            <ul>
+                <li><strong>Look-Ahead Bias Data Leakage:</strong> This occurs when an evaluation pipeline accidentally uses information from the future to predict a historical choice. Timestamps keep your features cleanly separated by time boundaries.</li>
+                <li><strong>Macro Economic Distribution Shifts:</strong> Markets change across seasons, recessions, and structural policy updates. This behavior is called <strong>Non-Stationarity</strong>, which means older weights lose predictive strength over time.</li>
+            </ul>
+
+            <h3 style="margin-top: 40px; color: var(--danger);">🎥 Interactive Video References</h3>
+            <div class="video-grid-layout">
+                <div class="video-resource-box">
+                    <div class="video-info">
+                        <span style="font-size: 1.8em;">📺</span>
+                        <div>
+                            <strong style="display:block; color: #fff;">Logistic Regression Math Demystified</strong>
+                            <span style="font-size:0.85em; color:var(--text-dark);">StatQuest Visual Series</span>
+                        </div>
+                    </div>
+                    <a href="https://www.youtube.com/watch?v=yIYKR4sgzI8" target="_blank" class="video-btn">Launch Video Lecture</a>
+                </div>
+
+                <div class="video-resource-box" style="background: rgba(157, 78, 223, 0.05); border-color: rgba(157, 78, 223, 0.15);">
+                    <div class="video-info">
+                        <span style="font-size: 1.8em;">📉</span>
+                        <div>
+                            <strong style="display:block; color: #fff;">Time Series Feature Windows</strong>
+                            <span style="font-size:0.85em; color:var(--text-dark);">Computational Finance Walkthrough</span>
+                        </div>
+                    </div>
+                    <a href="https://www.youtube.com/watch?v=e8Yw4alG16Q" target="_blank" class="video-btn" style="background: linear-gradient(135deg, var(--secondary), #b5179e);">Launch Video Lecture</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="question-bank" class="app-panel">
+            <h2>🛠️ High-Fidelity Problem-Solving Question Bank</h2>
+            <p style="color: var(--text-dark); margin-bottom: 30px;">Click on any technical prompt below to expand comprehensive algorithmic breakdowns, engineering case studies, and comparisons.</p>
+
+            <div class="accordion-item">
+                <div class="accordion-trigger">1. Brief the issues of Runtime, Interpretability, and Scalability faced during classifier selection.</div>
+                <div class="accordion-content">
+                    <p>When selecting a classifier for an enterprise pipeline, engineers optimize across three operational constraints:</p>
+                    <p><strong>A. Runtime Latency (Training vs. Inference):</strong> Training runtime defines the calculation window required to minimize the model's loss function. Inference runtime is the end-to-end latency needed to execute a prediction forward pass on live incoming data. In high-frequency environments, inference must complete in sub-milliseconds.</p>
+                    <p><strong>B. Model Interpretability:</strong> This measures how easily an audit trail can map input fields directly to decisions. Highly regulated fields like consumer lending require "white-box" transparent workflows (such as Logistic Regression) so odds ratios can be clearly verified by compliance teams.</p>
+                    <p><strong>C. Scalability:</strong> This maps a model's operational resource footprint as volume expands ($\mathcal{O}(N)$). While parametric approaches like Logistic Regression scale linearly, non-parametric hyperplanes (like SVMs) can scale quadratically ($\mathcal{O}(N^2)$), running the risk of hardware exhaustion on large datasets.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-trigger">2. Explain the mechanisms of Logistic Regression with an algorithmic production example.</div>
+                <div class="accordion-content">
+                    <p>Logistic Regression takes a weighted linear array combination of input metrics and runs it through a non-linear sigmoid transform to calculate an absolute classification probability score.</p>
+                    <p><strong>Production Scenario:</strong> A monitoring node tracks real-time machinery failure risks ($Y=1$) based on operating temperature ($X_1$) and vibration frequency ($X_2$).</p>
+                    <p>Assume your optimized production configuration parameters are: $\beta_0 = -5.0$, $\beta_1 = 0.04$, and $\beta_2 = 0.1$.</p>
+                    <p>If the sensor detects an operating profile of $X_1 = 80^\circ\text{C}$ and $X_2 = 30\text{Hz}$, the underlying baseline score ($z$) is calculated as follows:</p>
+                    <code-block>
+z = -5.0 + (0.04 * 80) + (0.1 * 30)
+z = -5.0 + 3.2 + 3.0 = 1.2
+                    </code-block>
+                    <p>Next, route this linear score through the non-linear sigmoid equation to calculate the absolute probability of component failure:</p>
+                    <code-block>
+P(Failure) = 1 / (1 + e^(-1.2)) = 1 / (1 + 0.3012) ≈ 0.7685 (76.85%)
+                    </code-block>
+                    <p>Using a standard classification decision threshold ($\tau = 0.50$), the system identifies the elevated risk and flags the component for preventive maintenance.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-trigger">3. Provide an architectural comparison: Linear Regression vs. Logistic Regression.</div>
+                <div class="accordion-content">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Architectural Attribute</th>
+                                <th>Linear Regression</th>
+                                <th>Logistic Regression</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Output Space Bounds</strong></td>
+                                <td>Unbounded ($-\infty$ to $+\infty$)</td>
+                                <td>Strictly Bounded Probability ($0$ to $1$)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Loss Minimization Path</strong></td>
+                                <td>Ordinary Least Squares (OLS)</td>
+                                <td>Maximum Likelihood Estimation (MLE) via Cross-Entropy Loss</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Outlier Sensitivity</strong></td>
+                                <td>High; extreme values pull the regression line out of alignment</td>
+                                <td>Low; the sigmoid function asymptotes cleanly to 0 and 1, flattening the impact of extreme values</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-trigger">4. Analytical Case Study: Mitigating Data Leakage in Timestamp-Driven Algorithmic Trading Systems.</div>
+                <div class="accordion-content">
+                    <p><strong>Problem Statement:</strong> A quantitative hedge fund experiences severe performance degradation when moving an algorithmic model from backtesting to live production. The model achieves an $89\%$ accuracy rate during offline validation but drops to $51\%$ when deployed to live market feeds.</p>
+                    <p><strong>Root Cause Analysis:</strong> The engineering team discovered data leakage caused by improper handling of timestamp boundaries. The model used a 5-day rolling average feature that accidentally included the current day's closing price ($t$) to predict trade entry points at the market open ($t$). This incorporated information from the future into historical training records, creating an unrealistic validation score that could not be replicated in real-world trading.</p>
+                    <p><strong>Engineering Solution:</strong> The team implemented a strict time-locked feature engineering pipeline using a backward-shifted index, ensuring features only use historical data up to the previous day ($t-1$):</p>
+                    <code-block>
+import pandas as pd
+
+# Shift indices backwards to guarantee historical containment
+df['rolling_features_valid'] = df['market_close'].shift(1).rolling(window=5).mean()
+df.dropna(inplace=True)
+                    </code-block>
+                    <p>By enforcing this historical constraint, the fund removed future data points from the training pipeline, aligning the backtest results with real-world production performance.</p>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <div class="accordion-trigger">5. Industrial Case Study: Deploying Automated Credit Risk Classification Engines in Retail Banking.</div>
+                <div class="accordion-content">
+                    <p><strong>Problem Statement:</strong> A digital platform needs to automate its loan underwriting workflow to evaluate credit applications in real time and reject high-risk files likely to end in default ($Y=1$).</p>
+                    <p><strong>System Implementation:</strong> The bank deployed a scalable Logistic Regression pipeline evaluating Debt-to-Income Ratio ($X_1$) and Credit Bureau Score ($X_2$). The parameters are: $\beta_0 = -1.5$, $\beta_1 = 4.5$, and $\beta_2 = -0.015$.</p>
+                    <p>An applicant submits a profile with a Debt-to-Income ratio of $X_1 = 0.45$ and a Credit Bureau score of $X_2 = 620$. The system computes the underlying risk score ($z$):</p>
+                    <code-block>
+z = -1.5 + (4.5 * 0.45) + (-0.015 * 620)
+z = -1.5 + 2.025 - 9.3 = -8.775
+                    </code-block>
+                    <p>Converting this linear score to absolute risk probability via the sigmoid function:</p>
+                    <code-block>
+P(Default) = 1 / (1 + e^(-(-8.775))) = 1 / (1 + e^(8.775)) ≈ 0.00015
+                    </code-block>
+                    <p>The calculated default risk is extremely low ($0.015\%$). The automated system approves the application instantly and passes the file to the active loan servicing pipeline.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="interactive-quiz" class="app-panel">
+            <div id="quiz-intro-screen" class="quiz-intro">
+                <h2>🕹️ Unit III Gamified Evaluation Arena</h2>
+                <p style="margin-bottom: 25px;">Test your structural understanding of classification performance, model scaling limits, and financial timestamp mechanics with this 10-question quiz.</p>
+                <button class="quiz-start-btn" onclick="startQuizEngine()">Initiate Assessment Pipeline</button>
+            </div>
+
+            <div id="quiz-active-screen" class="quiz-card">
+                <div class="progress-bar-container">
+                    <div id="quiz-progress-bar" class="progress-bar-fill"></div>
+                </div>
+                <div class="quiz-meta">
+                    <span id="quiz-question-counter">Question 1 of 10</span>
+                    <span id="quiz-live-score">Score: 0</span>
+                </div>
+                <div id="question-text-field" class="quiz-question-text">Loading validation prompt...</div>
+                <div id="options-buttons-box" class="options-grid"></div>
+                <div class="quiz-controls">
+                    <button id="quiz-next-action-btn" class="action-btn" onclick="advanceQuizQuestion()" disabled>Verify Entry</button>
+                </div>
+            </div>
+
+            <div id="quiz-results-screen" class="quiz-results-screen">
+                <h2>🎓 Assessment Pipeline Terminated</h2>
+                <div id="final-score-display" class="results-score-circle">0/10</div>
+                <p id="performance-feedback-text">Evaluating performance metrics...</p>
+                <button class="quiz-start-btn" style="margin-top:20px;" onclick="startQuizEngine()">Re-run Validation Pipeline</button>
+            </div>
+        </div>
+
+        <div id="learn-more-notes" class="app-panel">
+            <h2>📊 Advanced Classification & Mathematical Scaffolding</h2>
+            <p>This section outlines advanced core concepts from the curriculum notes, focusing on processing numeric targets using bounded estimators.</p>
+            
+            <div class="highlight-box">
+                <p>Unlike continuous target estimation, a classifier isolates the cross-entropy boundary mapping instances directly into vector class assignments ($Y \in \{0, 1\}$).</p>
+            </div>
+
+            <h3>📐 Log Odds & Logit Transformations</h3>
+            <p>By computing the natural inverse transformation of the sigmoid function, we reveal the system's underlying log-odds formulation, or <strong>Logit Transition Model</strong>:</p>
+
+            <div class="formula-card">
+                <div class="formula-math">ln( p / (1 - p) ) = β₀ + β₁X₁ + ... + βₙXₙ</div>
+                <div class="formula-desc">This confirms that the log-odds distribution of our binary target remains linear across all feature weights.</div>
+            </div>
+
+            <h3>🛡️ Advanced Financial Modelling Windows</h3>
+            <p>Deploying classification models into production banking ecosystems introduces a critical complexity: handling time series data. Financial metrics do not exist as static, isolated snapshots; they are ordered sequentially as data streams driven by strict timestamps.</p>
+
+            <div class="grid-2">
+                <div class="feature-card">
+                    <h3 style="color: var(--primary);">⚠️ Look-Ahead Bias</h3>
+                    <p>Look-ahead bias manifests when a model incorporates training information from a point in time that occurs after the target observation. For example, calculating an average feature value across an entire month introduces leakage from future days, invalidating live model performance during backtesting.</p>
+                </div>
+                <div class="feature-card">
+                    <h3 style="color: var(--warning);">⚡ Non-Stationarity & Macro Drift</h3>
+                    <p>Financial parameters constantly drift due to changing monetary policies, economic crises, and real-time inflation. This dynamic shift in underlying distributions requires regular model retraining pipelines and rolling feature windows.</p>
+                </div>
+            </div>
+
+            <h3>📈 Structural Architecture of Advanced Financial Models</h3>
+            <p>Modern quantitative engineering architectures utilize timestamp telemetry to structure real-time automated workflows across two main domains:</p>
+            <ul>
+                <li><strong>Probability of Default (PD) Systems:</strong> High-throughput classification engines that analyze a corporate client's rolling financial statements to evaluate immediate insolvency risks.</li>
+                <li><strong>High-Frequency Market Triggering:</strong> Low-latency models that parse multi-tiered order book timestamp streams to automatically flag and execute immediate downside protection protocols.</li>
+            </ul>
+
+            <div class="video-resource-box" style="background: rgba(157, 78, 223, 0.08); border-color: rgba(157, 78, 223, 0.2);">
+                <div class="video-info">
+                    <span style="font-size: 1.5em;">📊</span>
+                    <div>
+                        <strong style="display:block; color: #fff;">Maximum Likelihood Estimation Explained</strong>
+                        <span style="font-size:0.85em; color:var(--text-dark);">StatQuest Mathematical Demystification Series</span>
+                    </div>
+                </div>
+                <a href="https://www.youtube.com/watch?v=yIYKR4sgzI8" target="_blank" class="video-btn" style="background: linear-gradient(135deg, var(--secondary), #b5179e);">Launch Video</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Core Tab Navigation Controller
+        function navigateTabs(event, targetPanelId) {
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.app-panel').forEach(panel => panel.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById(targetPanelId).classList.add('active');
+        }
+
+        // Q-Bank Accordion Toggler
+        document.querySelectorAll('.accordion-trigger').forEach(trigger => {
+            trigger.addEventListener('click', () => {
+                const item = trigger.parentElement;
+                item.classList.toggle('active');
+            });
+        });
+
+        // 10-Question Quiz Questions Array
+        const quizBank = [
+            {
+                q: "Why is Ordinary Least Squares (OLS) linear regression poorly suited for processing discrete binary classification targets?",
+                options: [
+                    "It restricts prediction values too heavily between absolute zero and one.",
+                    "It can generate unbounded outputs (-inf to +inf) that lack physical meaning as probabilities.",
+                    "It cannot process datasets containing multiple continuous features.",
+                    "It requires non-linear features to compute stable trends."
+                ],
+                correct: 1
+            },
+            {
+                q: "Which mathematical transformation converts raw linear combinations scores into absolute binary probability boundaries?",
+                options: [
+                    "Pearson Product-Moment Transform Matrix",
+                    "Ordinary Least Squares Linear Polynomial Equation",
+                    "The Non-Linear Sigmoid Function",
+                    "Standard Error Residual Deviation Parameter"
+                ],
+                correct: 2
+            },
+            {
+                q: "If a system requires an interpretable 'white-box' classifier to comply with strict banking regulations, which algorithm is preferred?",
+                options: [
+                    "Deep Neural Network Embedding Models",
+                    "Logistic Regression",
+                    "High-Dimensional Support Vector Machine Hyperplanes",
+                    "Random Forest Ensemble Classifiers"
+                ],
+                correct: 1
+            },
+            {
+                q: "A KNN classifier features near-zero training overhead but exhibits high operational latency during inference. This is an issue of:",
+                options: [
+                    "Interpretability Matrix Deficit",
+                    "Look-Ahead Feature Drift",
+                    "Runtime Performance Contradiction",
+                    "Non-Stationary Structural Variance"
+                ],
+                correct: 2
+            },
+            {
+                q: "What type of loss function does Logistic Regression optimize using Maximum Likelihood Estimation?",
+                options: [
+                    "Mean Squared Error (MSE)",
+                    "Cross-Entropy Loss (Log-Loss)",
+                    "Absolute Residual Error Mapping",
+                    "R-Squared Variance Loss"
+                ],
+                correct: 1
+            },
+            {
+                q: "Which statistical risk error occurs when a model uses historical records that accidentally incorporate information from future timestamps?",
+                options: [
+                    "Look-Ahead Bias (Data Leakage)",
+                    "Non-Stationary Drift Deficit",
+                    "Logit Variance Skewness",
+                    "Parametric Scale Contraction"
+                ],
+                correct: 0
+            },
+            {
+                q: "If a corporate risk model calculates a log-odds logit score (z) of exactly 0, what is the probability that the client defaults?",
+                options: [
+                    "0.0 (Absolute Certainty of Non-Default)",
+                    "1.0 (Absolute Certainty of Insolvency)",
+                    "0.50 (Equal Chance Probability)",
+                    "0.25 (Low Likelihood)"
+                ],
+                correct: 2
+            },
+            {
+                q: "Financial data distributions constantly drift over time due to macroeconomic changes and shifting regulations. This property is known as:",
+                options: [
+                    "Strict Stationarity Alignment",
+                    "Non-Stationarity",
+                    "Parametric Multi-Collinearity",
+                    "Inference Runtime Latency"
+                ],
+                correct: 1
+            },
+            {
+                q: "How does the computational training complexity of parametric Logistic Regression scale with expanding data sample sizes (N)?",
+                options: [
+                    "Quadratically: O(N²)",
+                    "Linearly: O(N)",
+                    "Cubically: O(N³)",
+                    "Exponentially: O(2ᴺ)"
+                ],
+                correct: 1
+            },
+            {
+                q: "In systematic banking models, what does a Probability of Default (PD) classification asset actively evaluate?",
+                options: [
+                    "The daily variance in real estate stock option tickers",
+                    "The immediate likelihood that a commercial borrower will experience financial insolvency",
+                    "The exact network latency of low-level trading hardware configurations",
+                    "The automated database clustering configuration of unlabelled customer accounts"
+                ],
+                correct: 1
+            }
+        ];
+
+        let executionIndex = 0;
+        let runningScore = 0;
+
+        function startQuizEngine() {
+            executionIndex = 0;
+            runningScore = 0;
+            document.getElementById('quiz-live-score').innerText = "Score: 0";
+            document.getElementById('quiz-intro-screen').style.display = 'none';
+            document.getElementById('quiz-results-screen').style.display = 'none';
+            document.getElementById('quiz-active-screen').style.display = 'block';
+            renderQuizQuestionCard();
+        }
+
+        function renderQuizQuestionCard() {
+            document.getElementById('quiz-next-action-btn').disabled = true;
+            const contextData = quizBank[executionIndex];
+            
+            document.getElementById('quiz-question-counter').innerText = `Question ${executionIndex + 1} of 10`;
+            document.getElementById('question-text-field').innerText = contextData.q;
+            
+            const progressPct = ((executionIndex) / quizBank.length) * 100;
+            document.getElementById('quiz-progress-bar').style.width = `${progressPct}%`;
+
+            const buttonsBox = document.getElementById('options-buttons-box');
+            buttonsBox.innerHTML = '';
+
+            contextData.options.forEach((txt, idx) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = 'option-btn';
+                optBtn.innerText = txt;
+                optBtn.onclick = () => verifySelectedChoice(idx, optBtn);
+                buttonsBox.appendChild(optBtn);
+            });
+        }
+
+        function verifySelectedChoice(chosenIdx, clickedBtnElement) {
+            const currentQuestion = quizBank[executionIndex];
+            const allOptionButtons = document.querySelectorAll('.option-btn');
+            
+            allOptionButtons.forEach(btn => btn.disabled = true);
+
+            if (chosenIdx === currentQuestion.correct) {
+                clickedBtnElement.classList.add('correct');
+                runningScore++;
+                document.getElementById('quiz-live-score').innerText = "Score: " + runningScore;
+            } else {
+                clickedBtnElement.classList.add('wrong');
+                allOptionButtons[currentQuestion.correct].classList.add('correct');
+            }
+
+            document.getElementById('quiz-next-action-btn').disabled = false;
+        }
+
+        function advanceQuizQuestion() {
+            executionIndex++;
+            if (executionIndex < quizBank.length) {
+                renderQuizQuestionCard();
+            } else {
+                terminateEvaluationPipeline();
+            }
+        }
+
+        function terminateEvaluationPipeline() {
+            document.getElementById('quiz-active-screen').style.display = 'none';
+            const endScreen = document.getElementById('quiz-results-screen');
+            endScreen.style.display = 'block';
+            
+            document.getElementById('final-score-display').innerText = `${runningScore} / 10`;
+            
+            const feedbackBox = document.getElementById('performance-feedback-text');
+            if (runningScore >= 8) {
+                feedbackBox.innerText = "Excellent Core Metrics! You have demonstrated high proficiency across classifier architecture constraints and timestamp management methodologies.";
+                feedbackBox.style.color = "var(--success)";
+            } else if (runningScore >= 5) {
+                feedbackBox.innerText = "Passing Criteria Met. Minor systemic validation errors detected. Review look-ahead bias pipelines and loss minimization functions.";
+                feedbackBox.style.color = "var(--warning)";
+            } else {
+                feedbackBox.innerText = "Performance drop detected. Review Unit III material thoroughly before running live production assets.";
+                feedbackBox.style.color = "var(--danger)";
+            }
+        }
+    </script>
+</body>
+</html>
