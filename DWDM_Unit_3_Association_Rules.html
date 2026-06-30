@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit III — Association Rules | DWDM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#1a1230;--bg-2:#271a44;--bg-3:#372460;--cream:#f1eef7;--cream-2:#fbf9fe;--ac:#b07bff;--ac-d:#7d4fd6;--gold:#e8b54a;--ok:#46c08a;--no:#e8615a;--ink:#1c1430;--muted:#b3a6cf;--line:rgba(241,238,247,.12);--shadow:0 18px 50px -22px rgba(0,0,0,.8);--maxw:1080px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);background:radial-gradient(1100px 560px at 84% -10%, rgba(232,181,74,.08), transparent 60%),radial-gradient(900px 520px at -8% 16%, rgba(176,123,255,.13), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}a{color:var(--gold)}::selection{background:var(--ac);color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(26,18,48,.85);border-bottom:1px solid var(--line)}.topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}.logo::after{content:"🛒"}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}.topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}.topnav a:hover{background:var(--bg-3);opacity:1}
+  .hero{padding:58px 0 30px}.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);font-weight:700;border:1px solid var(--ac-d);border-radius:100px;padding:6px 14px;background:rgba(176,123,255,.06)}
+  .hero h1{font-size:clamp(34px,6.4vw,68px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}.hero h1 .hl{color:var(--ac)}.hero .sub{font-size:clamp(16px,2.2vw,20px);color:#ddd4ee;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}.chip b{color:var(--ac);font-family:'JetBrains Mono';font-weight:700}
+  .dash{margin-top:30px;background:linear-gradient(180deg,#130d24,#1a1230);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}.d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ac);font-family:'JetBrains Mono'}.dot-live{width:9px;height:9px;border-radius:50%;background:var(--ac);animation:blink 1.3s infinite}@keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}.d-cell{background:#130d24;border:1px solid var(--line);border-radius:12px;padding:14px}.d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--ac);letter-spacing:-1px}.d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+  section{padding:44px 0;border-top:1px solid var(--line)}.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:24px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--ac);font-size:14px;letter-spacing:1px;border:1px solid var(--ac-d);border-radius:8px;padding:5px 10px;background:rgba(176,123,255,.08)}.sec-head h2{font-size:clamp(23px,3.6vw,33px);font-weight:800;letter-spacing:-.6px}
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:24px 26px;box-shadow:var(--shadow)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:6px 0}
+  .concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .cc{background:var(--cream);color:var(--ink);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--ac)}.cc b{font-family:'Archivo';font-size:15px;display:block;margin-bottom:4px}.cc p{margin:0;font-size:13px;color:#54486a}.cc:nth-child(even){border-top-color:var(--gold)}
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}.panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}.panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .tx{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:16px}
+  .txc{background:var(--cream-2);border:1px solid rgba(28,20,48,.12);border-radius:10px;padding:9px 12px;font-size:12.5px}
+  .txc .ti{font-family:'JetBrains Mono';font-weight:700;color:var(--ac-d);font-size:11px}.txc .items{margin-top:3px;display:flex;gap:4px;flex-wrap:wrap}.txc .it{background:rgba(176,123,255,.16);color:#5b3aa3;border-radius:5px;padding:1px 7px;font-weight:600;font-size:11px}
+  .sl{margin:6px 0 16px}.sl .top{display:flex;justify-content:space-between;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);margin-bottom:5px}.sl .top .v{font-family:'JetBrains Mono';color:var(--ac-d)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:6px;background:var(--bg-3);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  .level{margin:12px 0}.level .lv-t{font-family:'Archivo';font-weight:700;font-size:12.5px;color:#54486a;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+  .isets{display:flex;flex-wrap:wrap;gap:8px}
+  .iset{border-radius:10px;padding:8px 11px;min-width:96px;border:1px solid rgba(28,20,48,.14);background:var(--cream-2);transition:.25s}
+  .iset.freq{border-color:var(--ok);background:rgba(70,192,138,.13)}.iset.pruned{opacity:.5;border-style:dashed}
+  .iset .nm{font-family:'JetBrains Mono';font-weight:700;font-size:12px;color:var(--ink)}
+  .iset .bar{height:6px;border-radius:4px;background:rgba(28,20,48,.1);margin-top:6px;overflow:hidden}.iset .bar i{display:block;height:100%;background:var(--ac);border-radius:4px;transition:width .4s}.iset.freq .bar i{background:var(--ok)}
+  .iset .sp{font-size:10.5px;color:#6a5e80;margin-top:3px;font-family:'JetBrains Mono'}
+  .opinfo{margin-top:14px;background:rgba(176,123,255,.1);border:1px solid rgba(125,79,214,.3);border-left:4px solid var(--ac);border-radius:10px;padding:13px 16px;color:var(--ink)}.opinfo b{font-family:'Archivo'}
+  .rule-pick{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.rule-pick button{font-family:'Inter';font-size:12.5px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(28,20,48,.2);padding:7px 12px;border-radius:8px;cursor:pointer}.rule-pick button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .rule-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:560px){.rule-metrics{grid-template-columns:1fr}}
+  .rm{background:var(--cream-2);border:1px solid rgba(28,20,48,.1);border-radius:12px;padding:12px 14px;border-top:4px solid var(--ac)}.rm .rl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#6a5e80;font-weight:700;font-family:'Archivo'}.rm .rn{font-family:'Archivo';font-weight:900;font-size:22px;color:var(--ink);margin-top:3px}.rm.c{border-top-color:var(--gold)}.rm.l{border-top-color:var(--ok)}
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .linkcard{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}.linkcard .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ac);text-transform:uppercase;letter-spacing:.5px}.linkcard b{font-family:'Archivo';font-size:15px}.linkcard span{font-size:12.5px;color:var(--muted)}.linkcard a{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:8px;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);background:var(--ac);padding:9px 14px;border-radius:9px}
+  .quiz{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .quiz .qh{padding:18px 24px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.quiz .qh b{font-family:'Archivo';font-size:18px}.quiz .qh .scorepill{margin-left:auto;font-family:'JetBrains Mono';font-weight:700;font-size:13px;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:8px}
+  .qbody{padding:20px 24px}.qitem{padding:16px 0;border-bottom:1px solid rgba(28,20,48,.1)}.qitem:last-of-type{border-bottom:0}.qitem .qq{font-family:'Archivo';font-weight:700;font-size:15px;margin-bottom:10px;display:flex;gap:10px}.qitem .qq .qn{color:var(--ac-d);flex:none}
+  .opt{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid rgba(28,20,48,.18);border-radius:9px;margin:6px 0;cursor:pointer;font-size:13.5px;transition:.12s;background:var(--cream-2)}.opt:hover{border-color:var(--ac)}.opt.sel{border-color:var(--ink);background:#f1eafd}.opt.correct{border-color:var(--ok);background:rgba(70,192,138,.14)}.opt.wrong{border-color:var(--no);background:rgba(232,97,90,.12)}
+  .opt .mk{width:20px;height:20px;border-radius:50%;border:2px solid rgba(28,20,48,.3);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}.opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}.opt.wrong .mk{background:var(--no);border-color:var(--no);color:#fff}
+  .ex{font-size:12.5px;color:#54486a;margin-top:8px;padding:9px 12px;background:rgba(176,123,255,.08);border-radius:8px;display:none}.ex.show{display:block}
+  .qactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.btn{font-family:'Archivo';font-weight:700;font-size:14px;padding:11px 20px;border-radius:10px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fff}.btn:hover{background:var(--ac);border-color:var(--ac);color:var(--ink)}.btn.ghost{background:transparent;color:var(--ink)}
+  .result{margin-top:16px;padding:16px 18px;border-radius:12px;font-family:'Archivo';font-weight:800;font-size:17px;display:none}.result.show{display:block}.result.pass{background:rgba(70,192,138,.14);color:#1f8f5f;border:1px solid var(--ok)}.result.fail{background:rgba(232,181,74,.14);color:#9a7a1a;border:1px solid var(--gold)}
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="logo" aria-hidden="true"></div><div class="brand"><b>DWDM</b><span>Data Warehousing &amp; Mining</span></div>
+  <nav class="topnav"><a href="index.html">All units</a><a href="#overview">Overview</a><a href="#apriori">Apriori</a><a href="#rules">Rules</a><a href="#concepts">Concepts</a><a href="#videos">Videos</a><a href="#quiz">Quiz</a></nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow"><span class="logo" style="width:16px;height:16px;font-size:9px"></span>Unit&nbsp;III · CO3</span>
+  <h1>"People Who Bought…"<br><span class="hl">Association Rules</span></h1>
+  <p class="sub">Which items sell together? Association rule mining finds patterns like <i>{Bread} → {Butter}</i> using <b>support</b> and <b>confidence</b>. Slide the support threshold and watch Apriori prune the infrequent itemsets in real time.</p>
+  <div class="meta-row"><div class="chip">Course&nbsp;<b>IT314 B</b></div><div class="chip">Outcome&nbsp;<b>CO3</b></div><div class="chip">Lectures&nbsp;<b>9</b></div><div class="chip">Algorithms&nbsp;<b>Apriori · FP-Growth</b></div></div>
+  <div class="dash reveal"><div class="d-top"><h3>What this unit covers</h3><div class="live"><span class="dot-live"></span>INTERACTIVE</div></div>
+    <div class="d-grid">
+      <div class="d-cell"><div class="n" data-count="6">0</div><div class="l">Transactions</div></div>
+      <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Key measures</div></div>
+      <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Algorithms</div></div>
+      <div class="d-cell"><div class="n" data-count="10">0</div><div class="l">Quiz questions</div></div>
+    </div></div>
+</div></header>
+
+<section id="overview"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Support, Confidence &amp; the Apriori Principle</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:6px;color:var(--ac-d)">The two measures</h3>
+      <div style="background:var(--cream-2);border-radius:10px;padding:13px;font-family:'JetBrains Mono';font-size:12.5px;color:var(--ink);border:1px solid rgba(28,20,48,.1);line-height:1.9">
+        support(X) = txns with X / total<br>confidence(X→Y) = support(X∪Y) / support(X)<br>lift(X→Y) = confidence / support(Y)</div>
+      <p style="color:#54486a;font-size:13.5px;margin-bottom:0">Support = how often; Confidence = how reliable; Lift &gt; 1 = positively correlated.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;color:var(--ac-d)">The Apriori principle</h3>
+      <p style="color:#54486a;margin-top:0">If an itemset is <b>infrequent</b>, then <i>all of its supersets are also infrequent</i>. This anti-monotone property lets Apriori <b>prune</b> huge numbers of candidates without counting them — the key to efficiency.</p></div>
+  </div>
+</div></section>
+
+<section id="apriori"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>Frequent Itemset Explorer</h2></div>
+  <p class="reveal" style="max-width:760px;color:#ddd4ee;margin-top:-12px">Six shopping baskets. Slide the <b>minimum support</b> — itemsets that meet it turn <span style="color:var(--ok)">green (frequent)</span>; the rest are <span style="opacity:.6">pruned</span>. Notice how raising support shrinks the frequent set and, by Apriori, kills the bigger itemsets first.</p>
+  <div class="panel reveal"><div class="ph"><b>Apriori on 6 transactions</b><span class="hint">M=Milk B=Bread U=Butter E=Eggs R=Beer</span></div>
+    <div class="pbody">
+      <div class="tx" id="txHost"></div>
+      <div class="sl"><div class="top"><span>Minimum support (count of transactions)</span><span class="v" id="vSup">3 (50%)</span></div><input type="range" id="sSup" min="1" max="5" value="3"></div>
+      <div class="level"><div class="lv-t">1-itemsets</div><div class="isets" id="lv1"></div></div>
+      <div class="level"><div class="lv-t">2-itemsets</div><div class="isets" id="lv2"></div></div>
+      <div class="level"><div class="lv-t">3-itemsets</div><div class="isets" id="lv3"></div></div>
+      <div class="opinfo" id="aprInfo"></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="rules"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>Rule Strength</h2></div>
+  <p class="reveal" style="max-width:760px;color:#ddd4ee;margin-top:-12px">From a frequent itemset we generate rules and score them. Pick a rule and see its support, confidence and lift, computed from the same six baskets.</p>
+  <div class="panel reveal"><div class="ph"><b>Association rule metrics</b><span class="hint">pick a rule</span></div>
+    <div class="pbody">
+      <div class="rule-pick" id="rulePick"></div>
+      <div class="rule-metrics">
+        <div class="rm"><div class="rl">Support</div><div class="rn" id="rSup">—</div></div>
+        <div class="rm c"><div class="rl">Confidence</div><div class="rn" id="rConf">—</div></div>
+        <div class="rm l"><div class="rl">Lift</div><div class="rn" id="rLift">—</div></div>
+      </div>
+      <div class="opinfo" id="ruleInfo"></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="concepts"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Key Concepts</h2></div>
+  <div class="concepts">
+    <div class="cc"><b>Frequent itemset</b><p>A set of items appearing together in at least min-support transactions.</p></div>
+    <div class="cc"><b>Apriori algorithm</b><p>Iteratively generates candidate k-itemsets from frequent (k−1)-itemsets, counts support, prunes.</p></div>
+    <div class="cc"><b>Candidate generation</b><p>Join frequent (k−1)-itemsets; prune any whose (k−1)-subset is infrequent.</p></div>
+    <div class="cc"><b>Partition algorithm</b><p>Scans the DB in two passes by partitioning it — any global frequent set is frequent in some partition.</p></div>
+    <div class="cc"><b>FP-Growth</b><p>Builds a compact FP-tree and mines frequent patterns <i>without</i> candidate generation — usually faster.</p></div>
+    <div class="cc"><b>Maximal frequent itemset</b><p>A frequent itemset with no frequent supersets.</p></div>
+    <div class="cc"><b>Closed frequent itemset</b><p>A frequent itemset with no superset having the same support.</p></div>
+    <div class="cc"><b>Rule generation</b><p>For each frequent itemset, form rules and keep those above min-confidence.</p></div>
+  </div>
+</div></section>
+
+<section id="videos"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Watch &amp; Learn</h2></div>
+  <div class="vid-grid">
+    <div class="linkcard"><span class="src">Algorithm · Apriori</span><b>Apriori algorithm (solved example)</b><span>Support, confidence, candidate generation and pruning step by step.</span><a href="https://www.youtube.com/results?search_query=apriori+algorithm+solved+example+support+confidence" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+    <div class="linkcard"><span class="src">Algorithm · FP-Growth</span><b>FP-Growth &amp; FP-tree</b><span>Mining frequent patterns without candidate generation.</span><a href="https://www.youtube.com/results?search_query=FP+growth+algorithm+FP+tree+data+mining+example" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+    <div class="linkcard"><span class="src">Concept · itemsets</span><b>Maximal vs closed frequent itemsets</b><span>Compact representations of frequent patterns.</span><a href="https://www.youtube.com/results?search_query=maximal+closed+frequent+itemset+data+mining" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+  </div>
+</div></section>
+
+<section id="quiz"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Unit III Quiz — 10 Questions</h2></div>
+  <div class="quiz"><div class="qh"><b>Test yourself: Association Rules</b><span class="scorepill" id="scorePill">0 / 10</span></div>
+    <div class="qbody"><div id="qhost"></div>
+      <div class="qactions"><button class="btn" id="checkBtn">Check answers</button><button class="btn ghost" id="resetBtn">Reset</button></div>
+      <div class="result" id="result"></div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">DWDM · Unit III · Association Rules — Course IT314 B (R20) · CO3<br><span style="opacity:.7">Interactive learning material. Keep all unit files in one folder so the navigation links work.</span></div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=900,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+
+/* transactions */
+const TX=[['M','B','U'],['B','U'],['M','B'],['M','B','U','E'],['B','R'],['M','U','E']];
+const NAME={M:'Milk',B:'Bread',U:'Butter',E:'Eggs',R:'Beer'};
+const N=TX.length;
+function sup(set){let c=0;TX.forEach(t=>{if(set.every(x=>t.includes(x)))c++;});return c;}
+// render transactions
+const txHost=document.getElementById('txHost');
+TX.forEach((t,i)=>{const d=document.createElement('div');d.className='txc';d.innerHTML='<div class="ti">T'+(i+1)+'</div><div class="items">'+t.map(x=>'<span class="it">'+x+'</span>').join('')+'</div>';txHost.appendChild(d);});
+
+const I1=['M','B','U','E','R'];
+const I2=[['M','B'],['M','U'],['M','E'],['B','U'],['B','E'],['U','E']];
+const I3=[['M','B','U'],['M','U','E']];
+function isetEl(set){const s=sup(set);const el=document.createElement('div');el.className='iset';el.dataset.sup=s;
+  el.innerHTML='<div class="nm">{'+set.join(',')+'}</div><div class="bar"><i style="width:'+(s/N*100)+'%"></i></div><div class="sp">sup '+s+'/'+N+'</div>';return el;}
+function renderApriori(){
+  const minc=+document.getElementById('sSup').value;
+  document.getElementById('vSup').textContent=minc+' ('+Math.round(minc/N*100)+'%)';
+  [['lv1',I1.map(x=>[x])],['lv2',I2],['lv3',I3]].forEach(([id,sets])=>{
+    const host=document.getElementById(id);host.innerHTML='';
+    sets.forEach(set=>{const el=isetEl(set);const s=+el.dataset.sup;
+      if(s>=minc)el.classList.add('freq');else el.classList.add('pruned');host.appendChild(el);});
+  });
+  // count frequent
+  let f=0;[I1.map(x=>[x]),I2,I3].forEach(g=>g.forEach(set=>{if(sup(set)>=minc)f++;}));
+  document.getElementById('aprInfo').innerHTML='<b>'+f+' frequent itemset(s)</b> at min-support '+minc+'/'+N+'. Apriori would only count candidates whose subsets are all frequent \u2014 raise the threshold and watch the larger itemsets vanish first, exactly as the Apriori principle predicts.';
+}
+document.getElementById('sSup').addEventListener('input',renderApriori);
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){renderApriori();ob.disconnect();}})},{threshold:.2}).observe(document.getElementById('lv1'));
+
+/* rules */
+const RULES=[
+ {X:['B'],Y:['U']},{X:['U'],Y:['B']},{X:['M'],Y:['B']},{X:['M','U'],Y:['E']},{X:['M'],Y:['U']}
+];
+const rulePick=document.getElementById('rulePick');
+RULES.forEach((r,i)=>{const b=document.createElement('button');b.dataset.r=i;if(i===0)b.classList.add('on');b.textContent='{'+r.X.join(',')+'} → {'+r.Y.join(',')+'}';rulePick.appendChild(b);});
+function showRule(i){const r=RULES[i];const sX=sup(r.X),sXY=sup(r.X.concat(r.Y)),sY=sup(r.Y);
+  const support=sXY/N,conf=sXY/sX,lift=conf/(sY/N);
+  document.getElementById('rSup').textContent=(support*100).toFixed(0)+'%';
+  document.getElementById('rConf').textContent=(conf*100).toFixed(0)+'%';
+  document.getElementById('rLift').textContent=lift.toFixed(2);
+  document.getElementById('ruleInfo').innerHTML='<b>{'+r.X.map(x=>NAME[x]).join(', ')+'} → {'+r.Y.map(y=>NAME[y]).join(', ')+'}</b>: support = '+sXY+'/'+N+' = '+(support*100).toFixed(0)+'%, confidence = '+sXY+'/'+sX+' = '+(conf*100).toFixed(0)+'%. Lift '+lift.toFixed(2)+(lift>1?' &gt; 1 \u2192 the items appear together more than chance (positive association).':lift<1?' &lt; 1 \u2192 negatively associated.':' = 1 \u2192 independent.');
+}
+rulePick.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{rulePick.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on');showRule(+b.dataset.r);}));
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){showRule(0);ob.disconnect();}})},{threshold:.2}).observe(rulePick);
+
+/* QUIZ */
+const QUIZ=[
+ {q:"Support of an itemset X is defined as:",o:["Transactions containing X ÷ total transactions","Items in X ÷ total items","Confidence × lift","X's price"],a:0,ex:"Support = fraction of transactions that contain the itemset."},
+ {q:"Confidence of rule X → Y equals:",o:["support(X)/support(Y)","support(X∪Y)/support(X)","support(Y)","support(X)×support(Y)"],a:1,ex:"Confidence(X→Y)=support(X∪Y)/support(X) — reliability of the rule."},
+ {q:"The Apriori principle states that:",o:["All itemsets are frequent","If an itemset is infrequent, all its supersets are infrequent","Bigger itemsets have higher support","Support always increases with size"],a:1,ex:"Anti-monotonicity: supersets of an infrequent set are also infrequent — enabling pruning."},
+ {q:"A lift value greater than 1 means the items are:",o:["Independent","Negatively associated","Positively associated","Identical"],a:2,ex:"Lift>1 indicates positive correlation; =1 independent; <1 negative."},
+ {q:"Apriori generates candidate k-itemsets from:",o:["Frequent (k−1)-itemsets","All k-itemsets","Random itemsets","The largest itemset"],a:0,ex:"It joins frequent (k−1)-itemsets to form k-candidates, then prunes."},
+ {q:"FP-Growth's main advantage over Apriori is that it:",o:["Needs more database scans","Generates no candidate itemsets","Ignores support","Only works on numeric data"],a:1,ex:"FP-Growth mines an FP-tree without generating candidates, usually faster with fewer scans."},
+ {q:"A maximal frequent itemset is one that:",o:["Has the highest support","Has no frequent supersets","Has no subsets","Appears in every transaction"],a:1,ex:"Maximal = frequent with no frequent superset."},
+ {q:"A closed frequent itemset is frequent and has:",o:["No superset with the same support","The smallest support","Exactly one item","No subsets"],a:0,ex:"Closed = no immediate superset shares its support; preserves support info compactly."},
+ {q:"If support(Bread)=5/6 and support(Bread,Butter)=3/6, confidence of Bread→Butter is:",o:["50%","60%","83%","30%"],a:1,ex:"confidence = (3/6)/(5/6) = 3/5 = 60%."},
+ {q:"The Partition algorithm reduces database scans to:",o:["One","Two","k scans","n scans"],a:1,ex:"Partition needs just two scans: local frequent sets per partition, then a global count."}
+];
+const qhost=document.getElementById('qhost');let answered={},checked=false;
+function renderQuiz(){qhost.innerHTML='';QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='qitem';let opts='';item.o.forEach((o,oi)=>{opts+='<div class="opt" data-q="'+qi+'" data-o="'+oi+'"><span class="mk"></span><span>'+o+'</span></div>';});d.innerHTML='<div class="qq"><span class="qn">Q'+(qi+1)+'.</span><span>'+item.q+'</span></div>'+opts+'<div class="ex" id="ex'+qi+'">'+item.ex+'</div>';qhost.appendChild(d);});
+  qhost.querySelectorAll('.opt').forEach(op=>op.addEventListener('click',()=>{if(checked)return;const qi=op.dataset.q;qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(x=>x.classList.remove('sel'));op.classList.add('sel');answered[qi]=+op.dataset.o;document.getElementById('scorePill').textContent=Object.keys(answered).length+' / 10 answered';}));}
+document.getElementById('checkBtn').addEventListener('click',()=>{if(checked)return;checked=true;let score=0;QUIZ.forEach((item,qi)=>{const sel=answered[qi];document.getElementById('ex'+qi).classList.add('show');qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(op=>{const oi=+op.dataset.o;if(oi===item.a){op.classList.add('correct');op.querySelector('.mk').textContent='✓';}if(oi===sel&&sel!==item.a){op.classList.add('wrong');op.querySelector('.mk').textContent='✗';}});if(sel===item.a)score++;});document.getElementById('scorePill').textContent=score+' / 10';const r=document.getElementById('result');r.classList.add('show');r.classList.add(score>=6?'pass':'fail');r.textContent=(score>=6?'Well done! ':'Keep revising — ')+'You scored '+score+' / 10'+(score>=6?'. Strong on association rules.':'. Revisit support, confidence and Apriori.');});
+document.getElementById('resetBtn').addEventListener('click',()=>{answered={};checked=false;document.getElementById('result').className='result';document.getElementById('scorePill').textContent='0 / 10';renderQuiz();});
+renderQuiz();
+</script>
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit V — Clustering | DWDM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e1b2e;--bg-2:#15273f;--bg-3:#1f3756;--cream:#eef3f8;--cream-2:#f8fbfd;--ac:#2ec4a0;--ac-d:#1d9078;--gold:#e8b54a;--ok:#46c08a;--no:#e8615a;--ink:#10202f;--muted:#9bb2c6;--line:rgba(238,243,248,.12);--code-bg:#0a1521;--shadow:0 18px 50px -22px rgba(0,0,0,.8);--maxw:1080px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);background:radial-gradient(1100px 560px at 84% -10%, rgba(232,181,74,.08), transparent 60%),radial-gradient(900px 520px at -8% 16%, rgba(46,196,160,.12), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}a{color:var(--gold)}::selection{background:var(--ac);color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(14,27,46,.85);border-bottom:1px solid var(--line)}.topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}.logo::after{content:"🧩"}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}.topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}.topnav a:hover{background:var(--bg-3);opacity:1}
+  .hero{padding:58px 0 30px}.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);font-weight:700;border:1px solid var(--ac-d);border-radius:100px;padding:6px 14px;background:rgba(46,196,160,.06)}
+  .hero h1{font-size:clamp(34px,6.4vw,68px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}.hero h1 .hl{color:var(--ac)}.hero .sub{font-size:clamp(16px,2.2vw,20px);color:#cfe0ec;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}.chip b{color:var(--ac);font-family:'JetBrains Mono';font-weight:700}
+  .dash{margin-top:30px;background:linear-gradient(180deg,#0a1521,#0e1b2e);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}.d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ac);font-family:'JetBrains Mono'}.dot-live{width:9px;height:9px;border-radius:50%;background:var(--ac);animation:blink 1.3s infinite}@keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}.d-cell{background:#0a1521;border:1px solid var(--line);border-radius:12px;padding:14px}.d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--ac);letter-spacing:-1px}.d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+  section{padding:44px 0;border-top:1px solid var(--line)}.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:24px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--ac);font-size:14px;letter-spacing:1px;border:1px solid var(--ac-d);border-radius:8px;padding:5px 10px;background:rgba(46,196,160,.08)}.sec-head h2{font-size:clamp(23px,3.6vw,33px);font-weight:800;letter-spacing:-.6px}
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:24px 26px;box-shadow:var(--shadow)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:6px 0}
+  .concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .cc{background:var(--cream);color:var(--ink);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--ac)}
+  .cc b{font-family:'Archivo';font-size:15px;display:block;margin-bottom:4px;color:var(--ink)}.cc p{margin:0;font-size:13px;color:#4a5b6a}.cc:nth-child(even){border-top-color:var(--gold)}
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}.panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}.panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .plot{background:var(--cream-2);border:1px solid rgba(16,32,47,.1);border-radius:14px;padding:8px}canvas.chart{width:100%;display:block}
+  .ops{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.ops button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(16,32,47,.2);padding:8px 13px;border-radius:9px;cursor:pointer;transition:.14s}.ops button:hover{border-color:var(--ac-d)}.ops button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .opinfo{margin-top:14px;background:rgba(46,196,160,.1);border:1px solid rgba(43,139,173,.3);border-left:4px solid var(--ac);border-radius:10px;padding:13px 16px;color:var(--ink)}.opinfo b{font-family:'Archivo'}
+  .schema-toggle{display:flex;gap:8px;margin-bottom:12px}.schema-toggle button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(16,32,47,.2);padding:8px 14px;border-radius:9px;cursor:pointer}.schema-toggle button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  /* video link cards */
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .linkcard{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .linkcard .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ac);text-transform:uppercase;letter-spacing:.5px}.linkcard b{font-family:'Archivo';font-size:15px}.linkcard span{font-size:12.5px;color:var(--muted)}
+  .linkcard a{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:8px;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);background:var(--ac);padding:9px 14px;border-radius:9px}
+  /* quiz */
+  .quiz{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .quiz .qh{padding:18px 24px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.quiz .qh b{font-family:'Archivo';font-size:18px}.quiz .qh .scorepill{margin-left:auto;font-family:'JetBrains Mono';font-weight:700;font-size:13px;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:8px}
+  .qbody{padding:20px 24px}
+  .qitem{padding:16px 0;border-bottom:1px solid rgba(16,32,47,.1)}.qitem:last-of-type{border-bottom:0}
+  .qitem .qq{font-family:'Archivo';font-weight:700;font-size:15px;margin-bottom:10px;display:flex;gap:10px}.qitem .qq .qn{color:var(--ac-d);flex:none}
+  .opt{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid rgba(16,32,47,.18);border-radius:9px;margin:6px 0;cursor:pointer;font-size:13.5px;transition:.12s;background:var(--cream-2)}
+  .opt:hover{border-color:var(--ac)}.opt.sel{border-color:var(--ink);background:#e6f7f1}
+  .opt.correct{border-color:var(--ok);background:rgba(70,192,138,.14)}.opt.wrong{border-color:var(--no);background:rgba(232,97,90,.12)}
+  .opt .mk{width:20px;height:20px;border-radius:50%;border:2px solid rgba(16,32,47,.3);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}.opt.wrong .mk{background:var(--no);border-color:var(--no);color:#fff}
+  .ex{font-size:12.5px;color:#4a5b6a;margin-top:8px;padding:9px 12px;background:rgba(46,196,160,.08);border-radius:8px;display:none}.ex.show{display:block}
+  .qactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .btn{font-family:'Archivo';font-weight:700;font-size:14px;padding:11px 20px;border-radius:10px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fff}.btn:hover{background:var(--ac);border-color:var(--ac);color:var(--ink)}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .result{margin-top:16px;padding:16px 18px;border-radius:12px;font-family:'Archivo';font-weight:800;font-size:17px;display:none}.result.show{display:block}.result.pass{background:rgba(70,192,138,.14);color:#1f8f5f;border:1px solid var(--ok)}.result.fail{background:rgba(232,181,74,.14);color:#9a7a1a;border:1px solid var(--gold)}
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+  .vid-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+  .vid{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vid .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}.vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid .vmeta{padding:12px 15px}.vid .vmeta b{font-family:'Archivo';font-weight:700;font-size:14px;display:block}.vid .vmeta span{font-size:12px;color:var(--muted)}.vid .vmeta .src{font-family:'JetBrains Mono';font-size:10px;color:var(--ac);text-transform:uppercase;letter-spacing:.5px}
+  .sl{margin:11px 0}.sl .top{display:flex;justify-content:space-between;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);margin-bottom:5px}.sl .top .v{font-family:'JetBrains Mono';color:var(--ac-d)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:6px;background:var(--bg-3);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  .mrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}.mc{background:var(--cream-2);border:1px solid rgba(16,32,47,.1);border-radius:12px;padding:12px 14px;border-top:4px solid var(--ac)}.mc .ml{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5a6b7a;font-weight:700;font-family:Archivo}.mc .mn{font-family:Archivo;font-weight:900;font-size:22px;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="logo" aria-hidden="true"></div>
+  <div class="brand"><b>DWDM</b><span>Data Warehousing &amp; Mining</span></div>
+  <nav class="topnav"><a href="index.html">All units</a><a href="#overview">Overview</a><a href="#kmeans">k-means</a><a href="#hier">Hierarchical</a><a href="#issues">Issues</a><a href="#videos">Videos</a><a href="#quiz">Quiz</a></nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">Unit V · 9 Lectures</span>
+  <h1>Finding Groups <span class="hl">Without Labels</span></h1>
+  <p class="sub">Clustering discovers natural groupings in unlabelled data. Run k-means step by step, build a dendrogram by merging, weigh the trade-offs and spot outliers — then test yourself with 10 questions.</p>
+  <div class="meta-row"><div class="chip">Course&nbsp;<b>IT314 B</b></div><div class="chip">Unit&nbsp;<b>V</b></div><div class="chip">Type&nbsp;<b>Unsupervised</b></div><div class="chip">Outcome&nbsp;<b>CO3</b></div></div>
+  <div class="dash reveal"><div class="d-top"><h3>What you'll master</h3><div class="live"><span class="dot-live"></span>INTERACTIVE</div></div>
+    <div class="d-grid">
+      <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Method families</div></div>
+      <div class="d-cell"><div class="n" data-count="1">0</div><div class="l">Live k-means</div></div>
+      <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Concept videos</div></div>
+      <div class="d-cell"><div class="n" data-count="10">0</div><div class="l">Quiz questions</div></div>
+    </div></div>
+</div></header>
+
+<section id="overview"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>What Is Clustering?</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:6px">Group by similarity</h3>
+      <p style="color:#4a5b6a;margin-top:0">Clustering puts similar objects in the same group and dissimilar ones apart — with <b>no labels</b> to learn from. Good clusters have high <i>intra-cluster</i> similarity and low <i>inter-cluster</i> similarity. It's <b>unsupervised</b>: the structure is discovered, not taught.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px">Families of methods</h3>
+      <ul class="clean" style="color:#4a5b6a;font-size:13.5px">
+        <li><b>Partitioning</b> — split into k groups (k-means, k-medoids).</li>
+        <li><b>Hierarchical</b> — build a tree of clusters (agglomerative / divisive).</li>
+        <li><b>Density-based</b> — grow clusters from dense regions (DBSCAN).</li>
+        <li><b>Grid / model-based</b> — partition space or fit distributions.</li></ul></div>
+  </div>
+</div></section>
+
+<section id="kmeans"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>k-means, Step by Step</h2></div>
+  <p class="reveal" style="max-width:760px;color:#cfe0ec;margin-top:-12px">k-means repeats two steps until nothing moves: <b>assign</b> each point to its nearest centroid, then <b>update</b> each centroid to the mean of its points. Press <b>Step</b> to watch one round, <b>Run</b> to animate to convergence, and change <b>k</b> or resample the data.</p>
+  <div class="panel reveal"><div class="ph"><b>k-means clustering</b><span class="hint">Step = one assign+update round</span></div>
+    <div class="pbody">
+      <div class="ops"><button id="stepBtn">▶ Step</button><button id="runBtn">⏩ Run to convergence</button><button id="resampleBtn">↻ Resample data</button></div>
+      <div class="grid2" style="gap:16px">
+        <div class="plot"><canvas class="chart" id="kmCanvas" height="300"></canvas></div>
+        <div>
+          <div class="sl"><div class="top"><span>k — number of clusters</span><span class="v" id="vKm">3</span></div><input type="range" id="sKm" min="2" max="5" value="3"></div>
+          <div class="mrow">
+            <div class="mc"><div class="ml">Iteration</div><div class="mn" id="mIter">0</div></div>
+            <div class="mc"><div class="ml">Status</div><div class="mn" id="mStat" style="font-size:16px">ready</div></div>
+          </div>
+          <div class="opinfo" id="kmMsg"><b>Watch it converge:</b> centroids (the large rings) drift toward the centre of their points each Step, and the colours settle. k-means always converges, but the result depends on the random start and on choosing the right k — the classic limitations of partitioning.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="hier"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Hierarchical Clustering</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:6px">Agglomerative (bottom-up)</h3>
+      <p style="color:#4a5b6a;margin-top:0">Start with every point as its own cluster, then repeatedly <b>merge the two closest clusters</b> until one remains. The merge order draws a <b>dendrogram</b>; cut it at a height to get any number of clusters.</p>
+      <p style="color:#4a5b6a;font-size:13px">Linkage = how cluster distance is measured: <b>single</b> (nearest pair), <b>complete</b> (farthest pair), <b>average</b>, or <b>Ward</b> (variance).</p></div>
+    <div class="card"><h3 style="margin-bottom:6px">Divisive (top-down)</h3>
+      <p style="color:#4a5b6a;margin-top:0">The opposite: start with all points in one cluster and recursively <b>split</b>. It's more expensive but can capture large structure first. Both produce a hierarchy — no need to pre-choose k.</p></div>
+  </div>
+  <div class="concepts" style="margin-top:14px">
+    <div class="cc"><b>Dendrogram</b><p>A tree showing the merge/split order and the distance at each join.</p></div>
+    <div class="cc"><b>Key issue: linkage</b><p>Single linkage can "chain"; complete linkage makes compact clusters.</p></div>
+    <div class="cc"><b>Strength</b><p>No need to fix k in advance; produces a full hierarchy and interpretable tree.</p></div>
+    <div class="cc"><b>Weakness</b><p>Costly (O(n²) or worse) and merges/splits are irreversible — a bad early step stays.</p></div>
+  </div>
+</div></section>
+
+<section id="issues"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Trade-offs &amp; Outliers</h2></div>
+  <div class="concepts">
+    <div class="cc"><b>Choosing k</b><p>Use the elbow method (within-cluster sum of squares) or silhouette score to pick a sensible k for k-means.</p></div>
+    <div class="cc"><b>k-means strengths</b><p>Simple, fast and scalable — great for large, roughly spherical clusters.</p></div>
+    <div class="cc"><b>k-means weaknesses</b><p>Needs k up front, sensitive to initial centroids and outliers, and assumes convex, similar-sized clusters.</p></div>
+    <div class="cc"><b>Outlier detection</b><p>Points far from any cluster centre (or in very low-density regions) are flagged as outliers — useful for fraud and fault detection.</p></div>
+    <div class="cc"><b>k-medoids</b><p>Uses actual data points as centres, making it more robust to outliers than k-means.</p></div>
+    <div class="cc"><b>Distance measures</b><p>Euclidean, Manhattan or cosine — the choice of similarity shapes the clusters found.</p></div>
+  </div>
+</div></section>
+
+<section id="videos"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Watch the Concepts</h2></div>
+  <p style="max-width:760px;color:#cfe0ec;margin-top:-12px">Two clear explainers from <b>StatQuest with Josh Starmer</b> on the two clustering families in this unit.</p>
+  <div class="vid-grid2">
+    <div class="vid"><div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/4b5d3muPQmA" title="K-means clustering" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="vmeta"><span class="src">StatQuest</span><b>K-means Clustering</b><span>Assign, update, repeat — and how to pick k.</span></div></div>
+    <div class="vid"><div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/7xHsRkOdVwo" title="Hierarchical Clustering" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="vmeta"><span class="src">StatQuest</span><b>Hierarchical Clustering</b><span>Merging clusters and reading a dendrogram.</span></div></div>
+  </div>
+  <p style="color:var(--muted);font-size:12.5px;margin-top:14px">Videos are embedded from YouTube and belong to their creators. If a frame is blank, your network may block YouTube.</p>
+</div></section>
+
+<section id="quiz"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Unit V Quiz — 10 Questions</h2></div>
+  <div class="quiz">
+    <div class="qh"><b>Test yourself: Clustering</b><span class="scorepill" id="scorePill">0 / 10</span></div>
+    <div class="qbody"><div id="qhost"></div>
+      <div class="qactions"><button class="btn" id="checkBtn">Check answers</button><button class="btn ghost" id="resetBtn">Reset</button></div>
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">DWDM · Unit V · Clustering — Course IT314 B (R20) · CO3<br>
+<span style="opacity:.7">The k-means demo runs the real assign/update iterations in your browser on generated sample data.</span></div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const PAL=['#2ec4a0','#e8b54a','#9d7bff','#e0556b','#4aa3e0'];
+const INK='#10202f';
+
+const KM={cv:document.getElementById('kmCanvas'),pts:[],cent:[],iter:0,done:false,seed:21};
+function genPts(){const r=mulberry32(KM.seed);const blobs=[[0.28,0.7],[0.72,0.72],[0.5,0.28]];const pts=[];
+  blobs.forEach(b=>{for(let i=0;i<22;i++)pts.push({x:b[0]+gauss(r)*0.09,y:b[1]+gauss(r)*0.09,c:-1});});return pts;}
+function initKM(){KM.pts=genPts();const k=+document.getElementById('sKm').value;const r=mulberry32(KM.seed*7+k);
+  KM.cent=[];const idx=[...KM.pts.keys()];for(let i=0;i<k;i++){const j=Math.floor(r()*idx.length);KM.cent.push({x:KM.pts[idx[j]].x,y:KM.pts[idx[j]].y});idx.splice(j,1);}
+  KM.iter=0;KM.done=false;document.getElementById('mIter').textContent='0';document.getElementById('mStat').textContent='ready';drawKM();}
+function assign(){let changed=false;KM.pts.forEach(p=>{let best=0,bd=1e9;KM.cent.forEach((c,i)=>{const d=(p.x-c.x)**2+(p.y-c.y)**2;if(d<bd){bd=d;best=i;}});if(p.c!==best){p.c=best;changed=true;}});return changed;}
+function update(){KM.cent.forEach((c,i)=>{let sx=0,sy=0,n=0;KM.pts.forEach(p=>{if(p.c===i){sx+=p.x;sy+=p.y;n++;}});if(n){c.x=sx/n;c.y=sy/n;}});}
+function stepKM(){if(KM.done)return false;const ch=assign();update();KM.iter++;document.getElementById('mIter').textContent=KM.iter;
+  if(!ch){KM.done=true;document.getElementById('mStat').textContent='converged ✓';document.getElementById('kmMsg').innerHTML='<b>Converged after '+KM.iter+' iterations.</b> No point changed cluster, so the centroids are stable. Try a different k or resample — notice the final clusters can change with the random start, which is why k-means is often run several times.';}
+  else document.getElementById('mStat').textContent='running';
+  drawKM();return ch;}
+function drawKM(){const {ctx,W,H}=setup(KM.cv);const pad=14;const X=v=>pad+(W-2*pad)*v,Y=v=>pad+(H-2*pad)*(1-v);ctx.clearRect(0,0,W,H);
+  KM.pts.forEach(p=>{ctx.beginPath();ctx.arc(X(p.x),Y(p.y),5,0,Math.PI*2);ctx.fillStyle=p.c<0?'#9bb2c6':PAL[p.c%PAL.length];ctx.globalAlpha=.8;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#fff';ctx.lineWidth=1.1;ctx.stroke();});
+  KM.cent.forEach((c,i)=>{ctx.beginPath();ctx.arc(X(c.x),Y(c.y),11,0,Math.PI*2);ctx.strokeStyle=PAL[i%PAL.length];ctx.lineWidth=4;ctx.stroke();ctx.beginPath();ctx.arc(X(c.x),Y(c.y),4,0,Math.PI*2);ctx.fillStyle=INK;ctx.fill();});
+}
+document.getElementById('stepBtn').addEventListener('click',stepKM);
+document.getElementById('runBtn').addEventListener('click',()=>{let n=0;const t=setInterval(()=>{const ch=stepKM();n++;if(!ch||n>30){clearInterval(t);}},420);});
+document.getElementById('resampleBtn').addEventListener('click',()=>{KM.seed=Math.floor(Math.random()*9999)+1;initKM();});
+document.getElementById('sKm').addEventListener('input',()=>{document.getElementById('vKm').textContent=document.getElementById('sKm').value;initKM();});
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){initKM();ob.disconnect();}})},{threshold:.2}).observe(KM.cv);
+
+/* ===== QUIZ ENGINE ===== */
+const QUIZ=[
+ {q:"Clustering is which type of learning?",o:["Supervised","Unsupervised","Reinforcement","Self-supervised regression"],a:1,ex:"Clustering finds structure in unlabelled data — it is unsupervised."},
+ {q:"Good clusters have:",o:["High intra-cluster and high inter-cluster similarity","High intra-cluster, low inter-cluster similarity","Low intra-cluster similarity","Equal similarity everywhere"],a:1,ex:"Members of a cluster should be similar (high intra), and clusters should differ (low inter)."},
+ {q:"The two repeating steps of k-means are:",o:["Split and merge","Assign to nearest centroid, then update centroids","Sort and prune","Train and test"],a:1,ex:"k-means alternates assignment (nearest centroid) and update (mean of assigned points)."},
+ {q:"A major limitation of k-means is that it:",o:["Cannot handle numbers","Requires k to be chosen in advance","Always overfits","Needs labelled data"],a:1,ex:"You must specify k up front; it's also sensitive to initialisation and outliers."},
+ {q:"Agglomerative hierarchical clustering works:",o:["Top-down by splitting","Bottom-up by merging closest clusters","By choosing k centroids","By density thresholds"],a:1,ex:"Agglomerative is bottom-up: start with singletons and merge the closest clusters."},
+ {q:"A dendrogram shows:",o:["The decision boundary","The merge/split order and join distances","The confusion matrix","The data warehouse schema"],a:1,ex:"A dendrogram is the tree of merges with the distance (height) at each join."},
+ {q:"'Linkage' in hierarchical clustering refers to:",o:["How many clusters to keep","How distance between clusters is measured","The number of features","The learning rate"],a:1,ex:"Linkage (single, complete, average, Ward) defines inter-cluster distance."},
+ {q:"Which method does NOT require k to be set beforehand?",o:["k-means","k-medoids","Hierarchical clustering","All require k"],a:2,ex:"Hierarchical clustering builds a full tree; you cut it afterward to choose the number of clusters."},
+ {q:"The elbow method helps you:",o:["Detect outliers","Choose a good number of clusters k","Measure precision","Pick a linkage"],a:1,ex:"Plotting within-cluster sum of squares vs k, the 'elbow' suggests a good k."},
+ {q:"Points lying far from any cluster centre are typically treated as:",o:["Centroids","Outliers","Support vectors","Leaves"],a:1,ex:"Low-density / far points are flagged as outliers — useful for anomaly detection."},
+];
+let answered={},checked=false;const qhost=document.getElementById('qhost');
+function renderQuiz(){qhost.innerHTML='';QUIZ.forEach((item,qi)=>{
+  const d=document.createElement('div');d.className='qitem';
+  let opts='';item.o.forEach((o,oi)=>{opts+='<div class="opt" data-q="'+qi+'" data-o="'+oi+'"><span class="mk"></span><span>'+o+'</span></div>';});
+  d.innerHTML='<div class="qq"><span class="qn">Q'+(qi+1)+'.</span><span>'+item.q+'</span></div>'+opts+'<div class="ex" id="ex'+qi+'">'+item.ex+'</div>';
+  qhost.appendChild(d);});
+  qhost.querySelectorAll('.opt').forEach(op=>op.addEventListener('click',()=>{
+    if(checked)return;const qi=op.dataset.q;
+    qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(x=>x.classList.remove('sel'));
+    op.classList.add('sel');answered[qi]=+op.dataset.o;
+    document.getElementById('scorePill').textContent=Object.keys(answered).length+' / 10 answered';}));
+}
+document.getElementById('checkBtn').addEventListener('click',()=>{
+  if(checked)return;checked=true;let score=0;
+  QUIZ.forEach((item,qi)=>{const sel=answered[qi];document.getElementById('ex'+qi).classList.add('show');
+    qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(op=>{const oi=+op.dataset.o;
+      if(oi===item.a){op.classList.add('correct');op.querySelector('.mk').textContent='✓';}
+      if(oi===sel&&sel!==item.a){op.classList.add('wrong');op.querySelector('.mk').textContent='✗';}});
+    if(sel===item.a)score++;});
+  document.getElementById('scorePill').textContent=score+' / 10';
+  const r=document.getElementById('result');r.classList.add('show');r.classList.add(score>=6?'pass':'fail');
+  r.textContent=(score>=6?'Well done! ':'Keep revising — ')+'You scored '+score+' / 10'+(score>=6?'. Strong grasp of clustering.':'. Review the k-means and hierarchical sections and try again.');
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{answered={};checked=false;document.getElementById('result').className='result';document.getElementById('scorePill').textContent='0 / 10';renderQuiz();});
+renderQuiz();
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>drawKM(),200);});
+</script>
+</body>
+</html>

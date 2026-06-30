@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit I — Data Warehouse | DWDM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e1b2e;--bg-2:#15273f;--bg-3:#1f3756;--cream:#eef3f8;--cream-2:#f8fbfd;--ac:#4fc3e8;--ac-d:#2b8bad;--gold:#e8b54a;--ok:#46c08a;--no:#e8615a;--ink:#10202f;--muted:#9bb2c6;--line:rgba(238,243,248,.12);--code-bg:#0a1521;--shadow:0 18px 50px -22px rgba(0,0,0,.8);--maxw:1080px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);background:radial-gradient(1100px 560px at 84% -10%, rgba(232,181,74,.08), transparent 60%),radial-gradient(900px 520px at -8% 16%, rgba(79,195,232,.12), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}a{color:var(--gold)}::selection{background:var(--ac);color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(14,27,46,.85);border-bottom:1px solid var(--line)}.topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}.logo::after{content:"🏛️"}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}.topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}.topnav a:hover{background:var(--bg-3);opacity:1}
+  .hero{padding:58px 0 30px}.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);font-weight:700;border:1px solid var(--ac-d);border-radius:100px;padding:6px 14px;background:rgba(79,195,232,.06)}
+  .hero h1{font-size:clamp(34px,6.4vw,68px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}.hero h1 .hl{color:var(--ac)}.hero .sub{font-size:clamp(16px,2.2vw,20px);color:#cfe0ec;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}.chip b{color:var(--ac);font-family:'JetBrains Mono';font-weight:700}
+  .dash{margin-top:30px;background:linear-gradient(180deg,#0a1521,#0e1b2e);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}.d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ac);font-family:'JetBrains Mono'}.dot-live{width:9px;height:9px;border-radius:50%;background:var(--ac);animation:blink 1.3s infinite}@keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}.d-cell{background:#0a1521;border:1px solid var(--line);border-radius:12px;padding:14px}.d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--ac);letter-spacing:-1px}.d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+  section{padding:44px 0;border-top:1px solid var(--line)}.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:24px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--ac);font-size:14px;letter-spacing:1px;border:1px solid var(--ac-d);border-radius:8px;padding:5px 10px;background:rgba(79,195,232,.08)}.sec-head h2{font-size:clamp(23px,3.6vw,33px);font-weight:800;letter-spacing:-.6px}
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:24px 26px;box-shadow:var(--shadow)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:6px 0}
+  .concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .cc{background:var(--cream);color:var(--ink);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--ac)}
+  .cc b{font-family:'Archivo';font-size:15px;display:block;margin-bottom:4px;color:var(--ink)}.cc p{margin:0;font-size:13px;color:#4a5b6a}.cc:nth-child(even){border-top-color:var(--gold)}
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}.panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}.panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .plot{background:var(--cream-2);border:1px solid rgba(16,32,47,.1);border-radius:14px;padding:8px}canvas.chart{width:100%;display:block}
+  .ops{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.ops button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(16,32,47,.2);padding:8px 13px;border-radius:9px;cursor:pointer;transition:.14s}.ops button:hover{border-color:var(--ac-d)}.ops button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .opinfo{margin-top:14px;background:rgba(79,195,232,.1);border:1px solid rgba(43,139,173,.3);border-left:4px solid var(--ac);border-radius:10px;padding:13px 16px;color:var(--ink)}.opinfo b{font-family:'Archivo'}
+  .schema-toggle{display:flex;gap:8px;margin-bottom:12px}.schema-toggle button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(16,32,47,.2);padding:8px 14px;border-radius:9px;cursor:pointer}.schema-toggle button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  /* video link cards */
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .linkcard{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .linkcard .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ac);text-transform:uppercase;letter-spacing:.5px}.linkcard b{font-family:'Archivo';font-size:15px}.linkcard span{font-size:12.5px;color:var(--muted)}
+  .linkcard a{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:8px;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);background:var(--ac);padding:9px 14px;border-radius:9px}
+  /* quiz */
+  .quiz{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .quiz .qh{padding:18px 24px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.quiz .qh b{font-family:'Archivo';font-size:18px}.quiz .qh .scorepill{margin-left:auto;font-family:'JetBrains Mono';font-weight:700;font-size:13px;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:8px}
+  .qbody{padding:20px 24px}
+  .qitem{padding:16px 0;border-bottom:1px solid rgba(16,32,47,.1)}.qitem:last-of-type{border-bottom:0}
+  .qitem .qq{font-family:'Archivo';font-weight:700;font-size:15px;margin-bottom:10px;display:flex;gap:10px}.qitem .qq .qn{color:var(--ac-d);flex:none}
+  .opt{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid rgba(16,32,47,.18);border-radius:9px;margin:6px 0;cursor:pointer;font-size:13.5px;transition:.12s;background:var(--cream-2)}
+  .opt:hover{border-color:var(--ac)}.opt.sel{border-color:var(--ink);background:#eaf6fb}
+  .opt.correct{border-color:var(--ok);background:rgba(70,192,138,.14)}.opt.wrong{border-color:var(--no);background:rgba(232,97,90,.12)}
+  .opt .mk{width:20px;height:20px;border-radius:50%;border:2px solid rgba(16,32,47,.3);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}.opt.wrong .mk{background:var(--no);border-color:var(--no);color:#fff}
+  .ex{font-size:12.5px;color:#4a5b6a;margin-top:8px;padding:9px 12px;background:rgba(79,195,232,.08);border-radius:8px;display:none}.ex.show{display:block}
+  .qactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .btn{font-family:'Archivo';font-weight:700;font-size:14px;padding:11px 20px;border-radius:10px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fff}.btn:hover{background:var(--ac);border-color:var(--ac);color:var(--ink)}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .result{margin-top:16px;padding:16px 18px;border-radius:12px;font-family:'Archivo';font-weight:800;font-size:17px;display:none}.result.show{display:block}.result.pass{background:rgba(70,192,138,.14);color:#1f8f5f;border:1px solid var(--ok)}.result.fail{background:rgba(232,181,74,.14);color:#9a7a1a;border:1px solid var(--gold)}
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="logo" aria-hidden="true"></div><div class="brand"><b>DWDM</b><span>Data Warehousing &amp; Mining</span></div>
+  <nav class="topnav"><a href="index.html">All units</a><a href="#overview">Overview</a><a href="#cube">OLAP cube</a><a href="#schema">Schemas</a><a href="#concepts">Concepts</a><a href="#videos">Videos</a><a href="#quiz">Quiz</a></nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow"><span class="logo" style="width:16px;height:16px;font-size:9px"></span>Unit&nbsp;I · CO1</span>
+  <h1>The <span class="hl">Data Warehouse</span></h1>
+  <p class="sub">One place that gathers data from everywhere for analysis. Learn how it differs from operational databases, how it's modelled with <b>star &amp; snowflake schemas</b>, and how <b>OLAP</b> slices and dices a data cube — all interactive.</p>
+  <div class="meta-row"><div class="chip">Course&nbsp;<b>IT314 B</b></div><div class="chip">Outcome&nbsp;<b>CO1</b></div><div class="chip">Lectures&nbsp;<b>9</b></div><div class="chip">Topics&nbsp;<b>ETL · OLAP · Schema</b></div></div>
+  <div class="dash reveal"><div class="d-top"><h3>What this unit covers</h3><div class="live"><span class="dot-live"></span>INTERACTIVE</div></div>
+    <div class="d-grid">
+      <div class="d-cell"><div class="n" data-count="5">0</div><div class="l">OLAP operations</div></div>
+      <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">Schema types</div></div>
+      <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">OLAP servers</div></div>
+      <div class="d-cell"><div class="n" data-count="10">0</div><div class="l">Quiz questions</div></div>
+    </div></div>
+</div></header>
+
+<section id="overview"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Operational DB vs Data Warehouse</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:8px;color:var(--ac-d)">OLTP — operational database</h3>
+      <ul class="clean" style="color:#4a5b6a;font-size:14px"><li>Runs day-to-day transactions (orders, payments).</li><li>Current, detailed data; frequent small read/writes.</li><li>Normalized (3NF) to avoid redundancy.</li><li>Optimised for <b>fast inserts/updates</b>.</li></ul></div>
+    <div class="card"><h3 style="margin-bottom:8px;color:var(--ac-d)">OLAP — data warehouse</h3>
+      <ul class="clean" style="color:#4a5b6a;font-size:14px"><li>Subject-oriented, integrated, time-variant, non-volatile.</li><li>Historical, summarised data; read-mostly.</li><li>De-normalized (star/snowflake) for fast queries.</li><li>Optimised for <b>complex analytical queries</b>.</li></ul></div>
+  </div>
+  <div class="opinfo" style="margin-top:16px"><b>ETL — Extract, Transform, Load:</b> data is <i>extracted</i> from many source systems, <i>transformed</i> (cleaned, integrated, formatted), and <i>loaded</i> into the warehouse on a schedule. It's the bridge from operational systems to the warehouse.</div>
+</div></section>
+
+<section id="cube"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>The OLAP Cube, Live</h2></div>
+  <p class="reveal" style="max-width:760px;color:#cfe0ec;margin-top:-12px">A data cube stores measures across dimensions — here <b>Product × Time × Location</b>. Click an OLAP operation and watch the cube respond. Each operation answers a different analytical question.</p>
+  <div class="panel reveal"><div class="ph"><b>Data cube — OLAP operations</b><span class="hint">click an operation</span></div>
+    <div class="pbody">
+      <div class="ops">
+        <button data-op="none" class="on">Full cube</button>
+        <button data-op="rollup">Roll-up</button>
+        <button data-op="drill">Drill-down</button>
+        <button data-op="slice">Slice</button>
+        <button data-op="dice">Dice</button>
+        <button data-op="pivot">Pivot</button>
+      </div>
+      <div class="plot"><canvas class="chart" id="cubeCanvas" height="300"></canvas></div>
+      <div class="opinfo" id="opInfo"><b>Full cube:</b> every cell holds a measure (e.g. sales) for one Product, Time and Location. OLAP operations reshape this cube to explore the numbers.</div>
+    </div>
+  </div>
+</div></section>
+
+<section id="schema"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>Schema Design</h2></div>
+  <p class="reveal" style="max-width:760px;color:#cfe0ec;margin-top:-12px">A central <b>fact table</b> (measures + foreign keys) surrounded by <b>dimension tables</b>. Toggle between the two classic shapes.</p>
+  <div class="panel reveal"><div class="ph"><b>Star vs Snowflake schema</b><span class="hint">toggle ↓</span></div>
+    <div class="pbody">
+      <div class="schema-toggle"><button data-s="star" class="on">Star schema</button><button data-s="snow">Snowflake schema</button><button data-s="fact">Fact constellation</button></div>
+      <div class="plot"><canvas class="chart" id="schemaCanvas" height="300"></canvas></div>
+      <div class="opinfo" id="schemaInfo"><b>Star schema:</b> one fact table linked directly to de-normalized dimension tables. Simple and fast — the most common design.</div>
+    </div>
+  </div>
+</div></section>
+
+<section id="concepts"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Key Concepts</h2></div>
+  <div class="concepts">
+    <div class="cc"><b>DW characteristics</b><p>Subject-oriented, Integrated, Time-variant, Non-volatile (Inmon's four properties).</p></div>
+    <div class="cc"><b>Fact table</b><p>Holds numeric measures and foreign keys to dimensions. Usually the largest table.</p></div>
+    <div class="cc"><b>Dimension table</b><p>Descriptive attributes (who/what/where/when) used to filter and group facts.</p></div>
+    <div class="cc"><b>Additive measures</b><p>Summable across all dimensions (e.g. sales amount). Semi-additive sum across some (e.g. balance, not over time); non-additive never sum (e.g. ratios).</p></div>
+    <div class="cc"><b>Fact-less fact</b><p>A fact table with no measures — records that an event happened (e.g. student attendance).</p></div>
+    <div class="cc"><b>Star schema</b><p>Fact table + de-normalized dimensions. Fewer joins, fast queries.</p></div>
+    <div class="cc"><b>Snowflake schema</b><p>Dimensions normalized into sub-dimensions. Less redundancy, more joins.</p></div>
+    <div class="cc"><b>Fact constellation</b><p>Multiple fact tables sharing dimension tables (a galaxy schema).</p></div>
+    <div class="cc"><b>OLAP operations</b><p>Roll-up, drill-down, slice, dice, pivot — to navigate the cube.</p></div>
+    <div class="cc"><b>ROLAP / MOLAP / HOLAP</b><p>Relational storage / multidimensional arrays / hybrid of both.</p></div>
+  </div>
+</div></section>
+
+<section id="videos"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Watch &amp; Learn</h2></div>
+  <p style="max-width:760px;color:#cfe0ec;margin-top:-12px">Pick a clear explainer for each topic — these open curated YouTube searches.</p>
+  <div class="vid-grid">
+    <div class="linkcard"><span class="src">Concept · warehouse</span><b>Data warehouse &amp; OLAP basics</b><span>Architecture, ETL, OLTP vs OLAP and the data cube.</span><a href="https://www.youtube.com/results?search_query=data+warehouse+OLAP+architecture+ETL+explained" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+    <div class="linkcard"><span class="src">Concept · modelling</span><b>Star vs Snowflake schema</b><span>Fact tables, dimensions and schema design walkthrough.</span><a href="https://www.youtube.com/results?search_query=star+schema+vs+snowflake+schema+data+warehouse" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+    <div class="linkcard"><span class="src">Concept · OLAP</span><b>OLAP operations (roll-up, slice, dice)</b><span>See the cube operations demonstrated step by step.</span><a href="https://www.youtube.com/results?search_query=OLAP+operations+roll+up+drill+down+slice+dice+pivot" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+  </div>
+</div></section>
+
+<section id="quiz"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Unit I Quiz — 10 Questions</h2></div>
+  <div class="quiz">
+    <div class="qh"><b>Test yourself: Data Warehouse</b><span class="scorepill" id="scorePill">0 / 10</span></div>
+    <div class="qbody"><div id="qhost"></div>
+      <div class="qactions"><button class="btn" id="checkBtn">Check answers</button><button class="btn ghost" id="resetBtn">Reset</button></div>
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">DWDM · Unit I · Data Warehouse — Course IT314 B (R20) · CO1<br><span style="opacity:.7">Interactive learning material. Keep all unit files in one folder so the navigation links work.</span></div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=900,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+const REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+const AC='#4fc3e8',ACD='#2b8bad',GOLD='#e8b54a',INK='#10202f',MUT='#5a6b7a';
+
+/* ===== OLAP CUBE ===== */
+const CUBE={cv:document.getElementById('cubeCanvas'),op:'none'};
+function drawCube(){
+  const {ctx,W,H}=setup(CUBE.cv);ctx.clearRect(0,0,W,H);
+  const op=CUBE.op;
+  // resolution: rollup -> coarser, drill -> finer
+  let n = op==='rollup'?2 : op==='drill'?4 : 3;
+  const s=Math.min(34, (Math.min(W,H)-90)/(n*1.7));
+  const ox=W/2 - 6, oy=H/2 + n*s*0.5 - 10;
+  const cos=Math.cos(Math.PI/6), sin=Math.sin(Math.PI/6);
+  // axis vectors
+  const R={x:cos*s,y:sin*s}, L={x:-cos*s,y:sin*s}, U={x:0,y:-s};
+  function P(i,j,k){return {x:ox + i*R.x + k*L.x, y:oy + i*R.y + k*L.y + j*U.y};}
+  // pivot swaps R/L mapping
+  const pivot = op==='pivot';
+  function cell(i,j,k){return pivot?{i:k,j:j,k:i}:{i,j,k};}
+  // determine highlight set
+  function hot(i,j,k){
+    if(op==='slice') return k===0;            // fix one location layer
+    if(op==='dice') return (i>=1&&j<=1&&k<=1); // sub-block
+    return true;
+  }
+  // draw top faces of top layer + visible side faces; simpler: draw all voxels back-to-front
+  const order=[];
+  for(let i=0;i<n;i++)for(let j=0;j<n;j++)for(let k=0;k<n;k++)order.push({i,j,k,d:(i+k)-j});
+  order.sort((a,b)=>a.d-b.d);
+  for(const v of order){
+    const c=cell(v.i,v.j,v.k);
+    const isHot=hot(v.i,v.j,v.k);
+    const a=P(c.i,c.j,c.k),b=P(c.i+1,c.j,c.k),cc=P(c.i+1,c.j,c.k+1),d=P(c.i,c.j,c.k+1);
+    const a2=P(c.i,c.j+1,c.k),b2=P(c.i+1,c.j+1,c.k),c2=P(c.i+1,c.j+1,c.k+1),d2=P(c.i,c.j+1,c.k+1);
+    const alpha=isHot?1:0.18;
+    // top
+    ctx.beginPath();ctx.moveTo(a2.x,a2.y);ctx.lineTo(b2.x,b2.y);ctx.lineTo(c2.x,c2.y);ctx.lineTo(d2.x,d2.y);ctx.closePath();
+    ctx.fillStyle=isHot?'rgba(79,195,232,.85)':'rgba(79,195,232,.13)';ctx.fill();ctx.strokeStyle='rgba(16,32,47,'+(0.25*alpha+0.05)+')';ctx.lineWidth=1;ctx.stroke();
+    // left
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(a2.x,a2.y);ctx.lineTo(d2.x,d2.y);ctx.lineTo(d.x,d.y);ctx.closePath();
+    ctx.fillStyle=isHot?'rgba(43,139,173,.85)':'rgba(43,139,173,.12)';ctx.fill();ctx.stroke();
+    // right
+    ctx.beginPath();ctx.moveTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.lineTo(c2.x,c2.y);ctx.lineTo(b2.x,b2.y);ctx.closePath();
+    ctx.fillStyle=isHot?'rgba(31,103,130,.9)':'rgba(31,103,130,.12)';ctx.fill();ctx.stroke();
+  }
+  // axis labels
+  ctx.fillStyle=MUT;ctx.font='700 11px Archivo';ctx.textAlign='center';
+  ctx.fillText(pivot?'Location':'Product', ox+n*R.x*0.5+18, oy+n*R.y*0.5+22);
+  ctx.fillText(pivot?'Product':'Location', ox+n*L.x*0.5-18, oy+n*L.y*0.5+22);
+  ctx.save();ctx.translate(ox-n*cos*s-14,oy-n*s*0.5);ctx.rotate(-Math.PI/2);ctx.fillText('Time',0,0);ctx.restore();
+  const info={
+    none:'<b>Full cube:</b> every cell holds a measure (e.g. sales) for one Product, Time and Location. OLAP operations reshape this cube to explore the numbers.',
+    rollup:'<b>Roll-up:</b> climb up a concept hierarchy or drop a dimension — data is <i>aggregated</i> to a coarser level (e.g. day → month, city → country). The cube gets smaller.',
+    drill:'<b>Drill-down:</b> the reverse of roll-up — go to finer detail (month → day). More cells, more granularity.',
+    slice:'<b>Slice:</b> fix one dimension to a single value (e.g. Location = "Delhi"), leaving a 2-D plane of the cube.',
+    dice:'<b>Dice:</b> select a sub-cube by choosing ranges on two or more dimensions (e.g. two products × two months × two cities).',
+    pivot:'<b>Pivot (rotate):</b> rotate the cube to view it from another angle — swap which dimensions sit on which axis, for a different perspective.'
+  };
+  document.getElementById('opInfo').innerHTML=info[op];
+}
+document.querySelectorAll('[data-op]').forEach(b=>b.addEventListener('click',()=>{CUBE.op=b.dataset.op;document.querySelectorAll('[data-op]').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawCube();}));
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawCube();ob.disconnect();}})},{threshold:.2}).observe(CUBE.cv);
+
+/* ===== SCHEMA ===== */
+const SCH={cv:document.getElementById('schemaCanvas'),s:'star'};
+function box(ctx,x,y,w,h,fill,stroke,label,sub){ctx.fillStyle=fill;ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(x,y,w,h,8);ctx.fill();ctx.stroke();ctx.fillStyle=INK;ctx.font='700 12px Archivo';ctx.textAlign='center';ctx.fillText(label,x+w/2,y+(sub?16:h/2+4));if(sub){ctx.font='9px JetBrains Mono';ctx.fillStyle='#5a6b7a';ctx.fillText(sub,x+w/2,y+30);}}
+function line(ctx,x1,y1,x2,y2){ctx.strokeStyle='rgba(16,32,47,.35)';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+function drawSchema(){
+  const {ctx,W,H}=setup(SCH.cv);ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2,fw=120,fh=52;
+  if(SCH.s==='fact'){
+    // two fact tables sharing dims
+    const f1x=W*0.30-60,f2x=W*0.70-60;
+    line(ctx,f1x+60,cy,f2x+60,cy);
+    box(ctx,W*0.5-55,H*0.16,110,40,'#dff2f8',ACD,'Time dim','shared');
+    box(ctx,W*0.5-55,H*0.78,110,40,'#dff2f8',ACD,'Product dim','shared');
+    line(ctx,f1x+60,cy,W*0.5,H*0.20);line(ctx,f2x+60,cy,W*0.5,H*0.20);
+    line(ctx,f1x+60,cy,W*0.5,H*0.80);line(ctx,f2x+60,cy,W*0.5,H*0.80);
+    box(ctx,f1x,cy-fh/2,fw,fh,'#fdeccd',GOLD,'Sales Fact','measures');
+    box(ctx,f2x,cy-fh/2,fw,fh,'#fdeccd',GOLD,'Shipping Fact','measures');
+    document.getElementById('schemaInfo').innerHTML='<b>Fact constellation (galaxy):</b> multiple fact tables (Sales, Shipping) share common dimension tables. Used for complex warehouses with several business processes.';
+  } else {
+    const dims=[[cx,H*0.13],[W*0.85,cy],[cx,H*0.83],[W*0.15,cy]];
+    dims.forEach(d=>line(ctx,cx,cy,d[0],d[1]));
+    const names=['Time','Location','Product','Customer'];
+    dims.forEach((d,i)=>box(ctx,d[0]-52,d[1]-20,104,40,'#dff2f8',ACD,names[i]+' dim',SCH.s==='snow'?'normalized':''));
+    if(SCH.s==='snow'){
+      // sub-dimensions off two dims
+      line(ctx,W*0.85,cy,W*0.97,cy-40);line(ctx,cx,H*0.83,cx+70,H*0.95);
+      box(ctx,W*0.86,cy-62,90,34,'#eaf6fb',ACD,'Region','sub-dim');
+      box(ctx,cx+30,H*0.9,90,34,'#eaf6fb',ACD,'Category','sub-dim');
+      document.getElementById('schemaInfo').innerHTML='<b>Snowflake schema:</b> dimension tables are normalized into sub-dimensions (Location → Region, Product → Category). Less data redundancy, but more joins slow queries.';
+    } else {
+      document.getElementById('schemaInfo').innerHTML='<b>Star schema:</b> one central fact table linked directly to de-normalized dimension tables — its shape looks like a star. Fewer joins means fast, simple queries.';
+    }
+    box(ctx,cx-60,cy-fh/2,120,fh,'#fdeccd',GOLD,'Sales Fact','measures + FKs');
+  }
+}
+document.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{SCH.s=b.dataset.s;document.querySelectorAll('[data-s]').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawSchema();}));
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawSchema();ob.disconnect();}})},{threshold:.2}).observe(SCH.cv);
+
+/* ===== QUIZ ENGINE ===== */
+const QUIZ=[
+ {q:"Which is NOT one of the four key characteristics of a data warehouse?",o:["Subject-oriented","Time-variant","Volatile (frequently updated)","Integrated"],a:2,ex:"A warehouse is non-volatile — data is loaded and read, not constantly updated like an OLTP system."},
+ {q:"ETL stands for:",o:["Extract, Transform, Load","Enter, Transfer, Link","Evaluate, Test, Launch","Extract, Transmit, Log"],a:0,ex:"ETL = Extract from sources, Transform (clean/integrate), Load into the warehouse."},
+ {q:"In a star schema, the central table is the:",o:["Dimension table","Fact table","Bridge table","Lookup table"],a:1,ex:"The fact table sits at the centre holding measures and foreign keys to surrounding dimension tables."},
+ {q:"A measure that can be summed across some dimensions but not others (e.g. account balance, not over time) is:",o:["Additive","Semi-additive","Non-additive","Fact-less"],a:1,ex:"Semi-additive measures sum across some dimensions (e.g. across accounts) but not time."},
+ {q:"Which OLAP operation aggregates data to a coarser level (e.g. day → month)?",o:["Drill-down","Slice","Roll-up","Dice"],a:2,ex:"Roll-up climbs the concept hierarchy / removes a dimension, aggregating to less detail."},
+ {q:"Selecting a single value of one dimension to get a 2-D plane of the cube is called:",o:["Dice","Slice","Pivot","Roll-up"],a:1,ex:"Slice fixes one dimension to one value; dice selects ranges on two or more dimensions."},
+ {q:"A snowflake schema differs from a star schema because its dimension tables are:",o:["De-normalized","Removed entirely","Normalized into sub-dimensions","Merged into the fact table"],a:2,ex:"Snowflake normalizes dimensions into sub-dimensions, reducing redundancy at the cost of more joins."},
+ {q:"MOLAP stores data as:",o:["Relational tables","Multidimensional arrays/cubes","Flat CSV files","Graph structures"],a:1,ex:"MOLAP uses multidimensional array storage; ROLAP uses relational tables; HOLAP is a hybrid."},
+ {q:"A fact-less fact table is one that:",o:["Has no foreign keys","Contains no numeric measures","Has no dimensions","Is always empty"],a:1,ex:"A fact-less fact records that an event happened (keys only) with no measures, e.g. attendance."},
+ {q:"A schema with multiple fact tables sharing common dimension tables is a:",o:["Star schema","Snowflake schema","Fact constellation (galaxy) schema","Normalized schema"],a:2,ex:"Fact constellation / galaxy schema links several fact tables through shared dimensions."}
+];
+const qhost=document.getElementById('qhost');let answered={},checked=false;
+function renderQuiz(){qhost.innerHTML='';QUIZ.forEach((item,qi)=>{
+  const d=document.createElement('div');d.className='qitem';
+  let opts='';item.o.forEach((o,oi)=>{opts+='<div class="opt" data-q="'+qi+'" data-o="'+oi+'"><span class="mk"></span><span>'+o+'</span></div>';});
+  d.innerHTML='<div class="qq"><span class="qn">Q'+(qi+1)+'.</span><span>'+item.q+'</span></div>'+opts+'<div class="ex" id="ex'+qi+'">'+item.ex+'</div>';
+  qhost.appendChild(d);});
+  qhost.querySelectorAll('.opt').forEach(op=>op.addEventListener('click',()=>{
+    if(checked)return;const qi=op.dataset.q;
+    qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(x=>x.classList.remove('sel'));
+    op.classList.add('sel');answered[qi]=+op.dataset.o;
+    document.getElementById('scorePill').textContent=Object.keys(answered).length+' / 10 answered';
+  }));
+}
+document.getElementById('checkBtn').addEventListener('click',()=>{
+  if(checked)return;checked=true;let score=0;
+  QUIZ.forEach((item,qi)=>{
+    const sel=answered[qi];document.getElementById('ex'+qi).classList.add('show');
+    qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(op=>{const oi=+op.dataset.o;
+      if(oi===item.a){op.classList.add('correct');op.querySelector('.mk').textContent='✓';}
+      if(oi===sel&&sel!==item.a){op.classList.add('wrong');op.querySelector('.mk').textContent='✗';}});
+    if(sel===item.a)score++;
+  });
+  document.getElementById('scorePill').textContent=score+' / 10';
+  const r=document.getElementById('result');r.classList.add('show');
+  r.classList.add(score>=6?'pass':'fail');
+  r.textContent=(score>=6?'Well done! ':'Keep revising — ')+'You scored '+score+' / 10'+(score>=6?'. Solid grasp of the data warehouse.':'. Review the cube & schema sections and try again.');
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{answered={};checked=false;document.getElementById('result').className='result';document.getElementById('scorePill').textContent='0 / 10';renderQuiz();});
+renderQuiz();
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawCube();drawSchema();},200);});
+</script>
+</body>
+</html>

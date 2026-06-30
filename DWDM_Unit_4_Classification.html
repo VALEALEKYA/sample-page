@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit IV — Classification | DWDM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0e1b2e;--bg-2:#15273f;--bg-3:#1f3756;--cream:#eef3f8;--cream-2:#f8fbfd;--ac:#9d7bff;--ac-d:#6f4fd6;--gold:#e8b54a;--ok:#46c08a;--no:#e8615a;--ink:#10202f;--muted:#9bb2c6;--line:rgba(238,243,248,.12);--code-bg:#0a1521;--shadow:0 18px 50px -22px rgba(0,0,0,.8);--maxw:1080px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);background:radial-gradient(1100px 560px at 84% -10%, rgba(232,181,74,.08), transparent 60%),radial-gradient(900px 520px at -8% 16%, rgba(157,123,255,.12), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}a{color:var(--gold)}::selection{background:var(--ac);color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(14,27,46,.85);border-bottom:1px solid var(--line)}.topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}.logo::after{content:"🧠"}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}.topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}.topnav a:hover{background:var(--bg-3);opacity:1}
+  .hero{padding:58px 0 30px}.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);font-weight:700;border:1px solid var(--ac-d);border-radius:100px;padding:6px 14px;background:rgba(157,123,255,.06)}
+  .hero h1{font-size:clamp(34px,6.4vw,68px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}.hero h1 .hl{color:var(--ac)}.hero .sub{font-size:clamp(16px,2.2vw,20px);color:#cfe0ec;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}.chip b{color:var(--ac);font-family:'JetBrains Mono';font-weight:700}
+  .dash{margin-top:30px;background:linear-gradient(180deg,#0a1521,#0e1b2e);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}.d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ac);font-family:'JetBrains Mono'}.dot-live{width:9px;height:9px;border-radius:50%;background:var(--ac);animation:blink 1.3s infinite}@keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}.d-cell{background:#0a1521;border:1px solid var(--line);border-radius:12px;padding:14px}.d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--ac);letter-spacing:-1px}.d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+  section{padding:44px 0;border-top:1px solid var(--line)}.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:24px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--ac);font-size:14px;letter-spacing:1px;border:1px solid var(--ac-d);border-radius:8px;padding:5px 10px;background:rgba(157,123,255,.08)}.sec-head h2{font-size:clamp(23px,3.6vw,33px);font-weight:800;letter-spacing:-.6px}
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:24px 26px;box-shadow:var(--shadow)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:6px 0}
+  .concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .cc{background:var(--cream);color:var(--ink);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--ac)}
+  .cc b{font-family:'Archivo';font-size:15px;display:block;margin-bottom:4px;color:var(--ink)}.cc p{margin:0;font-size:13px;color:#4a5b6a}.cc:nth-child(even){border-top-color:var(--gold)}
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}.panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}.panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .plot{background:var(--cream-2);border:1px solid rgba(16,32,47,.1);border-radius:14px;padding:8px}canvas.chart{width:100%;display:block}
+  .ops{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.ops button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(16,32,47,.2);padding:8px 13px;border-radius:9px;cursor:pointer;transition:.14s}.ops button:hover{border-color:var(--ac-d)}.ops button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .opinfo{margin-top:14px;background:rgba(157,123,255,.1);border:1px solid rgba(43,139,173,.3);border-left:4px solid var(--ac);border-radius:10px;padding:13px 16px;color:var(--ink)}.opinfo b{font-family:'Archivo'}
+  .schema-toggle{display:flex;gap:8px;margin-bottom:12px}.schema-toggle button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(16,32,47,.2);padding:8px 14px;border-radius:9px;cursor:pointer}.schema-toggle button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  /* video link cards */
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .linkcard{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .linkcard .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ac);text-transform:uppercase;letter-spacing:.5px}.linkcard b{font-family:'Archivo';font-size:15px}.linkcard span{font-size:12.5px;color:var(--muted)}
+  .linkcard a{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:8px;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);background:var(--ac);padding:9px 14px;border-radius:9px}
+  /* quiz */
+  .quiz{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .quiz .qh{padding:18px 24px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.quiz .qh b{font-family:'Archivo';font-size:18px}.quiz .qh .scorepill{margin-left:auto;font-family:'JetBrains Mono';font-weight:700;font-size:13px;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:8px}
+  .qbody{padding:20px 24px}
+  .qitem{padding:16px 0;border-bottom:1px solid rgba(16,32,47,.1)}.qitem:last-of-type{border-bottom:0}
+  .qitem .qq{font-family:'Archivo';font-weight:700;font-size:15px;margin-bottom:10px;display:flex;gap:10px}.qitem .qq .qn{color:var(--ac-d);flex:none}
+  .opt{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid rgba(16,32,47,.18);border-radius:9px;margin:6px 0;cursor:pointer;font-size:13.5px;transition:.12s;background:var(--cream-2)}
+  .opt:hover{border-color:var(--ac)}.opt.sel{border-color:var(--ink);background:#efeaff}
+  .opt.correct{border-color:var(--ok);background:rgba(70,192,138,.14)}.opt.wrong{border-color:var(--no);background:rgba(232,97,90,.12)}
+  .opt .mk{width:20px;height:20px;border-radius:50%;border:2px solid rgba(16,32,47,.3);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+  .opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}.opt.wrong .mk{background:var(--no);border-color:var(--no);color:#fff}
+  .ex{font-size:12.5px;color:#4a5b6a;margin-top:8px;padding:9px 12px;background:rgba(157,123,255,.08);border-radius:8px;display:none}.ex.show{display:block}
+  .qactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .btn{font-family:'Archivo';font-weight:700;font-size:14px;padding:11px 20px;border-radius:10px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fff}.btn:hover{background:var(--ac);border-color:var(--ac);color:var(--ink)}
+  .btn.ghost{background:transparent;color:var(--ink)}
+  .result{margin-top:16px;padding:16px 18px;border-radius:12px;font-family:'Archivo';font-weight:800;font-size:17px;display:none}.result.show{display:block}.result.pass{background:rgba(70,192,138,.14);color:#1f8f5f;border:1px solid var(--ok)}.result.fail{background:rgba(232,181,74,.14);color:#9a7a1a;border:1px solid var(--gold)}
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+  .vid-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:18px}
+  .vid{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vid .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}.vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid .vmeta{padding:12px 15px}.vid .vmeta b{font-family:'Archivo';font-weight:700;font-size:14px;display:block}.vid .vmeta span{font-size:12px;color:var(--muted)}.vid .vmeta .src{font-family:'JetBrains Mono';font-size:10px;color:var(--ac);text-transform:uppercase;letter-spacing:.5px}
+  .sl{margin:11px 0}.sl .top{display:flex;justify-content:space-between;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);margin-bottom:5px}.sl .top .v{font-family:'JetBrains Mono';color:var(--ac-d)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:6px;background:var(--bg-3);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  .mrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}.mc{background:var(--cream-2);border:1px solid rgba(16,32,47,.1);border-radius:12px;padding:12px 14px;border-top:4px solid var(--ac)}.mc .ml{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5a6b7a;font-weight:700;font-family:Archivo}.mc .mn{font-family:Archivo;font-weight:900;font-size:22px;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="logo" aria-hidden="true"></div>
+  <div class="brand"><b>DWDM</b><span>Data Warehousing &amp; Mining</span></div>
+  <nav class="topnav"><a href="index.html">All units</a><a href="#overview">Overview</a><a href="#trees">Decision trees</a><a href="#knn">KNN</a><a href="#more">Bayes &amp; more</a><a href="#videos">Videos</a><a href="#quiz">Quiz</a></nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">Unit IV · 9 Lectures</span>
+  <h1>Teaching Machines to <span class="hl">Label</span></h1>
+  <p class="sub">Classification predicts a category from labelled data. Build decision trees by the purest split, classify with k nearest neighbours, reason with Bayes, and measure it all honestly — then test yourself with 10 questions.</p>
+  <div class="meta-row"><div class="chip">Course&nbsp;<b>IT314 B</b></div><div class="chip">Unit&nbsp;<b>IV</b></div><div class="chip">Type&nbsp;<b>Supervised</b></div><div class="chip">Outcome&nbsp;<b>CO3</b></div></div>
+  <div class="dash reveal"><div class="d-top"><h3>What you'll master</h3><div class="live"><span class="dot-live"></span>INTERACTIVE</div></div>
+    <div class="d-grid">
+      <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">Algorithms</div></div>
+      <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Live demos</div></div>
+      <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">Concept videos</div></div>
+      <div class="d-cell"><div class="n" data-count="10">0</div><div class="l">Quiz questions</div></div>
+    </div></div>
+</div></header>
+
+<section id="overview"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>The Classification Problem</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:6px">Learn a mapping, then predict</h3>
+      <p style="color:#4a5b6a;margin-top:0">Given training records with a known <b>class label</b>, a classifier learns a model that maps attributes → class. New, unlabelled records are then assigned a class. It's <b>supervised</b> learning because the labels guide training.</p>
+      <p style="color:#4a5b6a">General approach: split into train/test → build the model on training data → predict on the test set → evaluate accuracy → deploy.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px">Evaluating a classifier</h3>
+      <ul class="clean" style="color:#4a5b6a;font-size:13.5px">
+        <li><b>Confusion matrix</b> — TP, FP, TN, FN counts.</li>
+        <li><b>Accuracy</b> = (TP+TN)/all; <b>error rate</b> = 1 − accuracy.</li>
+        <li><b>Precision / Recall / F1</b> — for imbalanced data.</li>
+        <li><b>Holdout, random subsampling, k-fold cross-validation</b> for honest estimates.</li></ul></div>
+  </div>
+  <div class="concepts" style="margin-top:14px">
+    <div class="cc"><b>Characterization</b><p>Summarise the general traits of a target class.</p></div>
+    <div class="cc"><b>Decision boundary</b><p>The surface a model draws to separate classes.</p></div>
+    <div class="cc"><b>Overfitting</b><p>A model that memorises training noise and fails to generalise.</p></div>
+    <div class="cc"><b>Ensemble</b><p>Combine many models (bagging, boosting, random forest) for accuracy.</p></div>
+  </div>
+</div></section>
+
+<section id="trees"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">02</span><h2>Decision Trees &amp; the Best Split</h2></div>
+  <p class="reveal" style="max-width:760px;color:#cfe0ec;margin-top:-12px">A decision tree splits the data with attribute tests, choosing at each node the split that makes the children <b>purest</b>. Purity is measured by <b>Gini</b> or <b>entropy</b>; <b>information gain</b> is the drop in entropy after a split. Slide the class mix and watch impurity respond — purest (0) at the ends, most impure (max) at a 50/50 mix.</p>
+  <div class="panel reveal"><div class="ph"><b>Impurity calculator</b><span class="hint">Gini &amp; entropy of a node</span></div>
+    <div class="pbody">
+      <div class="grid2" style="gap:16px">
+        <div class="plot"><canvas class="chart" id="impCanvas" height="220"></canvas></div>
+        <div>
+          <div class="sl"><div class="top"><span>Class mix — % of class A in the node</span><span class="v" id="vP">50%</span></div><input type="range" id="sP" min="0" max="100" value="50"></div>
+          <div class="mrow">
+            <div class="mc"><div class="ml">Gini impurity</div><div class="mn" id="mGini">0.500</div></div>
+            <div class="mc"><div class="ml">Entropy (bits)</div><div class="mn" id="mEnt">1.000</div></div>
+          </div>
+          <div class="opinfo" id="impMsg"><b>Read it:</b> a node that is all one class has Gini = 0 and entropy = 0 (a pure leaf). A 50/50 node is maximally impure (Gini 0.5, entropy 1 bit). The tree picks the attribute test that lowers impurity the most — that drop is the information gain.</div>
+        </div>
+      </div>
+      <div class="concepts" style="margin-top:16px">
+        <div class="cc"><b>Attribute test conditions</b><p>Binary, multiway, or threshold splits on nominal, ordinal or continuous attributes.</p></div>
+        <div class="cc"><b>Best-split measures</b><p>Gini index, entropy/information gain, gain ratio — pick the attribute that purifies most.</p></div>
+        <div class="cc"><b>Induction (Hunt's algorithm)</b><p>Recursively split nodes until pure or a stop condition; then prune to avoid overfitting.</p></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="knn"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>k-Nearest Neighbours</h2></div>
+  <p class="reveal" style="max-width:760px;color:#cfe0ec;margin-top:-12px">KNN is a <b>lazy learner</b> — it stores the training data and classifies a new point by a majority vote of its <b>k closest</b> neighbours. <b>Click anywhere</b> to drop a query point; lines connect it to its k neighbours and it takes the majority colour. Slide k and watch the verdict change.</p>
+  <div class="panel reveal"><div class="ph"><b>KNN classifier</b><span class="hint">click the plot to place a query point</span></div>
+    <div class="pbody">
+      <div class="grid2" style="gap:16px">
+        <div class="plot"><canvas class="chart" id="knnCanvas" height="300"></canvas></div>
+        <div>
+          <div class="sl"><div class="top"><span>k — number of neighbours</span><span class="v" id="vK">5</span></div><input type="range" id="sK" min="1" max="15" step="2" value="5"></div>
+          <div class="mrow">
+            <div class="mc"><div class="ml">Class A votes</div><div class="mn" id="mVA" style="color:#4aa3e0">—</div></div>
+            <div class="mc"><div class="ml">Class B votes</div><div class="mn" id="mVB" style="color:#e0556b">—</div></div>
+          </div>
+          <div class="opinfo" id="knnMsg"><b>Try it:</b> click near the boundary between the two clusters and toggle k — a small k follows local noise, a large k smooths the decision. Choosing k is the key trade-off in KNN.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="more"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Bayes, Belief Networks &amp; Ensembles</h2></div>
+  <div class="concepts">
+    <div class="cc"><b>Naïve Bayes</b><p>Applies Bayes' theorem assuming features are conditionally independent given the class. Fast, surprisingly accurate, needs little data.</p></div>
+    <div class="cc"><b>Bayes' theorem</b><p>P(class∣x) ∝ P(x∣class)·P(class). Pick the class with the highest posterior probability.</p></div>
+    <div class="cc"><b>Bayesian belief networks</b><p>A graph of variables with conditional dependencies — relaxes the naïve independence assumption to model real relationships.</p></div>
+    <div class="cc"><b>Lazy vs eager</b><p>KNN is lazy (no model until query time); trees and Bayes are eager (build a model up front).</p></div>
+    <div class="cc"><b>Accuracy &amp; error measures</b><p>Accuracy, error rate, precision, recall, F-measure; cross-validation gives a reliable estimate.</p></div>
+    <div class="cc"><b>Ensemble methods</b><p>Bagging (e.g. random forest), boosting (e.g. AdaBoost) and stacking combine weak models into a strong one.</p></div>
+  </div>
+</div></section>
+
+<section id="videos"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Watch the Concepts</h2></div>
+  <p style="max-width:760px;color:#cfe0ec;margin-top:-12px">Clear explainers from <b>StatQuest with Josh Starmer</b> for the three classifiers in this unit.</p>
+  <div class="vid-grid2">
+    <div class="vid"><div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/_L39rN6gz7Y" title="Decision and Classification Trees" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="vmeta"><span class="src">StatQuest</span><b>Decision &amp; Classification Trees</b><span>How splits and impurity build a tree.</span></div></div>
+    <div class="vid"><div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/O2L2Uv9pdDA" title="Naive Bayes, Clearly Explained" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="vmeta"><span class="src">StatQuest</span><b>Naïve Bayes, Clearly Explained</b><span>Bayes' theorem for classification.</span></div></div>
+    <div class="vid"><div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/HVXime0nQeI" title="K-nearest neighbors, Clearly Explained" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><div class="vmeta"><span class="src">StatQuest</span><b>K-Nearest Neighbours</b><span>Classify by the nearest k points.</span></div></div>
+  </div>
+  <p style="color:var(--muted);font-size:12.5px;margin-top:14px">Videos are embedded from YouTube and belong to their creators. If a frame is blank, your network may block YouTube.</p>
+</div></section>
+
+<section id="quiz"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Unit IV Quiz — 10 Questions</h2></div>
+  <div class="quiz">
+    <div class="qh"><b>Test yourself: Classification</b><span class="scorepill" id="scorePill">0 / 10</span></div>
+    <div class="qbody"><div id="qhost"></div>
+      <div class="qactions"><button class="btn" id="checkBtn">Check answers</button><button class="btn ghost" id="resetBtn">Reset</button></div>
+      <div class="result" id="result"></div>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">DWDM · Unit IV · Classification — Course IT314 B (R20) · CO3<br>
+<span style="opacity:.7">The impurity and KNN demos compute Gini/entropy and nearest-neighbour votes live in your browser on sample data.</span></div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+const AC='#9d7bff',ACD='#6f4fd6',BLUE='#4aa3e0',RED='#e0556b',INK='#10202f',MUT='#5a6b7a',GRID='rgba(16,32,47,.1)';
+
+/* impurity calculator */
+const IMP={cv:document.getElementById('impCanvas')};
+function drawImp(){
+  const {ctx,W,H}=setup(IMP.cv);const padL=34,padR=12,padT=12,padB=24;
+  const p=(+document.getElementById('sP').value)/100;
+  const gini=v=>2*v*(1-v); const ent=v=>{if(v<=0||v>=1)return 0;return -(v*Math.log2(v)+(1-v)*Math.log2(1-v));};
+  const X=v=>padL+(W-padL-padR)*v, Y=v=>padT+(H-padT-padB)*(1-v/1.05);
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle=GRID;ctx.lineWidth=1;for(let i=0;i<=4;i++){const y=padT+(H-padT-padB)*i/4;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();}
+  ctx.fillStyle=MUT;ctx.font='9px Inter';ctx.textAlign='center';ctx.fillText('0',X(0),H-padB+12);ctx.fillText('0.5',X(.5),H-padB+12);ctx.fillText('1',X(1),H-padB+12);ctx.fillText('p (class A)',W/2,H-4);
+  // entropy curve
+  ctx.strokeStyle=AC;ctx.lineWidth=2.4;ctx.beginPath();for(let i=0;i<=100;i++){const v=i/100;i?ctx.lineTo(X(v),Y(ent(v))):ctx.moveTo(X(v),Y(ent(v)));}ctx.stroke();
+  // gini curve
+  ctx.strokeStyle='#e8b54a';ctx.lineWidth=2.4;ctx.beginPath();for(let i=0;i<=100;i++){const v=i/100;i?ctx.lineTo(X(v),Y(gini(v))):ctx.moveTo(X(v),Y(gini(v)));}ctx.stroke();
+  // marker
+  ctx.strokeStyle='rgba(16,32,47,.3)';ctx.setLineDash([4,3]);ctx.beginPath();ctx.moveTo(X(p),padT);ctx.lineTo(X(p),H-padB);ctx.stroke();ctx.setLineDash([]);
+  [['ent',ent(p),AC],['gini',gini(p),'#e8b54a']].forEach(d=>{ctx.beginPath();ctx.arc(X(p),Y(d[1]),5,0,Math.PI*2);ctx.fillStyle=d[2];ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();});
+  ctx.textAlign='left';ctx.font='10px Inter';ctx.fillStyle=ACD;ctx.fillText('— entropy',padL+2,padT+4);ctx.fillStyle='#b58a26';ctx.fillText('— gini',padL+72,padT+4);
+  document.getElementById('mGini').textContent=gini(p).toFixed(3);
+  document.getElementById('mEnt').textContent=ent(p).toFixed(3);
+}
+document.getElementById('sP').addEventListener('input',()=>{document.getElementById('vP').textContent=document.getElementById('sP').value+'%';drawImp();});
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawImp();ob.disconnect();}})},{threshold:.2}).observe(IMP.cv);
+
+/* KNN */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const KNN={cv:document.getElementById('knnCanvas'),pts:[],q:{x:0.5,y:0.5}};
+(function(){const r=mulberry32(13);for(let i=0;i<26;i++)KNN.pts.push({x:0.3+gauss(r)*0.12,y:0.62+gauss(r)*0.13,c:0});for(let i=0;i<26;i++)KNN.pts.push({x:0.68+gauss(r)*0.12,y:0.38+gauss(r)*0.13,c:1});})();
+function drawKNN(){
+  const {ctx,W,H}=setup(KNN.cv);const pad=14;
+  const X=v=>pad+(W-2*pad)*v, Y=v=>pad+(H-2*pad)*(1-v);
+  ctx.clearRect(0,0,W,H);
+  const k=+document.getElementById('sK').value;
+  // nearest k
+  const d=KNN.pts.map((p,i)=>({i,d:(p.x-KNN.q.x)**2+(p.y-KNN.q.y)**2})).sort((a,b)=>a.d-b.d).slice(0,k);
+  let va=0,vb=0;d.forEach(o=>KNN.pts[o.i].c===0?va++:vb++);
+  // lines
+  d.forEach(o=>{const p=KNN.pts[o.i];ctx.strokeStyle='rgba(16,32,47,.22)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(X(KNN.q.x),Y(KNN.q.y));ctx.lineTo(X(p.x),Y(p.y));ctx.stroke();});
+  // points
+  KNN.pts.forEach(p=>{ctx.beginPath();ctx.arc(X(p.x),Y(p.y),5,0,Math.PI*2);ctx.fillStyle=p.c===0?BLUE:RED;ctx.globalAlpha=.85;ctx.fill();ctx.globalAlpha=1;ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.stroke();});
+  // query
+  const win=va>=vb?BLUE:RED;
+  ctx.beginPath();ctx.arc(X(KNN.q.x),Y(KNN.q.y),9,0,Math.PI*2);ctx.fillStyle=win;ctx.fill();ctx.strokeStyle='#10202f';ctx.lineWidth=2.5;ctx.stroke();
+  document.getElementById('mVA').textContent=va;document.getElementById('mVB').textContent=vb;
+  document.getElementById('knnMsg').innerHTML='<b>Verdict:</b> with k='+k+', the query has '+va+' Class A vs '+vb+' Class B neighbours → classified as <b style="color:'+(win)+'">Class '+(va>=vb?'A':'B')+'</b>. Move it across the gap or change k to flip the decision.';
+}
+KNN.cv.addEventListener('click',e=>{const r=KNN.cv.getBoundingClientRect();const pad=14,W=KNN.cv.clientWidth,H=KNN.cv.height;KNN.q.x=Math.max(0,Math.min(1,((e.clientX-r.left)-pad)/(W-2*pad)));KNN.q.y=Math.max(0,Math.min(1,1-((e.clientY-r.top)-pad)/(H-2*pad)));drawKNN();});
+document.getElementById('sK').addEventListener('input',()=>{document.getElementById('vK').textContent=document.getElementById('sK').value;drawKNN();});
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawKNN();ob.disconnect();}})},{threshold:.2}).observe(KNN.cv);
+
+/* ===== QUIZ ENGINE ===== */
+const QUIZ=[
+ {q:"Classification is an example of which kind of learning?",o:["Unsupervised","Supervised","Reinforcement","Semi-supervised only"],a:1,ex:"Classification uses labelled training data, so it is supervised learning."},
+ {q:"At a decision-tree node, the best split is the one that:",o:["Maximises impurity","Makes the children purest","Uses the most attributes","Creates the most branches"],a:1,ex:"The split chosen is the one that most reduces impurity (Gini/entropy), i.e. makes children purest."},
+ {q:"A node containing only one class has a Gini impurity of:",o:["1.0","0.5","0.0","Undefined"],a:2,ex:"A pure node has Gini = 0 and entropy = 0."},
+ {q:"Information gain is defined as:",o:["The entropy after a split","The reduction in entropy due to a split","The number of leaves","The tree depth"],a:1,ex:"Information gain = entropy(parent) − weighted entropy(children); the drop in impurity."},
+ {q:"KNN is described as a 'lazy learner' because it:",o:["Trains very slowly","Builds no model until a query arrives","Ignores most data","Always picks k=1"],a:1,ex:"KNN stores the data and does the work at prediction time, so it is a lazy/instance-based learner."},
+ {q:"In KNN, choosing a very small k tends to:",o:["Smooth the decision boundary","Be sensitive to noise/overfit","Ignore the nearest points","Guarantee best accuracy"],a:1,ex:"Small k follows local noise (high variance); large k smooths but can underfit."},
+ {q:"Naïve Bayes assumes that features are:",o:["Perfectly correlated","Conditionally independent given the class","Always continuous","Equally weighted by entropy"],a:1,ex:"The 'naïve' assumption is conditional independence of features given the class."},
+ {q:"Bayes' theorem chooses the class with the highest:",o:["Prior only","Likelihood only","Posterior probability","Information gain"],a:2,ex:"It picks argmax of the posterior P(class∣x) ∝ P(x∣class)P(class)."},
+ {q:"Which technique gives the most reliable accuracy estimate?",o:["Testing on the training set","A single holdout split","k-fold cross-validation","Guessing"],a:2,ex:"k-fold cross-validation averages over multiple train/test splits for a robust estimate."},
+ {q:"Random Forest is an example of which ensemble idea?",o:["Boosting","Bagging","Stacking only","Pruning"],a:1,ex:"Random Forest uses bagging — many de-correlated trees on bootstrapped samples, then a vote."},
+];
+let answered={},checked=false;const qhost=document.getElementById('qhost');
+function renderQuiz(){qhost.innerHTML='';QUIZ.forEach((item,qi)=>{
+  const d=document.createElement('div');d.className='qitem';
+  let opts='';item.o.forEach((o,oi)=>{opts+='<div class="opt" data-q="'+qi+'" data-o="'+oi+'"><span class="mk"></span><span>'+o+'</span></div>';});
+  d.innerHTML='<div class="qq"><span class="qn">Q'+(qi+1)+'.</span><span>'+item.q+'</span></div>'+opts+'<div class="ex" id="ex'+qi+'">'+item.ex+'</div>';
+  qhost.appendChild(d);});
+  qhost.querySelectorAll('.opt').forEach(op=>op.addEventListener('click',()=>{
+    if(checked)return;const qi=op.dataset.q;
+    qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(x=>x.classList.remove('sel'));
+    op.classList.add('sel');answered[qi]=+op.dataset.o;
+    document.getElementById('scorePill').textContent=Object.keys(answered).length+' / 10 answered';}));
+}
+document.getElementById('checkBtn').addEventListener('click',()=>{
+  if(checked)return;checked=true;let score=0;
+  QUIZ.forEach((item,qi)=>{const sel=answered[qi];document.getElementById('ex'+qi).classList.add('show');
+    qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(op=>{const oi=+op.dataset.o;
+      if(oi===item.a){op.classList.add('correct');op.querySelector('.mk').textContent='✓';}
+      if(oi===sel&&sel!==item.a){op.classList.add('wrong');op.querySelector('.mk').textContent='✗';}});
+    if(sel===item.a)score++;});
+  document.getElementById('scorePill').textContent=score+' / 10';
+  const r=document.getElementById('result');r.classList.add('show');r.classList.add(score>=6?'pass':'fail');
+  r.textContent=(score>=6?'Well done! ':'Keep revising — ')+'You scored '+score+' / 10'+(score>=6?'. Strong grasp of classification.':'. Review the trees, KNN and Bayes sections and try again.');
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{answered={};checked=false;document.getElementById('result').className='result';document.getElementById('scorePill').textContent='0 / 10';renderQuiz();});
+renderQuiz();
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawImp();drawKNN();},200);});
+</script>
+</body>
+</html>

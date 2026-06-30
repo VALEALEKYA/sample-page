@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment 5 — Regression Analysis with Residual Plots | DSA Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel:#15212c;   --steel-2:#1e3140;  --steel-3:#294355;
+    --cream:#f1efe8;   --cream-2:#fbf9f2;
+    --lime:#aed636;    --lime-d:#7a9a1f;
+    --sky:#4ea8de;     --sky-d:#2b7fb5;     /* regression line */
+    --orange:#f0743f;  --orange-d:#c4521f;  /* residuals */
+    --good:#3fcf8e;
+    --ink:#16222c;     --muted:#93b0bf;
+    --line:rgba(241,239,232,.14);
+    --code-bg:#101a23;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.78);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:radial-gradient(1100px 560px at 84% -10%, rgba(174,214,54,.10), transparent 60%),
+               radial-gradient(900px 520px at -8% 16%, rgba(78,168,222,.12), transparent 55%),var(--steel);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3,h4{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}
+  a{color:var(--lime)}
+  ::selection{background:var(--lime);color:var(--ink)}
+
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(21,33,44,.84);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--steel-3);position:relative;box-shadow:0 0 0 2px rgba(255,255,255,.08);overflow:hidden}
+  .logo::before{content:"";position:absolute;left:5px;right:5px;bottom:6px;top:6px;border-left:2px solid var(--muted);border-bottom:2px solid var(--muted)}
+  .logo::after{content:"";position:absolute;left:6px;bottom:7px;width:20px;height:2px;background:var(--sky);transform-origin:left;transform:rotate(-34deg)}
+  .brand b{font-family:'Archivo';font-weight:800;letter-spacing:.3px}
+  .brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}
+  .topnav a:hover{background:var(--steel-3);opacity:1}
+
+  .hero{padding:62px 0 34px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--lime);font-weight:700;border:1px solid var(--lime-d);border-radius:100px;padding:6px 14px;background:rgba(174,214,54,.06)}
+  .hero h1{font-size:clamp(38px,7vw,74px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}
+  .hero h1 .hl{color:var(--lime)}
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:#d4e2ea;max-width:700px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{font-size:12.5px;font-weight:600;background:var(--steel-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}
+  .chip b{color:var(--lime);font-family:'JetBrains Mono';font-weight:700}
+
+  .dash{margin-top:34px;background:linear-gradient(180deg,#0f1820,#15212c);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}
+  .d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--sky);font-family:'JetBrains Mono'}
+  .dot-live{width:9px;height:9px;border-radius:50%;background:var(--sky);animation:blink 1.3s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+  .d-cell{background:#0f1820;border:1px solid var(--line);border-radius:12px;padding:14px}
+  .d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--lime);letter-spacing:-1px}
+  .d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--lime);font-size:14px;letter-spacing:1px;border:1px solid var(--lime-d);border-radius:8px;padding:5px 10px;background:rgba(174,214,54,.08)}
+  .sec-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:800;letter-spacing:-.6px}
+
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+  .card h3{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .lab-meta{display:grid;grid-template-columns:160px 1fr;gap:0}
+  .lab-meta .k{font-weight:700;font-family:'Archivo';padding:12px 0;border-bottom:1px solid rgba(22,34,44,.10);color:var(--sky-d)}
+  .lab-meta .v{padding:12px 0;border-bottom:1px solid rgba(22,34,44,.10)}
+  @media(max-width:600px){.lab-meta{grid-template-columns:1fr}.lab-meta .v{padding-top:0}.lab-meta .k{border-bottom:0;padding-bottom:0}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:7px 0}
+
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--steel-2),var(--steel-3));color:var(--cream);flex-wrap:wrap}
+  .panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}
+  .panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+
+  .presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .presets button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(22,34,44,.2);padding:8px 14px;border-radius:9px;cursor:pointer;transition:.14s}
+  .presets button:hover{border-color:var(--lime-d)}
+  .presets button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .dual{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.dual{grid-template-columns:1fr}}
+  .plot{background:var(--cream-2);border:1px solid rgba(22,34,44,.1);border-radius:14px;padding:10px}
+  .plot .pt-title{font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);text-align:center;margin-bottom:4px}
+  .plot .pt-sub{font-size:11px;color:#5f7585;text-align:center;margin-bottom:6px}
+  canvas.chart{width:100%;display:block;cursor:crosshair}
+  canvas.noclick{cursor:default}
+
+  .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-top:16px}
+  .mc{background:var(--cream-2);border:1px solid rgba(22,34,44,.1);border-radius:12px;padding:12px 14px;border-top:4px solid var(--sky)}
+  .mc .ml{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#5f7585;font-weight:700;font-family:'Archivo'}
+  .mc .mn{font-family:'Archivo';font-weight:900;font-size:24px;color:var(--ink);margin-top:3px}
+  .mc.r2{border-top-color:var(--lime-d)}.mc.rmse{border-top-color:var(--orange)}.mc.slope{border-top-color:var(--sky)}.mc.intercept{border-top-color:var(--steel-3)}
+
+  .verdict{margin-top:14px;border-radius:12px;padding:14px 18px;font-family:'Archivo';font-weight:700;display:flex;align-items:center;gap:12px}
+  .verdict .vbadge{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:5px 11px;border-radius:8px;flex:none}
+  .verdict.good{background:rgba(63,207,142,.12);border:1px solid var(--good);color:#1c7a52}
+  .verdict.good .vbadge{background:var(--good);color:#07321f}
+  .verdict.bad{background:rgba(240,116,63,.12);border:1px solid var(--orange);color:var(--orange-d)}
+  .verdict.bad .vbadge{background:var(--orange);color:#3a1606}
+  .verdict .vtext{font-weight:500;font-family:'Inter';font-size:13.5px;color:var(--ink)}
+
+  /* pattern guide */
+  .pg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:680px){.pg-grid{grid-template-columns:1fr}}
+  .pgc{background:var(--cream);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .pgc .pgh{padding:11px 14px;color:#fff;font-family:'Archivo';font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  .pgc .pgd{background:var(--cream-2);padding:8px}
+  .pgc .pgt{padding:11px 14px;font-size:12.5px;color:#41525d}
+  .pg-good{background:var(--good)}.pg-curve{background:var(--orange-d)}.pg-funnel{background:var(--sky-d)}
+
+  /* videos */
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  .vid{background:var(--steel-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vid .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+  .vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid .vmeta{padding:13px 16px}
+  .vid .vmeta b{font-family:'Archivo';font-weight:700;font-size:14.5px;display:block}
+  .vid .vmeta span{font-size:12px;color:var(--muted)}
+  .vid .vmeta .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--lime);text-transform:uppercase;letter-spacing:.5px}
+
+  /* code */
+  .code-card{background:var(--code-bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .code-top{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#0c151c;border-bottom:1px solid var(--line)}
+  .tl{display:flex;gap:7px}.tl span{width:11px;height:11px;border-radius:50%}
+  .tl span:nth-child(1){background:#ff5f57}.tl span:nth-child(2){background:#febc2e}.tl span:nth-child(3){background:#28c840}
+  .code-top .fname{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);margin-left:6px}
+  .copy{margin-left:auto;font-family:'Inter';font-size:12px;font-weight:600;color:var(--cream);background:var(--steel-3);border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+  .copy:hover{background:var(--sky);border-color:var(--sky);color:#062536}
+  pre{margin:0;padding:18px 20px;overflow-x:auto}
+  code{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;color:#e3ebef}
+  .tok-kw{color:#7fd0ff;font-weight:600}.tok-fn{color:#9be05a}.tok-str{color:#f0a830}
+  .tok-num{color:#b6c2ff}.tok-com{color:#5f7585;font-style:italic}.tok-bi{color:#7fe0c8}
+
+  .timeline{position:relative;padding-left:28px}
+  .timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--lime),var(--sky))}
+  .step{position:relative;margin-bottom:18px}
+  .step::before{content:"";position:absolute;left:-23px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px var(--steel)}
+  .step b{font-family:'Archivo';color:var(--lime-d)}
+
+  .viva details{background:var(--cream);color:var(--ink);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 8px 22px -16px rgba(0,0,0,.6)}
+  .viva summary{cursor:pointer;list-style:none;padding:15px 20px;font-weight:600;font-family:'Archivo';display:flex;align-items:center;gap:12px}
+  .viva summary::-webkit-details-marker{display:none}
+  .viva summary::before{content:"Q";font-family:'JetBrains Mono';font-weight:700;color:#fff;background:var(--sky);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  .viva details[open] summary{background:var(--cream-2)}
+  .viva .ans{padding:0 20px 18px 56px;color:#41525d}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="logo" aria-hidden="true"></div>
+    <div class="brand"><b>DSA LAB</b><span>Data Science Applications</span></div>
+    <nav class="topnav">
+      <a href="#manual">Manual</a>
+      <a href="#residuals">Residuals</a>
+      <a href="#demo">Live demo</a>
+      <a href="#read">Read plots</a>
+      <a href="#videos">Videos</a>
+      <a href="#program">Program</a>
+      <a href="#viva">Viva</a>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="logo" style="width:16px;height:16px"></span>Experiment&nbsp;05 · CO3</span>
+    <h1>What the <span class="hl">Leftovers</span><br>Reveal</h1>
+    <p class="sub">Regression analysis and <b>residual plots</b>. Fit a line, then look at what's left over — the residuals. Their <i>pattern</i> tells you whether the model is right. Switch the data shape and watch the residual plot give the verdict.</p>
+    <div class="meta-row">
+      <div class="chip">Course&nbsp;<b>IT416</b></div>
+      <div class="chip">Outcome&nbsp;<b>CO3</b></div>
+      <div class="chip">Tools&nbsp;<b>OLS · residuals</b></div>
+      <div class="chip">Metrics&nbsp;<b>R² · RMSE</b></div>
+    </div>
+    <div class="dash reveal">
+      <div class="d-top"><h3>Diagnostics at a glance</h3><div class="live"><span class="dot-live"></span>LIVE FIT</div></div>
+      <div class="d-grid">
+        <div class="d-cell"><div class="n" data-count="4">0</div><div class="l">Data shapes</div></div>
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Linked plots</div></div>
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Key metrics</div></div>
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Concept videos</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- LAB MANUAL -->
+<section id="manual">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Lab Manual</h2></div>
+    <div class="card">
+      <div class="lab-meta">
+        <div class="k">Aim</div>
+        <div class="v">To write a program that performs regression analysis on a given dataset and demonstrates residual plots, using them to judge how well the regression model fits.</div>
+        <div class="k">Objectives</div>
+        <div class="v"><ul class="clean">
+          <li>Fit a linear regression model (ordinary least squares) to data.</li>
+          <li>Compute residuals — the differences between observed and predicted values.</li>
+          <li>Draw a residual plot (residual vs fitted value) and interpret its shape.</li>
+          <li>Evaluate the fit with R² and RMSE, and check the regression assumptions.</li>
+        </ul></div>
+        <div class="k">Software</div>
+        <div class="v">Python 3.x · Jupyter / Colab · NumPy, Pandas, Matplotlib / Seaborn, scikit-learn (or statsmodels).</div>
+        <div class="k">Theory</div>
+        <div class="v">A regression line predicts ŷ for each x. The <b>residual</b> is e = y − ŷ. If the model is appropriate, residuals should scatter <i>randomly</i> around zero with constant spread. Systematic patterns reveal problems: a curve means the relationship isn't linear; a funnel means the variance isn't constant (heteroscedasticity); a lone far-off point is an outlier.</div>
+        <div class="k">Outcome</div>
+        <div class="v">CO3 — building a regression model and evaluating it with diagnostic plots.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESIDUALS EXPLAINER -->
+<section id="residuals">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">02</span><h2>What Is a Residual?</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:6px">Observed − Predicted</h3>
+        <p style="color:#41525d;margin-top:0">For every point, the model predicts a value on the line. The vertical gap between the real point and the line is the residual.</p>
+        <div style="background:var(--cream-2);border-radius:10px;padding:14px;font-family:'JetBrains Mono';font-size:14px;color:var(--ink);border:1px solid rgba(22,34,44,.1);text-align:center">
+          residual&nbsp;e<sub>i</sub> = y<sub>i</sub> − ŷ<sub>i</sub>
+        </div>
+        <p style="color:#41525d;font-size:13.5px">Least squares finds the line that makes the <b>sum of squared residuals</b> as small as possible.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:6px">Why plot them?</h3>
+        <p style="color:#41525d;margin-top:0">The scatter plot shows <i>how good</i> the fit is. The <b>residual plot</b> shows <i>what's wrong</i> with it. A healthy residual plot is a shapeless cloud centred on zero. Any structure is the data telling you the model is missing something.</p>
+        <div style="background:var(--cream-2);border-radius:10px;padding:12px 14px;font-size:13px;color:#41525d;border:1px solid rgba(22,34,44,.1)">
+          R² = fraction of variation explained · RMSE = typical prediction error (same units as y)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE DEMO -->
+<section id="demo">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">03</span><h2>Fit &amp; Diagnose, Live</h2></div>
+    <p class="reveal" style="max-width:760px;color:#d4e2ea;margin-top:-12px">Pick a data shape. The left plot fits the regression line (sky blue) and draws each residual (orange). The right plot is the residual plot. <b>Tap the left plot</b> to add your own point and watch both update. Read the diagnosis at the bottom.</p>
+
+    <div class="panel reveal">
+      <div class="ph"><b>Regression &amp; residual plot</b><span class="hint">tap left plot to add a point</span></div>
+      <div class="pbody">
+        <div class="presets">
+          <button data-preset="linear" class="on">Linear (good fit)</button>
+          <button data-preset="curved">Curved relationship</button>
+          <button data-preset="funnel">Funnel (unequal variance)</button>
+          <button data-preset="outlier">With an outlier</button>
+          <button data-preset="reset" style="margin-left:auto">↺ Reset shape</button>
+        </div>
+        <div class="dual">
+          <div class="plot">
+            <div class="pt-title">Regression fit</div><div class="pt-sub">data + line + residuals</div>
+            <canvas class="chart" id="fitCanvas" height="240"></canvas>
+          </div>
+          <div class="plot">
+            <div class="pt-title">Residual plot</div><div class="pt-sub">residual vs fitted value</div>
+            <canvas class="chart noclick" id="residCanvas" height="240"></canvas>
+          </div>
+        </div>
+        <div class="metrics">
+          <div class="mc slope"><div class="ml">Slope</div><div class="mn" id="mSlope">—</div></div>
+          <div class="mc intercept"><div class="ml">Intercept</div><div class="mn" id="mInt">—</div></div>
+          <div class="mc r2"><div class="ml">R²</div><div class="mn" id="mR2">—</div></div>
+          <div class="mc rmse"><div class="ml">RMSE</div><div class="mn" id="mRmse">—</div></div>
+        </div>
+        <div class="verdict good" id="verdict"><span class="vbadge" id="vBadge">—</span><span class="vtext" id="vText">—</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO READ -->
+<section id="read">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">03a</span><h2>How to Read a Residual Plot</h2></div>
+    <p style="max-width:720px;color:#d4e2ea;margin-top:-12px">Three shapes to recognise. Only the first one means "all good".</p>
+    <div class="pg-grid">
+      <div class="pgc">
+        <div class="pgh pg-good">✓ Random cloud</div>
+        <div class="pgd"><canvas class="chart noclick" data-pat="good" height="120"></canvas></div>
+        <div class="pgt"><b>Good.</b> Points scatter evenly above and below zero with no pattern — the linear model fits well.</div>
+      </div>
+      <div class="pgc">
+        <div class="pgh pg-curve">⌣ Curve / U-shape</div>
+        <div class="pgd"><canvas class="chart noclick" data-pat="curve" height="120"></canvas></div>
+        <div class="pgt"><b>Wrong shape.</b> A smile or frown means the true relationship is non-linear — try a polynomial or transform.</div>
+      </div>
+      <div class="pgc">
+        <div class="pgh pg-funnel">◁ Funnel / fan</div>
+        <div class="pgd"><canvas class="chart noclick" data-pat="funnel" height="120"></canvas></div>
+        <div class="pgt"><b>Unequal variance.</b> Spread grows with the fitted value (heteroscedasticity) — consider a log transform or weighted regression.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Watch the Concepts</h2></div>
+    <p style="max-width:760px;color:#d4e2ea;margin-top:-12px">Two clear explainers from <b>StatQuest with Josh Starmer</b> covering least-squares fitting, residuals and R² — the foundations of this experiment.</p>
+    <div class="vid-grid">
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/PaFPbb66DxQ" title="The Main Ideas of Fitting a Line to Data (Least Squares)" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest</span><b>Fitting a Line to Data (Least Squares)</b><span>How residuals are measured and minimised to fit the best line.</span></div>
+      </div>
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/nk2CQITm_eo" title="Linear Regression, Clearly Explained" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest</span><b>Linear Regression, Clearly Explained</b><span>Least squares, residuals and how R² measures the quality of a fit.</span></div>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:12.5px;margin-top:14px">Videos are embedded from YouTube and belong to their creators. If a frame is blank, your network may block YouTube — search the titles on youtube.com.</p>
+  </div>
+</section>
+
+<!-- PROGRAM -->
+<section id="program">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">05</span><h2>The Program</h2></div>
+    <p style="max-width:720px;color:#d4e2ea;margin-top:-12px">Fit the model, then produce the residual plot and the metrics. Swap in any CSV with one predictor and one target.</p>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">1 — fit_regression.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> numpy <span class="tok-kw">as</span> np
+<span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+<span class="tok-kw">import</span> matplotlib.pyplot <span class="tok-kw">as</span> plt
+<span class="tok-kw">from</span> sklearn.linear_model <span class="tok-kw">import</span> LinearRegression
+<span class="tok-kw">from</span> sklearn.metrics <span class="tok-kw">import</span> r2_score, mean_squared_error
+
+df = pd.<span class="tok-fn">read_csv</span>(<span class="tok-str">"data.csv"</span>)        <span class="tok-com"># columns: x, y</span>
+X = df[[<span class="tok-str">"x"</span>]].values
+y = df[<span class="tok-str">"y"</span>].values
+
+model = <span class="tok-fn">LinearRegression</span>().<span class="tok-fn">fit</span>(X, y)
+y_pred = model.<span class="tok-fn">predict</span>(X)
+residuals = y - y_pred
+
+<span class="tok-bi">print</span>(<span class="tok-str">"slope:"</span>, model.coef_[<span class="tok-num">0</span>], <span class="tok-str">"intercept:"</span>, model.intercept_)
+<span class="tok-bi">print</span>(<span class="tok-str">"R2  :"</span>, <span class="tok-fn">r2_score</span>(y, y_pred))
+<span class="tok-bi">print</span>(<span class="tok-str">"RMSE:"</span>, np.<span class="tok-fn">sqrt</span>(<span class="tok-fn">mean_squared_error</span>(y, y_pred)))</code></pre>
+    </div>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">2 — residual_plot.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-com"># Residual plot: residual vs fitted value</span>
+plt.<span class="tok-fn">figure</span>(figsize=(<span class="tok-num">6</span>,<span class="tok-num">4</span>))
+plt.<span class="tok-fn">scatter</span>(y_pred, residuals, color=<span class="tok-str">"#f0743f"</span>, edgecolor=<span class="tok-str">"k"</span>, alpha=<span class="tok-num">0.7</span>)
+plt.<span class="tok-fn">axhline</span>(<span class="tok-num">0</span>, color=<span class="tok-str">"#2b7fb5"</span>, linestyle=<span class="tok-str">"--"</span>)   <span class="tok-com"># the zero line</span>
+plt.<span class="tok-fn">xlabel</span>(<span class="tok-str">"Fitted value (ŷ)"</span>); plt.<span class="tok-fn">ylabel</span>(<span class="tok-str">"Residual"</span>)
+plt.<span class="tok-fn">title</span>(<span class="tok-str">"Residual Plot"</span>); plt.<span class="tok-fn">tight_layout</span>(); plt.<span class="tok-fn">show</span>()
+
+<span class="tok-com"># Quick one-liner with seaborn:</span>
+<span class="tok-com"># import seaborn as sns; sns.residplot(x=y_pred, y=y)</span></code></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">3 — full_diagnostics.py (statsmodels)</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> statsmodels.api <span class="tok-kw">as</span> sm
+
+Xc = sm.<span class="tok-fn">add_constant</span>(X)          <span class="tok-com"># add intercept term</span>
+ols = sm.<span class="tok-fn">OLS</span>(y, Xc).<span class="tok-fn">fit</span>()
+<span class="tok-bi">print</span>(ols.<span class="tok-fn">summary</span>())             <span class="tok-com"># R2, coefficients, p-values</span>
+
+<span class="tok-com"># residuals vs fitted, with a Q-Q plot for normality</span>
+sm.qqplot(ols.resid, line=<span class="tok-str">"s"</span>); plt.<span class="tok-fn">show</span>()</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- PROCEDURE & RESULT -->
+<section id="procedure">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Procedure &amp; Result</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:14px">Steps followed</h3>
+        <div class="timeline">
+          <div class="step"><b>1 · Load</b><br>Read the dataset (x, y) from CSV.</div>
+          <div class="step"><b>2 · Fit</b><br>Fit a least-squares regression line.</div>
+          <div class="step"><b>3 · Predict</b><br>Compute fitted values ŷ.</div>
+          <div class="step"><b>4 · Residuals</b><br>e = y − ŷ for every point.</div>
+          <div class="step"><b>5 · Plot</b><br>Scatter residuals vs fitted; add zero line.</div>
+          <div class="step"><b>6 · Interpret</b><br>Read the pattern; report R² and RMSE.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:14px">Result</h3>
+        <p style="color:#41525d;margin-top:0">A regression model was fitted to the dataset and its residual plot was produced. The model quality was reported using R² and RMSE, and the residual plot was used to check the regression assumptions, demonstrating CO3.</p>
+        <div class="verdict good" style="margin-top:8px"><span class="vbadge">Conclusion</span><span class="vtext">A high R² alone doesn't prove a good model — the residual plot is the real test. Random, evenly-spread residuals around zero confirm the linear fit; curves, funnels or far-off points warn that the model needs a different shape, a transform, or a closer look at outliers.</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIVA -->
+<section id="viva" class="viva">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Viva Questions</h2></div>
+    <details><summary>What is a residual?</summary>
+      <div class="ans">A residual is the difference between an observed value and the value predicted by the model: e = y − ŷ. It measures the error left over for each data point after fitting.</div></details>
+    <details><summary>What does a good residual plot look like?</summary>
+      <div class="ans">Points scattered randomly around the horizontal zero line with roughly constant spread and no visible pattern. That indicates the linear model is appropriate.</div></details>
+    <details><summary>What does a curved pattern in the residual plot indicate?</summary>
+      <div class="ans">That the true relationship is non-linear, so a straight line is the wrong model. A polynomial term or a transformation of the variables is usually needed.</div></details>
+    <details><summary>What is heteroscedasticity and how does the residual plot show it?</summary>
+      <div class="ans">Heteroscedasticity is non-constant variance of the errors. In the residual plot it appears as a funnel/fan shape where the spread grows (or shrinks) with the fitted value. A log transform or weighted least squares can help.</div></details>
+    <details><summary>Difference between R² and RMSE?</summary>
+      <div class="ans">R² is the proportion of variance in y explained by the model (0–1, unitless). RMSE is the typical size of the prediction error in the original units of y. R² judges relative fit; RMSE judges absolute error.</div></details>
+    <details><summary>What is the least-squares method?</summary>
+      <div class="ans">It chooses the line that minimises the sum of squared residuals, Σ(yᵢ − ŷᵢ)², giving the unique slope and intercept that best fit the data in that sense.</div></details>
+    <details><summary>What are the key assumptions of linear regression?</summary>
+      <div class="ans">Linearity, independence of errors, constant error variance (homoscedasticity), and approximately normal residuals. Residual and Q-Q plots are used to check them.</div></details>
+    <details><summary>How do outliers affect a regression line?</summary>
+      <div class="ans">An outlier (especially with extreme x) can pull the line toward itself, inflating error and distorting slope and intercept. It shows up as a single far-from-zero point in the residual plot.</div></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    DSA Lab · Experiment 05 · Regression Analysis with Residual Plots — Course IT416 (R23) · CO3<br>
+    <span style="opacity:.7">The live demo fits ordinary least squares in your browser on generated sample data; the diagnosis reads the actual residual pattern. Use the program above on your own CSV.</span>
+  </div>
+</footer>
+
+<script>
+/* reveal + count-up */
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+
+/* canvas helpers */
+const REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const C={ink:'#16222c',lime:'#aed636',limeD:'#7a9a1f',sky:'#4ea8de',skyD:'#2b7fb5',orange:'#f0743f',orangeD:'#c4521f',good:'#3fcf8e',grid:'rgba(22,34,44,.12)',mut:'#5f7585'};
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+const easeOut=t=>1-Math.pow(1-t,3);
+
+/* PRNG + data generation */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(rng){let u=0,v=0;while(!u)u=rng();while(!v)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function genData(preset){
+  const seeds={linear:11,curved:22,funnel:33,outlier:44};
+  const rng=mulberry32(seeds[preset]||11), n=24, pts=[];
+  for(let i=0;i<n;i++){const x=0.3+9.4*i/(n-1);let y;
+    if(preset==='curved')y=1+0.25*x+0.16*x*x+gauss(rng)*1.0;
+    else if(preset==='funnel')y=2+1.1*x+gauss(rng)*(0.3+0.5*x);
+    else y=2+1.1*x+gauss(rng)*1.1;
+    pts.push([x,y]);}
+  if(preset==='outlier')pts[5][1]+=11;
+  return pts;
+}
+
+/* OLS + diagnostics */
+function ols(pts){const n=pts.length;const mx=pts.reduce((s,p)=>s+p[0],0)/n,my=pts.reduce((s,p)=>s+p[1],0)/n;
+  let sxy=0,sxx=0;pts.forEach(p=>{sxy+=(p[0]-mx)*(p[1]-my);sxx+=(p[0]-mx)**2;});
+  const slope=sxx?sxy/sxx:0,intercept=my-slope*mx;
+  const res=pts.map(p=>p[1]-(intercept+slope*p[0]));
+  const ssr=res.reduce((s,r)=>s+r*r,0),sst=pts.reduce((s,p)=>s+(p[1]-my)**2,0);
+  return {slope,intercept,res,r2:sst?1-ssr/sst:0,rmse:Math.sqrt(ssr/n),my};}
+function diagnose(pts,f){
+  const n=pts.length, idx=[...pts.keys()].sort((a,b)=>pts[a][0]-pts[b][0]);
+  const res=idx.map(i=>f.res[i]); const t=Math.floor(n/3);
+  const mean=a=>a.reduce((s,v)=>s+v,0)/(a.length||1);
+  const std=a=>{const m=mean(a);return Math.sqrt(a.reduce((s,v)=>s+(v-m)**2,0)/(a.length||1));};
+  const m1=mean(res.slice(0,t)),m2=mean(res.slice(t,2*t)),m3=mean(res.slice(2*t));
+  const lo=std(res.slice(0,Math.floor(n/2))),hi=std(res.slice(Math.floor(n/2)));
+  const maxAbs=Math.max(...f.res.map(Math.abs));
+  const rmse=f.rmse||1e-9;
+  const outlier=maxAbs/rmse>2.9;
+  const funnel=(hi/(lo||1e-9))>1.9||(lo/(hi||1e-9))>1.9;
+  const curve=((m1>0&&m3>0&&m2<0)||(m1<0&&m3<0&&m2>0))&&Math.abs(m2)>0.45*rmse;
+  if(outlier)return{k:'bad',badge:'Outlier',txt:'One point sits far from zero in the residual plot — an outlier is pulling the line and inflating the error. Investigate or consider a robust method.'};
+  if(funnel)return{k:'bad',badge:'Funnel',txt:'The residual spread grows with the fitted value (heteroscedasticity). The line\'s slope is fine, but errors are not equal — try a log transform or weighted regression.'};
+  if(curve)return{k:'bad',badge:'Curved',txt:'The residuals bend in a U/arch — a straight line is the wrong shape for a curved relationship. Add a polynomial term or transform a variable.'};
+  return{k:'good',badge:'Good fit',txt:'Residuals scatter randomly around zero with even spread — the linear model is appropriate. This is what a healthy residual plot looks like.'};
+}
+
+/* domains for the fit plot (fixed for stable tapping) */
+const XD=[0,10], YD=[-3,23];
+const FIT={cv:document.getElementById('fitCanvas')};
+const RES={cv:document.getElementById('residCanvas')};
+let DATA=genData('linear');
+
+function fitPx(W,H){const padL=30,padR=12,padT=12,padB=24;
+  return {x:v=>padL+(W-padL-padR)*(v-XD[0])/(XD[1]-XD[0]),
+          y:v=>padT+(H-padT-padB)*(1-(v-YD[0])/(YD[1]-YD[0])),
+          inv:px=>XD[0]+(px-padL)/(W-padL-padR)*(XD[1]-XD[0]),
+          invY:py=>YD[0]+(1-(py-padT)/(H-padT-padB))*(YD[1]-YD[0]),padL,padR,padT,padB};}
+
+function drawAll(animateIt=true){
+  const f=ols(DATA);
+  // metrics
+  document.getElementById('mSlope').textContent=f.slope.toFixed(2);
+  document.getElementById('mInt').textContent=f.intercept.toFixed(2);
+  document.getElementById('mR2').textContent=f.r2.toFixed(3);
+  document.getElementById('mRmse').textContent=f.rmse.toFixed(2);
+  // verdict
+  const d=diagnose(DATA,f);
+  const v=document.getElementById('verdict');v.className='verdict '+d.k;
+  document.getElementById('vBadge').textContent=d.badge;
+  document.getElementById('vText').textContent=d.txt;
+  // animate
+  const t0=performance.now(),dur=700;
+  function frame(now){const p=REDUCE||!animateIt?1:easeOut(Math.min(1,(now-t0)/dur));
+    drawFit(f,p);drawResid(f,p);if(p<1)requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+}
+function drawFit(f,p){
+  const {ctx,W,H}=setup(FIT.cv);const m=fitPx(W,H);
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle=C.grid;ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=m.padT+(H-m.padT-m.padB)*i/4;ctx.beginPath();ctx.moveTo(m.padL,y);ctx.lineTo(W-m.padR,y);ctx.stroke();}
+  for(let gx=0;gx<=10;gx+=2){ctx.beginPath();ctx.moveTo(m.x(gx),m.padT);ctx.lineTo(m.x(gx),H-m.padB);ctx.stroke();
+    ctx.fillStyle=C.mut;ctx.font='9px JetBrains Mono';ctx.textAlign='center';ctx.fillText(gx,m.x(gx),H-m.padB+13);}
+  // regression line
+  ctx.strokeStyle=C.sky;ctx.lineWidth=2.6;ctx.beginPath();
+  ctx.moveTo(m.x(0),m.y(f.intercept));ctx.lineTo(m.x(10),m.y(f.intercept+f.slope*10));
+  ctx.save();ctx.beginPath();ctx.rect(m.padL,m.padT,W-m.padL-m.padR,H-m.padT-m.padB);ctx.clip();ctx.stroke();ctx.restore();
+  // residual segments + points
+  DATA.forEach((pt,i)=>{
+    const px=m.x(pt[0]), py=m.y(pt[1]), lineY=m.y(f.intercept+f.slope*pt[0]);
+    const ey=lineY+(py-lineY)*p;
+    ctx.strokeStyle='rgba(240,116,63,.75)';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(px,lineY);ctx.lineTo(px,ey);ctx.stroke();
+    ctx.beginPath();ctx.arc(px,py,4.5,0,Math.PI*2);ctx.fillStyle=C.sky;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.3;ctx.stroke();
+  });
+  ctx.fillStyle=C.skyD;ctx.font='10px Inter';ctx.textAlign='left';ctx.fillText('— fit',m.padL+2,m.padT+4);
+  ctx.fillStyle=C.orangeD;ctx.fillText('| residual',m.padL+38,m.padT+4);
+}
+function drawResid(f,p){
+  const {ctx,W,H}=setup(RES.cv);const padL=30,padR=12,padT=14,padB=24;
+  ctx.clearRect(0,0,W,H);
+  const fitted=DATA.map(pt=>f.intercept+f.slope*pt[0]);
+  const fMin=Math.min(...fitted),fMax=Math.max(...fitted);
+  const maxR=Math.max(0.5,Math.max(...f.res.map(Math.abs))*1.15);
+  const X=v=>padL+(W-padL-padR)*((v-fMin)/((fMax-fMin)||1));
+  const Y=v=>padT+(H-padT-padB)*(1-(v+maxR)/(2*maxR));
+  // band ±rmse
+  ctx.fillStyle='rgba(78,168,222,.08)';ctx.fillRect(padL,Y(f.rmse),W-padL-padR,Y(-f.rmse)-Y(f.rmse));
+  // grid
+  ctx.strokeStyle=C.grid;ctx.lineWidth=1;for(let i=0;i<=4;i++){const y=padT+(H-padT-padB)*i/4;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();}
+  // zero line
+  ctx.strokeStyle=C.skyD;ctx.lineWidth=2;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(W-padR,Y(0));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=C.skyD;ctx.font='9px Inter';ctx.textAlign='left';ctx.fillText('0',W-padR-8,Y(0)-3);
+  // points
+  DATA.forEach((pt,i)=>{const r=f.res[i]*p;
+    ctx.beginPath();ctx.arc(X(fitted[i]),Y(r),4.2,0,Math.PI*2);
+    ctx.fillStyle='rgba(240,116,63,.85)';ctx.fill();ctx.strokeStyle=C.orangeD;ctx.lineWidth=1;ctx.stroke();});
+  ctx.fillStyle=C.mut;ctx.font='9px Inter';ctx.textAlign='center';ctx.fillText('fitted value →',W/2,H-5);
+}
+
+/* tap to add point on fit canvas */
+FIT.cv.addEventListener('click',e=>{
+  const rect=FIT.cv.getBoundingClientRect();const W=FIT.cv.clientWidth,H=FIT.cv.height;
+  const m=fitPx(W,H);let x=m.inv(e.clientX-rect.left),y=m.invY(e.clientY-rect.top);
+  x=Math.max(XD[0],Math.min(XD[1],x));y=Math.max(YD[0],Math.min(YD[1],y));
+  DATA.push([x,y]);drawAll();
+});
+
+/* presets */
+let currentPreset='linear';
+document.querySelectorAll('.presets button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const p=b.dataset.preset;
+    if(p==='reset'){DATA=genData(currentPreset);drawAll();return;}
+    currentPreset=p;DATA=genData(p);
+    document.querySelectorAll('.presets button').forEach(x=>{if(x.dataset.preset!=='reset')x.classList.remove('on');});
+    b.classList.add('on');drawAll();
+  });
+});
+
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawAll();ob.disconnect();}})},{threshold:.25}).observe(FIT.cv);
+
+/* pattern guide mini canvases */
+function patternCanvas(cv,kind){
+  const {ctx,W,H}=setup(cv);const padT=10,padB=14,padL=12,padR=10;
+  const rng=mulberry32(kind==='good'?7:kind==='curve'?17:27);
+  const n=22, pts=[];
+  for(let i=0;i<n;i++){const fx=i/(n-1);let r;
+    if(kind==='good')r=gauss(rng)*0.5;
+    else if(kind==='curve')r=1.1*(Math.pow((fx-0.5)*2,2)-0.45)+gauss(rng)*0.18;
+    else r=gauss(rng)*(0.12+fx*1.1);
+    pts.push([fx,r]);}
+  const maxR=Math.max(...pts.map(p=>Math.abs(p[1])))*1.2||1;
+  const X=v=>padL+(W-padL-padR)*v;const Y=v=>padT+(H-padT-padB)*(1-(v+maxR)/(2*maxR));
+  const col=kind==='good'?C.good:kind==='curve'?C.orange:C.sky;
+  const t0=performance.now();
+  function frame(now){const p=REDUCE?1:easeOut(Math.min(1,(now-t0)/900));
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle=C.skyD;ctx.lineWidth=1.6;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(W-padR,Y(0));ctx.stroke();ctx.setLineDash([]);
+    pts.forEach((pt,i)=>{const dp=Math.max(0,Math.min(1,p*n-i));if(dp<=0)return;
+      ctx.beginPath();ctx.arc(X(pt[0]),Y(pt[1]*p),3.4,0,Math.PI*2);
+      ctx.fillStyle=col;ctx.globalAlpha=.85;ctx.fill();ctx.globalAlpha=1;});
+    if(p<1)requestAnimationFrame(frame);}
+  requestAnimationFrame(frame);
+}
+const patObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){patternCanvas(e.target,e.target.dataset.pat);patObs.unobserve(e.target);}})},{threshold:.4});
+document.querySelectorAll('canvas[data-pat]').forEach(c=>patObs.observe(c));
+
+/* copy + resize */
+document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const pre=b.closest('.code-card').querySelector('pre');const t=pre?pre.innerText:'';navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,1300);});});});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{drawAll(false);document.querySelectorAll('canvas[data-pat]').forEach(c=>patternCanvas(c,c.dataset.pat));},220);});
+</script>
+</body>
+</html>

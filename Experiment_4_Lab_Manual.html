@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment 4 — Naive Bayes Classifier | DSA Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine:#2a1419;      /* deep wine bg */
+    --wine-2:#3a1c24;
+    --wine-3:#4c2632;
+    --cream:#f4eee6;
+    --cream-2:#fbf7f0;
+    --gold:#e3b23c;      /* honey accent */
+    --gold-d:#b6841f;
+    --yes:#2bb6a3;       /* class: Play / Yes */
+    --yes-d:#1c8576;
+    --no:#e2607a;        /* class: Don't Play / No */
+    --no-d:#b23a54;
+    --ink:#261319;
+    --muted:#c6a3ad;
+    --line:rgba(244,238,230,.14);
+    --code-bg:#1f1016;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.78);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:radial-gradient(1100px 560px at 84% -10%, rgba(227,178,60,.10), transparent 60%),
+               radial-gradient(900px 520px at -8% 16%, rgba(43,182,163,.10), transparent 55%),var(--wine);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3,h4{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}
+  a{color:var(--gold)}
+  ::selection{background:var(--gold);color:var(--ink)}
+
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(42,20,25,.84);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:linear-gradient(135deg,var(--yes),var(--no));position:relative;box-shadow:0 0 0 2px rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-family:'Archivo';font-weight:900;color:#fff;font-size:15px}
+  .brand b{font-family:'Archivo';font-weight:800;letter-spacing:.3px}
+  .brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}
+  .topnav a:hover{background:var(--wine-3);opacity:1}
+
+  .hero{padding:62px 0 34px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;border:1px solid var(--gold-d);border-radius:100px;padding:6px 14px;background:rgba(227,178,60,.06)}
+  .hero h1{font-size:clamp(38px,7vw,74px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}
+  .hero h1 .hl{color:var(--gold)}
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:#ecd9df;max-width:700px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{font-size:12.5px;font-weight:600;background:var(--wine-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}
+  .chip b{color:var(--gold);font-family:'JetBrains Mono';font-weight:700}
+
+  .dash{margin-top:34px;background:linear-gradient(180deg,#220f14,#2a1419);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}
+  .d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--yes);font-family:'JetBrains Mono'}
+  .dot-live{width:9px;height:9px;border-radius:50%;background:var(--yes);animation:blink 1.3s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+  .d-cell{background:#220f14;border:1px solid var(--line);border-radius:12px;padding:14px}
+  .d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--gold);letter-spacing:-1px}
+  .d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--gold);font-size:14px;letter-spacing:1px;border:1px solid var(--gold-d);border-radius:8px;padding:5px 10px;background:rgba(227,178,60,.08)}
+  .sec-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:800;letter-spacing:-.6px}
+
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+  .card h3{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .lab-meta{display:grid;grid-template-columns:160px 1fr;gap:0}
+  .lab-meta .k{font-weight:700;font-family:'Archivo';padding:12px 0;border-bottom:1px solid rgba(38,19,25,.10);color:var(--no-d)}
+  .lab-meta .v{padding:12px 0;border-bottom:1px solid rgba(38,19,25,.10)}
+  @media(max-width:600px){.lab-meta{grid-template-columns:1fr}.lab-meta .v{padding-top:0}.lab-meta .k{border-bottom:0;padding-bottom:0}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:7px 0}
+
+  /* bayes formula */
+  .formula-box{background:var(--cream);color:var(--ink);border-radius:16px;padding:24px 26px;box-shadow:var(--shadow)}
+  .bayes{font-family:'JetBrains Mono';font-size:clamp(15px,2.6vw,22px);text-align:center;margin:6px 0 16px;line-height:2}
+  .bayes .post{color:var(--no-d);font-weight:700}
+  .bayes .like{color:var(--yes-d);font-weight:700}
+  .bayes .prior{color:var(--gold-d);font-weight:700}
+  .legend-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .lm{background:var(--cream-2);border:1px solid rgba(38,19,25,.1);border-radius:10px;padding:12px 14px;font-size:13.5px;color:#4a3138}
+  .lm b{font-family:'Archivo';display:block;margin-bottom:2px}
+  .lm.post b{color:var(--no-d)}.lm.like b{color:var(--yes-d)}.lm.prior b{color:var(--gold-d)}
+
+  /* training data table */
+  .tbl{width:100%;border-collapse:collapse;font-size:13px;color:var(--ink);background:var(--cream);border-radius:12px;overflow:hidden}
+  .tbl th{background:var(--wine-2);color:var(--cream);font-family:'Archivo';font-weight:600;padding:9px 10px;text-align:left;font-size:12px;letter-spacing:.3px}
+  .tbl td{padding:7px 10px;border-bottom:1px solid rgba(38,19,25,.08)}
+  .tbl tr.yes td:last-child{color:var(--yes-d);font-weight:700}
+  .tbl tr.no td:last-child{color:var(--no-d);font-weight:700}
+  .tbl tr.yes{background:rgba(43,182,163,.06)}
+  .tbl tr.no{background:rgba(226,96,122,.06)}
+  .tbl-wrap{overflow-x:auto;border-radius:12px;box-shadow:var(--shadow)}
+
+  /* classifier panel */
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--wine-2),var(--wine-3));color:var(--cream);flex-wrap:wrap}
+  .panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}
+  .panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:20px 22px 22px}
+
+  .sel-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  .sel-row .lbl{font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);min-width:96px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(38,19,25,.2);padding:7px 13px;border-radius:8px;cursor:pointer;transition:.14s}
+  .seg button:hover{border-color:var(--gold-d)}
+  .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .compute{margin-top:18px;background:var(--cream-2);border:1px solid rgba(38,19,25,.1);border-radius:14px;padding:16px 18px}
+  .crow{margin:12px 0}
+  .crow .ct{font-family:'Archivo';font-weight:700;font-size:12.5px;color:#5a3f47;text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+  .pair{display:grid;grid-template-columns:90px 1fr 56px;gap:10px;align-items:center;margin:5px 0;font-size:13px}
+  .pair .nm{color:#4a3138;font-weight:600}
+  .track{background:rgba(38,19,25,.08);border-radius:6px;height:18px;overflow:hidden}
+  .barfill{height:100%;border-radius:6px;transition:width .6s cubic-bezier(.2,.7,.2,1);width:0}
+  .barfill.y{background:var(--yes)}.barfill.n{background:var(--no)}
+  .pair .vv{font-family:'JetBrains Mono';font-size:12px;text-align:right;color:#4a3138}
+
+  .result{margin-top:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .splitbar{flex:1;min-width:200px;height:38px;border-radius:10px;overflow:hidden;display:flex;border:1px solid rgba(38,19,25,.15)}
+  .splitbar .sy{background:var(--yes);transition:width .7s cubic-bezier(.2,.7,.2,1);display:flex;align-items:center;justify-content:center;color:#06302b;font-weight:800;font-family:'Archivo';font-size:13px}
+  .splitbar .sn{background:var(--no);transition:width .7s cubic-bezier(.2,.7,.2,1);display:flex;align-items:center;justify-content:center;color:#3a0d18;font-weight:800;font-family:'Archivo';font-size:13px}
+  .verdict{font-family:'Archivo';font-weight:900;font-size:18px;padding:12px 18px;border-radius:12px;white-space:nowrap}
+  .verdict.play{background:rgba(43,182,163,.16);color:var(--yes-d);border:1px solid var(--yes)}
+  .verdict.stay{background:rgba(226,96,122,.16);color:var(--no-d);border:1px solid var(--no)}
+
+  /* test runner */
+  .test-tbl{width:100%;border-collapse:collapse;font-size:13px;color:var(--ink);background:var(--cream);border-radius:12px;overflow:hidden}
+  .test-tbl th{background:var(--wine-2);color:var(--cream);padding:9px 10px;text-align:left;font-family:'Archivo';font-weight:600;font-size:12px}
+  .test-tbl td{padding:8px 10px;border-bottom:1px solid rgba(38,19,25,.08);font-family:'JetBrains Mono';font-size:12px}
+  .test-tbl .pred{font-weight:700}
+  .mark{font-weight:800}.mark.ok{color:var(--yes-d)}.mark.bad{color:var(--no-d)}
+  .acc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+  @media(max-width:640px){.acc-wrap{grid-template-columns:1fr}}
+  .acc-card{background:var(--cream-2);border:1px solid rgba(38,19,25,.1);border-radius:12px;padding:16px;text-align:center}
+  .acc-card .big{font-family:'Archivo';font-weight:900;font-size:46px;color:var(--gold-d);letter-spacing:-1px}
+  .acc-card .sub{font-size:12px;color:#5a3f47;text-transform:uppercase;letter-spacing:1px;font-weight:700}
+  .cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:5px;font-size:12px}
+  .cm div{padding:9px;border-radius:7px;text-align:center;font-family:'JetBrains Mono'}
+  .cm .h{background:var(--wine-2);color:var(--cream);font-weight:700}
+  .cm .c{background:rgba(38,19,25,.06);color:var(--ink);font-weight:700;font-size:16px}
+  .cm .diag{background:rgba(43,182,163,.18);color:var(--yes-d)}
+  .cm .off{background:rgba(226,96,122,.18);color:var(--no-d)}
+  .btn{font-family:'Inter';font-size:13px;font-weight:600;color:#fff;background:var(--ink);border:1px solid var(--ink);padding:9px 16px;border-radius:9px;cursor:pointer;transition:.15s}
+  .btn:hover{background:var(--gold);border-color:var(--gold-d);color:var(--ink)}
+
+  .answer{margin-top:14px;background:rgba(227,178,60,.10);border:1px solid rgba(182,132,31,.3);border-left:4px solid var(--gold);border-radius:10px;padding:13px 16px;color:var(--ink)}
+  .answer b{color:var(--no-d);font-family:'Archivo'}
+
+  /* videos */
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  .vid{background:var(--wine-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vid .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+  .vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid .vmeta{padding:13px 16px}
+  .vid .vmeta b{font-family:'Archivo';font-weight:700;font-size:14.5px;display:block}
+  .vid .vmeta span{font-size:12px;color:var(--muted)}
+  .vid .vmeta .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
+
+  /* code */
+  .code-card{background:var(--code-bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .code-top{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#190c11;border-bottom:1px solid var(--line)}
+  .tl{display:flex;gap:7px}.tl span{width:11px;height:11px;border-radius:50%}
+  .tl span:nth-child(1){background:#ff5f57}.tl span:nth-child(2){background:#febc2e}.tl span:nth-child(3){background:#28c840}
+  .code-top .fname{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);margin-left:6px}
+  .copy{margin-left:auto;font-family:'Inter';font-size:12px;font-weight:600;color:var(--cream);background:var(--wine-3);border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+  .copy:hover{background:var(--yes);border-color:var(--yes);color:#06302b}
+  pre{margin:0;padding:18px 20px;overflow-x:auto}
+  code{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;color:#eee2e6}
+  .tok-kw{color:#ff9db1;font-weight:600}.tok-fn{color:#6fd8c4}.tok-str{color:#e3b23c}
+  .tok-num{color:#c9a0ff}.tok-com{color:#8a6470;font-style:italic}.tok-bi{color:#7fb0ff}
+
+  .timeline{position:relative;padding-left:28px}
+  .timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--gold),var(--no))}
+  .step{position:relative;margin-bottom:18px}
+  .step::before{content:"";position:absolute;left:-23px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--wine)}
+  .step b{font-family:'Archivo';color:var(--gold)}
+
+  .viva details{background:var(--cream);color:var(--ink);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 8px 22px -16px rgba(0,0,0,.6)}
+  .viva summary{cursor:pointer;list-style:none;padding:15px 20px;font-weight:600;font-family:'Archivo';display:flex;align-items:center;gap:12px}
+  .viva summary::-webkit-details-marker{display:none}
+  .viva summary::before{content:"Q";font-family:'JetBrains Mono';font-weight:700;color:#fff;background:var(--no);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  .viva details[open] summary{background:var(--cream-2)}
+  .viva .ans{padding:0 20px 18px 56px;color:#4a3138}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="logo" aria-hidden="true">NB</div>
+    <div class="brand"><b>DSA LAB</b><span>Data Science Applications</span></div>
+    <nav class="topnav">
+      <a href="#manual">Manual</a>
+      <a href="#bayes">Bayes</a>
+      <a href="#data">Dataset</a>
+      <a href="#classify">Classifier</a>
+      <a href="#accuracy">Accuracy</a>
+      <a href="#videos">Videos</a>
+      <a href="#program">Program</a>
+      <a href="#viva">Viva</a>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="logo" style="width:16px;height:16px;font-size:8px">NB</span>Experiment&nbsp;04 · CO3</span>
+    <h1>Guessing Smart<br>with <span class="hl">Probability</span></h1>
+    <p class="sub">The <b>Naive Bayes classifier</b> — built from a CSV, explained one probability at a time. Pick the weather, watch Bayes' theorem decide whether to play tennis, then run it on a test set and read the accuracy.</p>
+    <div class="meta-row">
+      <div class="chip">Course&nbsp;<b>IT416</b></div>
+      <div class="chip">Outcome&nbsp;<b>CO3</b></div>
+      <div class="chip">Dataset&nbsp;<b>Play Tennis (CSV)</b></div>
+      <div class="chip">Output&nbsp;<b>Accuracy %</b></div>
+    </div>
+    <div class="dash reveal">
+      <div class="d-top"><h3>Classifier at a glance</h3><div class="live"><span class="dot-live"></span>LIVE PREDICTION</div></div>
+      <div class="d-grid">
+        <div class="d-cell"><div class="n" data-count="14">0</div><div class="l">Training rows</div></div>
+        <div class="d-cell"><div class="n" data-count="4">0</div><div class="l">Features</div></div>
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Classes</div></div>
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Concept videos</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- LAB MANUAL -->
+<section id="manual">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Lab Manual</h2></div>
+    <div class="card">
+      <div class="lab-meta">
+        <div class="k">Aim</div>
+        <div class="v">To write a program that implements the Naive Bayes classifier for a sample training dataset stored as a .CSV file, and to compute the accuracy of the classifier on a few test examples.</div>
+        <div class="k">Objectives</div>
+        <div class="v"><ul class="clean">
+          <li>Read a labelled training dataset from a CSV file.</li>
+          <li>Apply Bayes' theorem with the "naive" feature-independence assumption.</li>
+          <li>Estimate prior and conditional (likelihood) probabilities, with Laplace smoothing.</li>
+          <li>Predict the class of unseen samples and compute accuracy &amp; a confusion matrix.</li>
+        </ul></div>
+        <div class="k">Software</div>
+        <div class="v">Python 3.x · Jupyter / Colab · Pandas, scikit-learn (or pure Python).</div>
+        <div class="k">Theory</div>
+        <div class="v">Naive Bayes is a probabilistic classifier based on Bayes' theorem. It assumes all features are <i>conditionally independent</i> given the class ("naive"). For each class it multiplies the prior by the likelihood of every feature value, then picks the class with the highest result. Despite the unrealistic independence assumption, it is fast, needs little data, and works well — especially for text/spam classification.</div>
+        <div class="k">Outcome</div>
+        <div class="v">CO3 — building and evaluating a classification model.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BAYES THEOREM -->
+<section id="bayes">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">02</span><h2>The One Formula</h2></div>
+    <div class="formula-box">
+      <div class="bayes">
+        <span class="post">P(class | data)</span> &nbsp;∝&nbsp; <span class="prior">P(class)</span> &nbsp;×&nbsp; <span class="like">P(data | class)</span>
+      </div>
+      <div class="bayes" style="font-size:clamp(13px,2.2vw,17px);color:#5a3f47">
+        and "naive" means: &nbsp; <span class="like">P(data|class)</span> = P(f₁|class) × P(f₂|class) × P(f₃|class) × …
+      </div>
+      <div class="legend-map">
+        <div class="lm post"><b>Posterior — what we want</b>How likely this class is, given the new day's features.</div>
+        <div class="lm prior"><b>Prior — the base rate</b>How common this class is overall (e.g. 9/14 days were "Play").</div>
+        <div class="lm like"><b>Likelihood — the evidence</b>How typical these feature values are for that class, multiplied together.</div>
+      </div>
+      <div class="answer" style="margin-top:18px"><b>Why "naive"?</b> Multiplying the feature probabilities assumes they don't influence each other (e.g. humidity and outlook are independent). That's rarely true — yet the shortcut still classifies remarkably well.</div>
+    </div>
+  </div>
+</section>
+
+<!-- DATASET -->
+<section id="data">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">03</span><h2>The Training CSV</h2></div>
+    <p style="max-width:720px;color:#ecd9df;margin-top:-12px">The classic <code style="font-family:JetBrains Mono;font-size:12px">play_tennis.csv</code> — 14 days of weather and whether a game was played. <span style="color:var(--yes)">Teal = Yes</span>, <span style="color:var(--no)">rose = No</span>. This is what the classifier learns from.</p>
+    <div class="tbl-wrap">
+      <table class="tbl" id="dataTable">
+        <thead><tr><th>#</th><th>Outlook</th><th>Temperature</th><th>Humidity</th><th>Wind</th><th>Play?</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE CLASSIFIER -->
+<section id="classify">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">04</span><h2>Classify a New Day</h2></div>
+    <p class="reveal" style="max-width:760px;color:#ecd9df;margin-top:-12px">Pick the weather for tomorrow. The classifier shows its full working — the priors, each feature's likelihood for both classes, the multiplied scores, and the final normalized decision. Everything updates live.</p>
+
+    <div class="panel reveal">
+      <div class="ph"><b>Naive Bayes — step by step</b><span class="hint">change any button ↓</span></div>
+      <div class="pbody">
+        <div id="selectors"></div>
+
+        <div class="compute">
+          <div class="crow">
+            <div class="ct">① Prior  P(class)</div>
+            <div class="pair"><span class="nm">Play (Yes)</span><div class="track"><div class="barfill y" id="priorY"></div></div><span class="vv" id="priorYv"></span></div>
+            <div class="pair"><span class="nm">No play</span><div class="track"><div class="barfill n" id="priorN"></div></div><span class="vv" id="priorNv"></span></div>
+          </div>
+          <div class="crow">
+            <div class="ct">② Likelihood  P(feature | class)</div>
+            <div id="likelihoods"></div>
+          </div>
+          <div class="crow">
+            <div class="ct">③ Score = prior × all likelihoods</div>
+            <div class="pair"><span class="nm">Yes score</span><div class="track"><div class="barfill y" id="scoreY"></div></div><span class="vv" id="scoreYv"></span></div>
+            <div class="pair"><span class="nm">No score</span><div class="track"><div class="barfill n" id="scoreN"></div></div><span class="vv" id="scoreNv"></span></div>
+          </div>
+          <div class="crow">
+            <div class="ct">④ Normalize → probability &amp; decision</div>
+            <div class="result">
+              <div class="splitbar"><div class="sy" id="splitY"></div><div class="sn" id="splitN"></div></div>
+              <div class="verdict" id="verdict">—</div>
+            </div>
+          </div>
+        </div>
+        <div class="answer" id="classifyMsg"><b>Tip:</b> set <i>Outlook = Overcast</i> — every overcast day in the data ended in a game, so the classifier becomes very confident about "Play".</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCURACY -->
+<section id="accuracy">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">05</span><h2>Test It &amp; Measure Accuracy</h2></div>
+    <p class="reveal" style="max-width:760px;color:#ecd9df;margin-top:-12px">The real task: run the trained classifier on a few <b>test days</b> whose true answers we already know, then count how many it got right. Press the button to classify them one by one.</p>
+
+    <div class="panel reveal">
+      <div class="ph"><b>Test set evaluation</b><span class="hint">predicted vs actual</span>
+        <button class="btn" id="runTest" style="margin-left:14px">▶ Run classifier</button></div>
+      <div class="pbody">
+        <div class="tbl-wrap">
+          <table class="test-tbl" id="testTable">
+            <thead><tr><th>Outlook</th><th>Temp</th><th>Humidity</th><th>Wind</th><th>Actual</th><th>Predicted</th><th>✓/✗</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="acc-wrap">
+          <div class="acc-card"><div class="big" id="accBig">—</div><div class="sub">Accuracy</div></div>
+          <div class="acc-card">
+            <div class="sub" style="margin-bottom:8px">Confusion matrix</div>
+            <div class="cm" id="cm">
+              <div class="c" style="background:transparent"></div><div class="h">Pred Yes</div><div class="h">Pred No</div>
+              <div class="h">Act Yes</div><div class="c diag" id="cm_yy">·</div><div class="c off" id="cm_yn">·</div>
+              <div class="h">Act No</div><div class="c off" id="cm_ny">·</div><div class="c diag" id="cm_nn">·</div>
+            </div>
+          </div>
+        </div>
+        <div class="answer" id="accMsg"><b>Accuracy</b> = correct predictions ÷ total test samples. The confusion matrix breaks it down: the diagonal (teal) is correct, the off-diagonal (rose) are mistakes.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Watch the Concepts</h2></div>
+    <p style="max-width:760px;color:#ecd9df;margin-top:-12px">Two clear explainers from <b>StatQuest with Josh Starmer</b>. The first covers Naive Bayes for categorical data (like our weather CSV); the second handles continuous numbers.</p>
+    <div class="vid-grid">
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/O2L2Uv9pdDA" title="Naive Bayes, Clearly Explained" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest</span><b>Naive Bayes, Clearly Explained</b><span>Priors, likelihoods and the multinomial classifier — exactly what this experiment uses.</span></div>
+      </div>
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/H3EjCKtlVog" title="Gaussian Naive Bayes, Clearly Explained" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest</span><b>Gaussian Naive Bayes</b><span>How to handle continuous features using the normal distribution.</span></div>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:12.5px;margin-top:14px">Videos are embedded from YouTube and belong to their creators. If a frame is blank, your network may block YouTube — search the titles on youtube.com.</p>
+  </div>
+</section>
+
+<!-- PROGRAM -->
+<section id="program">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">07</span><h2>The Program</h2></div>
+    <p style="max-width:720px;color:#ecd9df;margin-top:-12px">Two ways to implement it: the quick scikit-learn version, and a from-scratch version that mirrors the live demo above.</p>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">1 — sklearn_naive_bayes.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+<span class="tok-kw">from</span> sklearn.preprocessing <span class="tok-kw">import</span> LabelEncoder
+<span class="tok-kw">from</span> sklearn.model_selection <span class="tok-kw">import</span> train_test_split
+<span class="tok-kw">from</span> sklearn.naive_bayes <span class="tok-kw">import</span> CategoricalNB
+<span class="tok-kw">from</span> sklearn.metrics <span class="tok-kw">import</span> accuracy_score, confusion_matrix
+
+df = pd.<span class="tok-fn">read_csv</span>(<span class="tok-str">"play_tennis.csv"</span>)
+
+<span class="tok-com"># encode every text column to numbers</span>
+enc = {c: <span class="tok-fn">LabelEncoder</span>() <span class="tok-kw">for</span> c <span class="tok-kw">in</span> df.columns}
+<span class="tok-kw">for</span> c <span class="tok-kw">in</span> df.columns:
+    df[c] = enc[c].<span class="tok-fn">fit_transform</span>(df[c])
+
+X = df[[<span class="tok-str">"Outlook"</span>,<span class="tok-str">"Temp"</span>,<span class="tok-str">"Humidity"</span>,<span class="tok-str">"Wind"</span>]]
+y = df[<span class="tok-str">"Play"</span>]
+X_tr, X_te, y_tr, y_te = <span class="tok-fn">train_test_split</span>(X, y, test_size=<span class="tok-num">0.3</span>, random_state=<span class="tok-num">1</span>)
+
+model = <span class="tok-fn">CategoricalNB</span>()           <span class="tok-com"># Naive Bayes for categorical data</span>
+model.<span class="tok-fn">fit</span>(X_tr, y_tr)
+pred = model.<span class="tok-fn">predict</span>(X_te)
+
+<span class="tok-bi">print</span>(<span class="tok-str">"Accuracy:"</span>, <span class="tok-fn">accuracy_score</span>(y_te, pred))
+<span class="tok-bi">print</span>(<span class="tok-str">"Confusion matrix:\n"</span>, <span class="tok-fn">confusion_matrix</span>(y_te, pred))</code></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">2 — naive_bayes_from_scratch.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+
+df = pd.<span class="tok-fn">read_csv</span>(<span class="tok-str">"play_tennis.csv"</span>)
+target, n = <span class="tok-str">"Play"</span>, <span class="tok-bi">len</span>(df)
+
+<span class="tok-kw">def</span> <span class="tok-fn">predict</span>(query):
+    best, best_p = <span class="tok-kw">None</span>, -<span class="tok-num">1</span>
+    <span class="tok-kw">for</span> c <span class="tok-kw">in</span> df[target].<span class="tok-fn">unique</span>():
+        sub = df[df[target] == c]
+        p = <span class="tok-bi">len</span>(sub) / n                      <span class="tok-com"># prior</span>
+        <span class="tok-kw">for</span> feat, val <span class="tok-kw">in</span> query.<span class="tok-fn">items</span>():
+            k = df[feat].<span class="tok-fn">nunique</span>()             <span class="tok-com"># Laplace smoothing</span>
+            p *= (<span class="tok-fn">len</span>(sub[sub[feat]==val]) + <span class="tok-num">1</span>) / (<span class="tok-bi">len</span>(sub) + k)
+        <span class="tok-kw">if</span> p &gt; best_p: best, best_p = c, p
+    <span class="tok-kw">return</span> best
+
+q = {<span class="tok-str">"Outlook"</span>:<span class="tok-str">"Sunny"</span>,<span class="tok-str">"Temp"</span>:<span class="tok-str">"Cool"</span>,
+     <span class="tok-str">"Humidity"</span>:<span class="tok-str">"High"</span>,<span class="tok-str">"Wind"</span>:<span class="tok-str">"Strong"</span>}
+<span class="tok-bi">print</span>(<span class="tok-str">"Prediction:"</span>, <span class="tok-fn">predict</span>(q))    <span class="tok-com"># -> No</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- PROCEDURE & RESULT -->
+<section id="procedure">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Procedure &amp; Result</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:14px">Steps followed</h3>
+        <div class="timeline">
+          <div class="step"><b>1 · Read CSV</b><br>Load the labelled training data.</div>
+          <div class="step"><b>2 · Priors</b><br>Count each class → P(class).</div>
+          <div class="step"><b>3 · Likelihoods</b><br>P(feature value | class) with Laplace smoothing.</div>
+          <div class="step"><b>4 · Predict</b><br>Multiply, compare, pick the larger score.</div>
+          <div class="step"><b>5 · Test</b><br>Classify held-out test samples.</div>
+          <div class="step"><b>6 · Accuracy</b><br>Compare with true labels → accuracy &amp; confusion matrix.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:14px">Result</h3>
+        <p style="color:#4a3138;margin-top:0">The Naive Bayes classifier was implemented from a CSV file. Prior and conditional probabilities were estimated with Laplace smoothing, unseen samples were classified, and the accuracy was computed on a test set along with a confusion matrix, demonstrating CO3.</p>
+        <div class="answer" style="margin-top:8px"><b>Conclusion:</b> Naive Bayes turns counting into classification. By assuming features are independent it keeps the maths simple — just multiply probabilities — yet stays accurate and extremely fast. Laplace smoothing prevents a single unseen value from zeroing out a whole class. It is a strong, lightweight baseline, especially for categorical and text data.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIVA -->
+<section id="viva" class="viva">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">09</span><h2>Viva Questions</h2></div>
+    <details><summary>State Bayes' theorem.</summary>
+      <div class="ans">P(A|B) = [ P(B|A) · P(A) ] / P(B). For classification: P(class|data) is proportional to P(data|class) · P(class), and we pick the class with the highest value.</div></details>
+    <details><summary>Why is the classifier called "naive"?</summary>
+      <div class="ans">Because it naively assumes all features are conditionally independent given the class, so the joint likelihood is just the product of individual feature likelihoods. This is rarely true in reality, but simplifies the maths greatly.</div></details>
+    <details><summary>What are prior, likelihood and posterior?</summary>
+      <div class="ans">Prior P(class) is the base rate of a class before seeing features. Likelihood P(data|class) is how probable the observed features are within that class. Posterior P(class|data) is the updated probability after combining both.</div></details>
+    <details><summary>What is Laplace (add-one) smoothing and why is it needed?</summary>
+      <div class="ans">It adds 1 to every count so no probability is ever zero. Without it, a single feature value never seen with a class would multiply the whole class score to 0, wrongly ruling it out.</div></details>
+    <details><summary>Difference between Gaussian, Multinomial and Bernoulli Naive Bayes?</summary>
+      <div class="ans">Gaussian assumes continuous features follow a normal distribution; Multinomial is for counts (e.g. word frequencies); Bernoulli is for binary present/absent features.</div></details>
+    <details><summary>How do you compute accuracy and what is a confusion matrix?</summary>
+      <div class="ans">Accuracy = correct predictions ÷ total predictions. A confusion matrix tabulates actual vs predicted classes; its diagonal counts correct predictions, off-diagonal counts errors (false positives/negatives).</div></details>
+    <details><summary>Give real applications of Naive Bayes.</summary>
+      <div class="ans">Spam/e-mail filtering, sentiment and text classification, medical diagnosis, document categorisation and recommendation — anywhere fast, low-data classification is useful.</div></details>
+    <details><summary>What are the advantages and limitations?</summary>
+      <div class="ans">Advantages: fast, simple, works with little data and many features, good for text. Limitations: the independence assumption is unrealistic, and it gives poorly calibrated probability estimates even when the class ranking is correct.</div></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    DSA Lab · Experiment 04 · Naive Bayes Classifier — Course IT416 (R23) · CO3<br>
+    <span style="opacity:.7">The live classifier uses categorical Naive Bayes with Laplace smoothing on the Play-Tennis dataset; predictions are computed in your browser, not pre-stored.</span>
+  </div>
+</footer>
+
+<script>
+/* reveal + count-up */
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+
+/* ===== Naive Bayes on Play Tennis ===== */
+const DATA=[
+['Sunny','Hot','High','Weak','No'],['Sunny','Hot','High','Strong','No'],
+['Overcast','Hot','High','Weak','Yes'],['Rain','Mild','High','Weak','Yes'],
+['Rain','Cool','Normal','Weak','Yes'],['Rain','Cool','Normal','Strong','No'],
+['Overcast','Cool','Normal','Strong','Yes'],['Sunny','Mild','High','Weak','No'],
+['Sunny','Cool','Normal','Weak','Yes'],['Rain','Mild','Normal','Weak','Yes'],
+['Sunny','Mild','Normal','Strong','Yes'],['Overcast','Mild','High','Strong','Yes'],
+['Overcast','Hot','Normal','Weak','Yes'],['Rain','Mild','High','Strong','No']];
+const FEATS=['Outlook','Temp','Humidity','Wind'];
+const CATS=[['Sunny','Overcast','Rain'],['Hot','Mild','Cool'],['High','Normal'],['Weak','Strong']];
+const CLS=['Yes','No'];
+function train(data){
+  const cc={Yes:0,No:0}, ct={Yes:FEATS.map(()=>({})),No:FEATS.map(()=>({}))};
+  data.forEach(r=>{cc[r[4]]++;for(let f=0;f<4;f++)ct[r[4]][f][r[f]]=(ct[r[4]][f][r[f]]||0)+1;});
+  return {cc,ct,n:data.length};
+}
+const M=train(DATA);
+function likelihood(c,f,val){return ((M.ct[c][f][val]||0)+1)/(M.cc[c]+CATS[f].length);}
+function classify(q){
+  const out={};
+  CLS.forEach(c=>{let p=M.cc[c]/M.n;const lk=[];for(let f=0;f<4;f++){const l=likelihood(c,f,q[f]);lk.push(l);p*=l;}out[c]={prior:M.cc[c]/M.n,lk,score:p};});
+  const tot=out.Yes.score+out.No.score;
+  out.Yes.prob=out.Yes.score/tot; out.No.prob=out.No.score/tot;
+  return out;
+}
+
+/* ===== render training table ===== */
+(function(){const tb=document.querySelector('#dataTable tbody');DATA.forEach((r,i)=>{const tr=document.createElement('tr');tr.className=r[4]==='Yes'?'yes':'no';tr.innerHTML='<td>'+(i+1)+'</td>'+r.map(c=>'<td>'+c+'</td>').join('');tb.appendChild(tr);});})();
+
+/* ===== build selectors ===== */
+const QUERY=['Sunny','Cool','High','Strong'];
+(function(){
+  const host=document.getElementById('selectors');
+  FEATS.forEach((feat,f)=>{
+    const row=document.createElement('div');row.className='sel-row';
+    row.innerHTML='<span class="lbl">'+feat+'</span>';
+    const seg=document.createElement('div');seg.className='seg';
+    CATS[f].forEach(val=>{
+      const b=document.createElement('button');b.textContent=val;if(val===QUERY[f])b.classList.add('on');
+      b.onclick=()=>{QUERY[f]=val;[...seg.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');renderClassifier();};
+      seg.appendChild(b);
+    });
+    row.appendChild(seg);host.appendChild(row);
+  });
+})();
+
+function fmt(x,d=3){return (+x.toFixed(d)).toString();}
+function setBar(id,frac,valId,txt){document.getElementById(id).style.width=(Math.max(2,frac*100))+'%';if(valId)document.getElementById(valId).textContent=txt;}
+function renderClassifier(){
+  const r=classify(QUERY);
+  // priors
+  setBar('priorY',r.Yes.prior,'priorYv',fmt(r.Yes.prior,2)+' (9/14)');
+  setBar('priorN',r.No.prior,'priorNv',fmt(r.No.prior,2)+' (5/14)');
+  // likelihoods
+  const host=document.getElementById('likelihoods');host.innerHTML='';
+  for(let f=0;f<4;f++){
+    const ly=r.Yes.lk[f], ln=r.No.lk[f];
+    const wrap=document.createElement('div');wrap.style.margin='8px 0 12px';
+    wrap.innerHTML='<div style="font-size:12px;font-weight:700;color:#5a3f47;margin-bottom:3px">'+FEATS[f]+' = '+QUERY[f]+'</div>'+
+      '<div class="pair"><span class="nm">P(·|Yes)</span><div class="track"><div class="barfill y" style="width:'+(ly*100)+'%"></div></div><span class="vv">'+fmt(ly)+'</span></div>'+
+      '<div class="pair"><span class="nm">P(·|No)</span><div class="track"><div class="barfill n" style="width:'+(ln*100)+'%"></div></div><span class="vv">'+fmt(ln)+'</span></div>';
+    host.appendChild(wrap);
+  }
+  // scores (scale relative to max for visibility)
+  const mx=Math.max(r.Yes.score,r.No.score)||1;
+  setBar('scoreY',r.Yes.score/mx,'scoreYv',r.Yes.score.toExponential(2));
+  setBar('scoreN',r.No.score/mx,'scoreNv',r.No.score.toExponential(2));
+  // normalized split
+  const py=Math.round(r.Yes.prob*100), pn=100-py;
+  const sy=document.getElementById('splitY'),sn=document.getElementById('splitN');
+  sy.style.width=py+'%';sn.style.width=pn+'%';
+  sy.textContent=py>12?('Yes '+py+'%'):''; sn.textContent=pn>12?('No '+pn+'%'):'';
+  const v=document.getElementById('verdict');
+  if(r.Yes.prob>=r.No.prob){v.className='verdict play';v.textContent='✅ Play Tennis';}
+  else{v.className='verdict stay';v.textContent='🚫 Don\'t Play';}
+  // contextual message
+  const conf=Math.round(Math.max(py,pn));
+  document.getElementById('classifyMsg').innerHTML='For <b>'+QUERY.join(' / ')+'</b>, the classifier is <b>'+conf+'% </b> sure the answer is <b>'+(r.Yes.prob>=r.No.prob?'Play':'No play')+'</b>. Try switching one feature and watch the bars and decision shift.';
+}
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){renderClassifier();ob.disconnect();}})},{threshold:.2}).observe(document.getElementById('selectors'));
+
+/* ===== test set + accuracy ===== */
+const TEST=[ // last column = actual (ground truth)
+['Sunny','Hot','High','Strong','No'],
+['Overcast','Mild','Normal','Weak','Yes'],
+['Rain','Cool','High','Strong','Yes'],   // borderline — classifier leans No
+['Sunny','Cool','Normal','Weak','Yes'],
+['Rain','Mild','Normal','Strong','Yes']];
+(function(){const tb=document.querySelector('#testTable tbody');TEST.forEach((t,i)=>{const tr=document.createElement('tr');tr.id='trow'+i;
+  tr.innerHTML='<td>'+t[0]+'</td><td>'+t[1]+'</td><td>'+t[2]+'</td><td>'+t[3]+'</td><td>'+t[4]+'</td><td class="pred">–</td><td class="markcell">–</td>';
+  tb.appendChild(tr);});})();
+function runTest(){
+  let correct=0;const cm={Yes:{Yes:0,No:0},No:{Yes:0,No:0}};
+  document.getElementById('accBig').textContent='—';
+  ['cm_yy','cm_yn','cm_ny','cm_nn'].forEach(id=>document.getElementById(id).textContent='·');
+  TEST.forEach((t,i)=>{
+    setTimeout(()=>{
+      const r=classify(t);const pred=r.Yes.prob>=r.No.prob?'Yes':'No';const act=t[4];const ok=pred===act;
+      if(ok)correct++; cm[act][pred]++;
+      const row=document.getElementById('trow'+i);
+      row.querySelector('.pred').textContent=pred+' ('+Math.round(Math.max(r.Yes.prob,r.No.prob)*100)+'%)';
+      row.querySelector('.pred').style.color=pred==='Yes'?'var(--yes-d)':'var(--no-d)';
+      const mc=row.querySelector('.markcell');mc.innerHTML=ok?'<span class="mark ok">✓</span>':'<span class="mark bad">✗</span>';
+      row.style.background=ok?'rgba(43,182,163,.08)':'rgba(226,96,122,.10)';
+      // update on last
+      if(i===TEST.length-1){
+        const acc=Math.round(correct/TEST.length*100);
+        document.getElementById('accBig').textContent=acc+'%';
+        document.getElementById('cm_yy').textContent=cm.Yes.Yes;
+        document.getElementById('cm_yn').textContent=cm.Yes.No;
+        document.getElementById('cm_ny').textContent=cm.No.Yes;
+        document.getElementById('cm_nn').textContent=cm.No.No;
+        const wrong=TEST.length-correct;
+        document.getElementById('accMsg').innerHTML='<b>'+correct+' of '+TEST.length+' correct → '+acc+'% accuracy.</b> '+(wrong>0?('The '+wrong+' miss is a borderline rainy day — the classifier leaned "No" but the game was actually played. Real classifiers are rarely perfect, and the confusion matrix shows exactly where they slip.'):'A perfect run on this small test set.');
+      }
+    }, i*520);
+  });
+}
+document.getElementById('runTest').addEventListener('click',runTest);
+
+/* copy buttons */
+document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const pre=b.closest('.code-card').querySelector('pre');const t=pre?pre.innerText:'';navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,1300);});});});
+</script>
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment 9 — Comparing Machine Means (ANOVA) | DSA Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1b1c1f; --bg-2:#26282d; --bg-3:#33363d;
+    --cream:#f1efea; --cream-2:#fbf9f4;
+    --amber:#f0a23b; --amber-d:#bd7918;   /* accent */
+    --m1:#3f8fd0; --m2:#2bb59a; --m3:#a06bd6;  /* three machines */
+    --ok:#46c08a; --no:#e8615a;
+    --ink:#1d1e22; --muted:#aaa39a;
+    --line:rgba(241,239,234,.12);
+    --code-bg:#141518;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.8);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:radial-gradient(1100px 560px at 84% -10%, rgba(240,162,59,.10), transparent 60%),
+               radial-gradient(900px 520px at -8% 16%, rgba(63,143,208,.10), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}a{color:var(--amber)}
+  ::selection{background:var(--amber);color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(27,28,31,.85);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}.logo::after{content:"⚙️"}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}.topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}.topnav a:hover{background:var(--bg-3);opacity:1}
+  .hero{padding:60px 0 32px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);font-weight:700;border:1px solid var(--amber-d);border-radius:100px;padding:6px 14px;background:rgba(240,162,59,.06)}
+  .hero h1{font-size:clamp(36px,6.6vw,72px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}.hero h1 .hl{color:var(--amber)}
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:#e3ddd2;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}.chip b{color:var(--amber);font-family:'JetBrains Mono';font-weight:700}
+  .dash{margin-top:32px;background:linear-gradient(180deg,#141518,#1b1c1f);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}
+  .d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--m1);font-family:'JetBrains Mono'}
+  .dot-live{width:9px;height:9px;border-radius:50%;background:var(--m1);animation:blink 1.3s infinite}@keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+  .d-cell{background:#141518;border:1px solid var(--line);border-radius:12px;padding:14px}.d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--amber);letter-spacing:-1px}.d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--amber);font-size:14px;letter-spacing:1px;border:1px solid var(--amber-d);border-radius:8px;padding:5px 10px;background:rgba(240,162,59,.08)}
+  .sec-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:800;letter-spacing:-.6px}
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .lab-meta{display:grid;grid-template-columns:160px 1fr;gap:0}
+  .lab-meta .k{font-weight:700;font-family:'Archivo';padding:12px 0;border-bottom:1px solid rgba(29,30,34,.10);color:var(--m1)}
+  .lab-meta .v{padding:12px 0;border-bottom:1px solid rgba(29,30,34,.10)}
+  @media(max-width:600px){.lab-meta{grid-template-columns:1fr}.lab-meta .v{padding-top:0}.lab-meta .k{border-bottom:0;padding-bottom:0}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:7px 0}
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}.panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}.panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .plot{background:var(--cream-2);border:1px solid rgba(29,30,34,.1);border-radius:14px;padding:10px}
+  canvas.chart{width:100%;display:block}
+  .sl{margin:11px 0}.sl .top{display:flex;justify-content:space-between;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);margin-bottom:5px}.sl .top .v{font-family:'JetBrains Mono'}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:6px;background:var(--bg-3);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  .results{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:16px}
+  .rc{background:var(--cream-2);border:1px solid rgba(29,30,34,.1);border-radius:12px;padding:12px 14px;border-top:4px solid var(--amber)}
+  .rc .rl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#6a6258;font-weight:700;font-family:'Archivo'}
+  .rc .rn{font-family:'Archivo';font-weight:900;font-size:23px;color:var(--ink);margin-top:3px}
+  .rc.f{border-top-color:var(--m1)}.rc.p{border-top-color:var(--amber)}
+  .verdict{margin-top:14px;font-family:'Archivo';font-weight:800;font-size:16px;padding:14px 18px;border-radius:12px}
+  .verdict.sig{background:rgba(70,192,138,.14);color:#1f8f5f;border:1px solid var(--ok)}
+  .verdict.nsig{background:rgba(232,97,90,.12);color:#b2453d;border:1px solid var(--no)}
+  .btn{font-family:'Inter';font-size:13px;font-weight:600;color:#fff;background:var(--ink);border:1px solid var(--ink);padding:8px 14px;border-radius:9px;cursor:pointer}.btn:hover{background:var(--amber);border-color:var(--amber-d);color:var(--ink)}
+  .answer{margin-top:14px;background:rgba(240,162,59,.1);border:1px solid rgba(189,121,24,.3);border-left:4px solid var(--amber);border-radius:10px;padding:13px 16px;color:var(--ink)}.answer b{color:var(--m1);font-family:'Archivo'}
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  .vid{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vid .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}.vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid .vmeta{padding:13px 16px}.vid .vmeta b{font-family:'Archivo';font-weight:700;font-size:14.5px;display:block}.vid .vmeta span{font-size:12px;color:var(--muted)}.vid .vmeta .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--amber);text-transform:uppercase;letter-spacing:.5px}
+  .linkcard{display:flex;flex-direction:column;justify-content:center;gap:8px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .linkcard b{font-family:'Archivo';font-size:15px}.linkcard span{font-size:12.5px;color:var(--muted)}
+  .linkcard a{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:6px;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);background:var(--amber);padding:9px 14px;border-radius:9px}
+  .code-card{background:var(--code-bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .code-top{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#101114;border-bottom:1px solid var(--line)}
+  .tl{display:flex;gap:7px}.tl span{width:11px;height:11px;border-radius:50%}.tl span:nth-child(1){background:#ff5f57}.tl span:nth-child(2){background:#febc2e}.tl span:nth-child(3){background:#28c840}
+  .code-top .fname{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);margin-left:6px}
+  .copy{margin-left:auto;font-family:'Inter';font-size:12px;font-weight:600;color:var(--cream);background:var(--bg-3);border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer}.copy:hover{background:var(--amber);border-color:var(--amber);color:var(--ink)}
+  pre{margin:0;padding:18px 20px;overflow-x:auto}code{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;color:#ece6dd}
+  .tok-kw{color:#7fb8ff;font-weight:600}.tok-fn{color:#74d6b6}.tok-str{color:#f0a23b}.tok-num{color:#c3b0ff}.tok-com{color:#7d756a;font-style:italic}.tok-bi{color:#7fc7e0}
+  .timeline{position:relative;padding-left:28px}.timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--amber),var(--m1))}
+  .step{position:relative;margin-bottom:18px}.step::before{content:"";position:absolute;left:-23px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px var(--bg)}.step b{font-family:'Archivo';color:var(--amber-d)}
+  .viva details{background:var(--cream);color:var(--ink);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 8px 22px -16px rgba(0,0,0,.6)}
+  .viva summary{cursor:pointer;list-style:none;padding:15px 20px;font-weight:600;font-family:'Archivo';display:flex;align-items:center;gap:12px}.viva summary::-webkit-details-marker{display:none}
+  .viva summary::before{content:"Q";font-family:'JetBrains Mono';font-weight:700;color:#fff;background:var(--m1);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  .viva details[open] summary{background:var(--cream-2)}.viva .ans{padding:0 20px 18px 56px;color:#4a473f}
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="logo" aria-hidden="true"></div>
+  <div class="brand"><b>DSA LAB</b><span>Data Science Applications</span></div>
+  <nav class="topnav"><a href="#manual">Manual</a><a href="#idea">Idea</a><a href="#demo">ANOVA demo</a><a href="#videos">Videos</a><a href="#program">Program</a><a href="#viva">Viva</a></nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow"><span class="logo" style="width:16px;height:16px;font-size:9px"></span>Experiment&nbsp;09 · CO3</span>
+  <h1>Do the Machines<br><span class="hl">Really Differ?</span></h1>
+  <p class="sub">A factory runs three machines and asks: is their mean output truly different, or just random wobble? <b>One-way ANOVA</b> answers it by comparing variation <i>between</i> machines to variation <i>within</i> them. Move the means and watch the F-statistic and p-value react.</p>
+  <div class="meta-row">
+    <div class="chip">Course&nbsp;<b>IT416</b></div><div class="chip">Outcome&nbsp;<b>CO3</b></div>
+    <div class="chip">Test&nbsp;<b>One-way ANOVA</b></div><div class="chip">Output&nbsp;<b>F · p-value</b></div>
+  </div>
+  <div class="dash reveal"><div class="d-top"><h3>Significance, live</h3><div class="live"><span class="dot-live"></span>F-TEST</div></div>
+    <div class="d-grid">
+      <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">Machines</div></div>
+      <div class="d-cell"><div class="n" data-count="12">0</div><div class="l">Samples each</div></div>
+      <div class="d-cell"><div class="n" data-count="5" data-suffix="%">0</div><div class="l">Significance α</div></div>
+      <div class="d-cell"><div class="n" data-count="1">0</div><div class="l">Concept video</div></div>
+    </div></div>
+</div></header>
+
+<section id="manual"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Lab Manual</h2></div>
+  <div class="card"><div class="lab-meta">
+    <div class="k">Problem</div><div class="v">A manufacturing company wants to analyse whether the mean production output differs significantly across multiple machines operating under different conditions. Identify the appropriate statistical technique, implement the solution in Python, and interpret the results for decision-making.</div>
+    <div class="k">Aim</div><div class="v">To apply one-way Analysis of Variance (ANOVA) to test whether three or more group means are equal, and to interpret the F-statistic and p-value.</div>
+    <div class="k">Objectives</div><div class="v"><ul class="clean">
+      <li>State the null and alternative hypotheses for comparing means.</li>
+      <li>Partition total variation into between-group and within-group parts.</li>
+      <li>Compute the F-statistic and its p-value.</li>
+      <li>Decide significance at α = 0.05 and (if needed) run a post-hoc test.</li></ul></div>
+    <div class="k">Software</div><div class="v">Python 3.x · Jupyter / Colab · NumPy, Pandas, SciPy / statsmodels.</div>
+    <div class="k">Theory</div><div class="v">ANOVA compares the spread <b>between</b> group means to the spread <b>within</b> groups. If the between-group variation is large relative to the within-group variation, the means are unlikely to be equal. The ratio is the F-statistic; a small p-value (&lt; 0.05) rejects the null hypothesis that all means are equal.</div>
+    <div class="k">Outcome</div><div class="v">CO3 — selecting and applying a statistical technique for decision-making.</div>
+  </div></div>
+</div></section>
+
+<section id="idea"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Between vs Within</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:6px">The hypotheses</h3>
+      <div style="background:var(--cream-2);border-radius:10px;padding:14px;font-family:'JetBrains Mono';font-size:13px;color:var(--ink);border:1px solid rgba(29,30,34,.1);line-height:1.9">
+        H₀: μ₁ = μ₂ = μ₃ &nbsp;(all equal)<br>H₁: at least one mean differs</div>
+      <p style="color:#4a473f;font-size:13.5px">ANOVA is an <i>omnibus</i> test: a significant result says the means aren't all equal, but not <i>which</i> ones — that needs a post-hoc test (e.g. Tukey).</p></div>
+    <div class="card"><h3 style="margin-bottom:6px">The F-ratio</h3>
+      <div style="background:var(--cream-2);border-radius:10px;padding:14px;font-family:'JetBrains Mono';font-size:13px;color:var(--ink);border:1px solid rgba(29,30,34,.1);text-align:center">
+        F = MS<sub>between</sub> / MS<sub>within</sub></div>
+      <p style="color:#4a473f;font-size:13.5px">Big F → the machines' averages are far apart compared with their internal noise → likely a real difference. The p-value turns F into a probability.</p></div>
+  </div>
+</div></section>
+
+<section id="demo"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>The ANOVA Engine</h2></div>
+  <p class="reveal" style="max-width:760px;color:#e3ddd2;margin-top:-12px">Each column is a machine's 12 output samples; the thick line is its mean, the dashed line is the grand mean. Slide a machine's mean and watch the <b>F-statistic</b> and <b>p-value</b> recompute — both are real, using the F-distribution. Press resample to redraw the random noise.</p>
+  <div class="panel reveal"><div class="ph"><b>One-way ANOVA · 3 machines</b><span class="hint">spread the means apart to raise F</span>
+    <button class="btn" id="resample" style="margin-left:14px">↻ Resample</button></div>
+    <div class="pbody">
+      <div class="plot"><canvas class="chart" id="anovaCanvas" height="260"></canvas></div>
+      <div class="grid2" style="margin-top:14px;gap:14px">
+        <div>
+          <div class="sl"><div class="top"><span style="color:var(--m1)">Machine A mean</span><span class="v" id="vA" style="color:var(--m1)">50</span></div><input type="range" id="sA" min="30" max="70" value="50"></div>
+          <div class="sl"><div class="top"><span style="color:var(--m2)">Machine B mean</span><span class="v" id="vB" style="color:var(--m2)">50</span></div><input type="range" id="sB" min="30" max="70" value="50"></div>
+          <div class="sl"><div class="top"><span style="color:var(--m3)">Machine C mean</span><span class="v" id="vC" style="color:var(--m3)">50</span></div><input type="range" id="sC" min="30" max="70" value="50"></div>
+          <div class="sl"><div class="top"><span>Within-machine spread (σ)</span><span class="v" id="vS">6</span></div><input type="range" id="sS" min="2" max="14" value="6"></div>
+        </div>
+        <div>
+          <div class="results">
+            <div class="rc f"><div class="rl">F-statistic</div><div class="rn" id="rF">—</div></div>
+            <div class="rc p"><div class="rl">p-value</div><div class="rn" id="rP">—</div></div>
+            <div class="rc"><div class="rl">Between MS</div><div class="rn" id="rB">—</div></div>
+            <div class="rc"><div class="rl">Within MS</div><div class="rn" id="rW">—</div></div>
+          </div>
+          <div class="verdict nsig" id="verdict">—</div>
+        </div>
+      </div>
+      <div class="answer" id="anovaMsg"><b>Try this:</b> start with all three means equal — F is small and p is large (no difference). Drag Machine C up; as the between-group spread grows, F shoots up and the p-value drops below 0.05, flipping the verdict to "significant".</div>
+    </div>
+  </div>
+</div></section>
+
+<section id="videos"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Watch the Concepts</h2></div>
+  <p style="max-width:760px;color:#e3ddd2;margin-top:-12px">A clear explainer from <b>StatQuest</b> on how ANOVA works through linear models, plus a quick route to post-hoc testing.</p>
+  <div class="vid-grid">
+    <div class="vid"><div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/NF5_btOaCig" title="Using Linear Models for t-tests and ANOVA" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+      <div class="vmeta"><span class="src">StatQuest</span><b>t-tests and ANOVA, Clearly Explained</b><span>How the F-test decides whether group means differ.</span></div></div>
+    <div class="linkcard"><span class="src" style="font-family:JetBrains Mono;font-size:10.5px;color:var(--amber);text-transform:uppercase;letter-spacing:.5px">Further watching</span>
+      <b>Post-hoc: Tukey's HSD</b><span>After a significant ANOVA, find <i>which</i> machines differ. Open a clear walkthrough on YouTube.</span>
+      <a href="https://www.youtube.com/results?search_query=tukey+hsd+post+hoc+test+explained" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+  </div>
+  <p style="color:var(--muted);font-size:12.5px;margin-top:14px">Embedded video is from YouTube and belongs to its creator. If a frame is blank, your network may block YouTube.</p>
+</div></section>
+
+<section id="program"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>The Program</h2></div>
+  <p style="max-width:720px;color:#e3ddd2;margin-top:-12px">Run the F-test in one line with SciPy, then the full table and post-hoc with statsmodels.</p>
+  <div class="code-card" style="margin-bottom:20px">
+    <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">1 — anova_scipy.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+<span class="tok-kw">from</span> scipy <span class="tok-kw">import</span> stats
+
+df = pd.<span class="tok-fn">read_csv</span>(<span class="tok-str">"machines.csv"</span>)   <span class="tok-com"># columns: machine, output</span>
+A = df[df.machine==<span class="tok-str">"A"</span>].output
+B = df[df.machine==<span class="tok-str">"B"</span>].output
+C = df[df.machine==<span class="tok-str">"C"</span>].output
+
+F, p = stats.<span class="tok-fn">f_oneway</span>(A, B, C)         <span class="tok-com"># one-way ANOVA</span>
+<span class="tok-bi">print</span>(<span class="tok-str">"F ="</span>, <span class="tok-fn">round</span>(F,3), <span class="tok-str">" p ="</span>, <span class="tok-fn">round</span>(p,4))
+<span class="tok-bi">print</span>(<span class="tok-str">"Reject H0 (means differ)"</span> <span class="tok-kw">if</span> p &lt; <span class="tok-num">0.05</span> <span class="tok-kw">else</span> <span class="tok-str">"Fail to reject H0"</span>)</code></pre>
+  </div>
+  <div class="code-card" style="margin-bottom:20px">
+    <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">2 — anova_table.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> statsmodels.api <span class="tok-kw">as</span> sm
+<span class="tok-kw">from</span> statsmodels.formula.api <span class="tok-kw">import</span> ols
+
+model = <span class="tok-fn">ols</span>(<span class="tok-str">"output ~ C(machine)"</span>, data=df).<span class="tok-fn">fit</span>()
+table = sm.stats.<span class="tok-fn">anova_lm</span>(model, typ=<span class="tok-num">2</span>)
+<span class="tok-bi">print</span>(table)        <span class="tok-com"># sum_sq, df, F, PR(&gt;F)</span></code></pre>
+  </div>
+  <div class="code-card">
+    <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">3 — posthoc.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-com"># If significant, find WHICH machines differ</span>
+<span class="tok-kw">from</span> statsmodels.stats.multicomp <span class="tok-kw">import</span> pairwise_tukeyhsd
+
+tukey = <span class="tok-fn">pairwise_tukeyhsd</span>(df.output, df.machine, alpha=<span class="tok-num">0.05</span>)
+<span class="tok-bi">print</span>(tukey.<span class="tok-fn">summary</span>())
+<span class="tok-com"># Also check assumptions: normality of residuals, equal variances (Levene).</span></code></pre>
+  </div>
+</div></section>
+
+<section id="procedure"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Procedure &amp; Result</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:14px">Steps followed</h3><div class="timeline">
+      <div class="step"><b>1 · Hypotheses</b><br>State H₀ (means equal) and H₁.</div>
+      <div class="step"><b>2 · Check</b><br>Assumptions: normality, equal variances.</div>
+      <div class="step"><b>3 · Partition</b><br>Compute between- and within-group sums of squares.</div>
+      <div class="step"><b>4 · F &amp; p</b><br>F = MSB/MSW; get the p-value.</div>
+      <div class="step"><b>5 · Decide</b><br>Compare p with α = 0.05.</div>
+      <div class="step"><b>6 · Post-hoc</b><br>If significant, run Tukey's HSD.</div>
+    </div></div>
+    <div class="card"><h3 style="margin-bottom:14px">Result</h3>
+      <p style="color:#4a473f;margin-top:0">One-way ANOVA was applied to the machines' output. The F-statistic and p-value were computed; a p-value below 0.05 indicates the mean outputs differ significantly, and a Tukey post-hoc test identifies which machines stand apart — supporting a data-driven decision (CO3).</p>
+      <div class="answer" style="margin-top:8px"><b>Conclusion:</b> ANOVA compares signal (differences between machine averages) to noise (variation within each machine). A large F and small p mean the difference is real, not chance — telling the factory a machine genuinely needs attention. Always pair the result with a post-hoc test and an assumption check.</div>
+    </div>
+  </div>
+</div></section>
+
+<section id="viva" class="viva"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Viva Questions</h2></div>
+  <details><summary>What is ANOVA and when is it used?</summary><div class="ans">Analysis of Variance tests whether the means of three or more groups are equal. It's used when comparing several group means at once, avoiding the inflated error of running many t-tests.</div></details>
+  <details><summary>Why not just run multiple t-tests?</summary><div class="ans">Each t-test carries a chance of a false positive; doing many inflates the overall Type-I error rate. ANOVA gives a single test of "are any means different?" at the chosen significance level.</div></details>
+  <details><summary>What do between-group and within-group variance mean?</summary><div class="ans">Between-group variance measures how far the group means are from the grand mean (the signal). Within-group variance measures the scatter inside each group (the noise). ANOVA compares the two.</div></details>
+  <details><summary>What is the F-statistic and how is it interpreted?</summary><div class="ans">F = MS_between / MS_within. Values near 1 suggest equal means; large values suggest the group means differ. Its p-value gives the probability of seeing such an F if H₀ were true.</div></details>
+  <details><summary>What does the p-value tell you?</summary><div class="ans">The probability of obtaining results at least as extreme as observed if all means were truly equal. If p &lt; α (e.g. 0.05), reject H₀ and conclude the means differ.</div></details>
+  <details><summary>What are the assumptions of one-way ANOVA?</summary><div class="ans">Independent observations, approximately normal residuals, and roughly equal variances across groups (homoscedasticity). If violated, use Welch's ANOVA or the Kruskal-Wallis test.</div></details>
+  <details><summary>Why is a post-hoc test needed after a significant ANOVA?</summary><div class="ans">ANOVA only says at least one mean differs, not which. Post-hoc tests like Tukey's HSD compare pairs while controlling the overall error rate to pinpoint the differences.</div></details>
+</div></section>
+
+<footer><div class="wrap">DSA Lab · Experiment 09 · Comparing Machine Means with ANOVA — Course IT416 (R23) · CO3<br>
+<span style="opacity:.7">The engine computes a real one-way F-statistic and an exact p-value (via the incomplete-beta F-distribution) on samples generated in your browser. Run the program on your CSV for your data.</span></div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,s=el.dataset.suffix||'',d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e)+s;if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+
+const C={ink:'#1d1e22',m1:'#3f8fd0',m2:'#2bb59a',m3:'#a06bd6',amber:'#f0a23b',grid:'rgba(29,30,34,.1)',mut:'#6a6258'};
+const MCOL=[C.m1,C.m2,C.m3];
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+/* incomplete beta -> F p-value */
+function gammaln(x){const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];let y=x,t=x+5.5;t-=(x+0.5)*Math.log(t);let s=1.000000000190015;for(let j=0;j<6;j++){y++;s+=c[j]/y;}return -t+Math.log(2.5066282746310005*s/x);}
+function betacf(a,b,x){const MAXIT=200,EPS=3e-7,FPMIN=1e-30;let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;if(Math.abs(d)<FPMIN)d=FPMIN;d=1/d;let h=d;for(let m=1;m<=MAXIT;m++){let m2=2*m,aa=m*(b-m)*x/((qam+m2)*(a+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;h*=d*c;aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));d=1+aa*d;if(Math.abs(d)<FPMIN)d=FPMIN;c=1+aa/c;if(Math.abs(c)<FPMIN)c=FPMIN;d=1/d;let del=d*c;h*=del;if(Math.abs(del-1)<EPS)break;}return h;}
+function betai(a,b,x){if(x<=0)return 0;if(x>=1)return 1;const bt=Math.exp(gammaln(a+b)-gammaln(a)-gammaln(b)+a*Math.log(x)+b*Math.log(1-x));return x<(a+1)/(a+b+2)?bt*betacf(a,b,x)/a:1-bt*betacf(b,a,1-x)/b;}
+function fpval(f,d1,d2){if(f<=0)return 1;return betai(d2/2,d1/2,d2/(d2+d1*f));}
+
+const N=12;
+const AN={cv:document.getElementById('anovaCanvas'),seed:7};
+function genGroups(){
+  const r=mulberry32(AN.seed);
+  const means=[+document.getElementById('sA').value,+document.getElementById('sB').value,+document.getElementById('sC').value];
+  const sd=+document.getElementById('sS').value;
+  return means.map(m=>Array.from({length:N},()=>m+gauss(r)*sd));
+}
+function anova(groups){
+  const all=groups.flat(),N_all=all.length,k=groups.length;
+  const grand=all.reduce((s,v)=>s+v,0)/N_all;
+  const gm=groups.map(g=>g.reduce((s,v)=>s+v,0)/g.length);
+  let ssb=0;groups.forEach((g,i)=>ssb+=g.length*(gm[i]-grand)**2);
+  let ssw=0;groups.forEach((g,i)=>g.forEach(v=>ssw+=(v-gm[i])**2));
+  const df1=k-1,df2=N_all-k,msb=ssb/df1,msw=ssw/df2,F=msw>0?msb/msw:0;
+  return {gm,grand,msb,msw,F,p:fpval(F,df1,df2),df1,df2};
+}
+function drawAnova(){
+  const {ctx,W,H}=setup(AN.cv);const padL=30,padR=12,padT=12,padB=22;
+  const groups=genGroups(),res=anova(groups);
+  const all=groups.flat();let lo=Math.min(...all)-3,hi=Math.max(...all)+3;lo=Math.min(lo,28);hi=Math.max(hi,72);
+  const Y=v=>padT+(H-padT-padB)*(1-(v-lo)/(hi-lo));
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle=C.grid;ctx.lineWidth=1;for(let i=0;i<=4;i++){const y=padT+(H-padT-padB)*i/4;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();
+    ctx.fillStyle=C.mut;ctx.font='9px JetBrains Mono';ctx.textAlign='right';ctx.fillText(Math.round(hi-(hi-lo)*i/4),padL-4,y+3);}
+  // grand mean
+  ctx.strokeStyle='rgba(29,30,34,.4)';ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(padL,Y(res.grand));ctx.lineTo(W-padR,Y(res.grand));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=C.mut;ctx.font='9px Inter';ctx.textAlign='left';ctx.fillText('grand mean',W-padR-66,Y(res.grand)-4);
+  const cw=(W-padL-padR)/3;
+  groups.forEach((g,i)=>{
+    const cx=padL+cw*i+cw/2;const r=mulberry32(AN.seed*31+i*7);
+    g.forEach(v=>{const jx=cx+(r()-0.5)*cw*0.5;ctx.beginPath();ctx.arc(jx,Y(v),3.2,0,Math.PI*2);ctx.fillStyle=MCOL[i];ctx.globalAlpha=.55;ctx.fill();ctx.globalAlpha=1;});
+    // mean line
+    ctx.strokeStyle=MCOL[i];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx-cw*0.32,Y(res.gm[i]));ctx.lineTo(cx+cw*0.32,Y(res.gm[i]));ctx.stroke();
+    ctx.fillStyle=MCOL[i];ctx.font='700 11px Archivo';ctx.textAlign='center';ctx.fillText(['A','B','C'][i],cx,H-padB+14);
+  });
+  // results
+  document.getElementById('rF').textContent=res.F.toFixed(2);
+  document.getElementById('rP').textContent=res.p<0.001?res.p.toExponential(1):res.p.toFixed(3);
+  document.getElementById('rB').textContent=res.msb.toFixed(1);
+  document.getElementById('rW').textContent=res.msw.toFixed(1);
+  const v=document.getElementById('verdict');
+  if(res.p<0.05){v.className='verdict sig';v.textContent='p < 0.05 → REJECT H₀: the machine means differ significantly.';}
+  else{v.className='verdict nsig';v.textContent='p ≥ 0.05 → fail to reject H₀: no significant difference detected.';}
+  const m=document.getElementById('anovaMsg');
+  if(res.p<0.05) m.innerHTML='<b>Significant.</b> The between-machine spread (MS '+res.msb.toFixed(0)+') is large versus the within-machine noise (MS '+res.msw.toFixed(0)+'), so F='+res.F.toFixed(1)+' is big and p is tiny. A post-hoc test would now reveal which machine differs.';
+  else m.innerHTML='<b>Not significant.</b> The means sit close together relative to the noise, so F='+res.F.toFixed(1)+' is small and p='+res.p.toFixed(2)+'. Spread a machine\u2019s mean further to see the verdict flip.';
+}
+['sA','sB','sC','sS'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{
+  document.getElementById('vA').textContent=document.getElementById('sA').value;
+  document.getElementById('vB').textContent=document.getElementById('sB').value;
+  document.getElementById('vC').textContent=document.getElementById('sC').value;
+  document.getElementById('vS').textContent=document.getElementById('sS').value;
+  drawAnova();}));
+document.getElementById('resample').addEventListener('click',()=>{AN.seed=Math.floor(Math.random()*9999)+1;drawAnova();});
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawAnova();ob.disconnect();}})},{threshold:.2}).observe(AN.cv);
+
+document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const pre=b.closest('.code-card').querySelector('pre');const t=pre?pre.innerText:'';navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied \u2713';setTimeout(()=>b.textContent=o,1300);});});});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>drawAnova(),200);});
+</script>
+</body>
+</html>

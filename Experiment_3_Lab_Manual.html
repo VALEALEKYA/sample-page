@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment 3 — Regularized Linear Regression | DSA Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#120e26;          /* deep indigo */
+    --bg-2:#1d1740;        /* panel */
+    --bg-3:#2a2256;        /* lighter */
+    --cream:#f2eee6;
+    --cream-2:#fbf8f1;
+    --amber:#f0a830;       /* tuning dial */
+    --amber-d:#bf7f17;
+    --violet:#9d7bff;      /* model curve */
+    --violet-d:#6f4fd6;
+    --mint:#3fd0a8;        /* good fit */
+    --mint-d:#1f9c79;
+    --coral:#f0615a;       /* error / overfit */
+    --coral-d:#bf3a34;
+    --ink:#1b1730;
+    --muted:#a99fd0;
+    --line:rgba(242,238,230,.14);
+    --code-bg:#171130;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.75);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:radial-gradient(1100px 560px at 84% -10%, rgba(240,168,48,.10), transparent 60%),
+               radial-gradient(900px 520px at -8% 16%, rgba(157,123,255,.14), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3,h4{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}
+  a{color:var(--amber)}
+  ::selection{background:var(--amber);color:var(--ink)}
+
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(18,14,38,.82);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .dial{width:34px;height:34px;border-radius:50%;flex:none;background:conic-gradient(var(--amber) 0 70%, var(--bg-3) 70% 100%);position:relative;box-shadow:0 0 0 2px rgba(255,255,255,.08)}
+  .dial::after{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--bg);}
+  .dial::before{content:"";position:absolute;left:50%;top:5px;width:2px;height:13px;background:var(--coral);transform-origin:bottom;transform:translateX(-50%) rotate(40deg);z-index:2}
+  .brand b{font-family:'Archivo';font-weight:800;letter-spacing:.3px}
+  .brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}
+  .topnav a:hover{background:var(--bg-3);opacity:1}
+
+  .hero{padding:62px 0 34px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--amber);font-weight:700;border:1px solid var(--amber-d);border-radius:100px;padding:6px 14px;background:rgba(240,168,48,.06)}
+  .hero h1{font-size:clamp(38px,7vw,74px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}
+  .hero h1 .hl{color:var(--amber)}
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:#ddd5f5;max-width:690px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}
+  .chip b{color:var(--amber);font-family:'JetBrains Mono';font-weight:700}
+
+  .dash{margin-top:34px;background:linear-gradient(180deg,#0f0b22,#120e26);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}
+  .d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--violet);font-family:'JetBrains Mono'}
+  .dot-live{width:9px;height:9px;border-radius:50%;background:var(--violet);animation:blink 1.3s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+  .d-cell{background:#0f0b22;border:1px solid var(--line);border-radius:12px;padding:14px}
+  .d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--amber);letter-spacing:-1px}
+  .d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--violet);font-size:14px;letter-spacing:1px;border:1px solid var(--violet-d);border-radius:8px;padding:5px 10px;background:rgba(157,123,255,.08)}
+  .sec-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:800;letter-spacing:-.6px}
+
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+  .card h3{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .lab-meta{display:grid;grid-template-columns:160px 1fr;gap:0}
+  .lab-meta .k{font-weight:700;font-family:'Archivo';padding:12px 0;border-bottom:1px solid rgba(27,23,48,.10);color:var(--violet-d)}
+  .lab-meta .v{padding:12px 0;border-bottom:1px solid rgba(27,23,48,.10)}
+  @media(max-width:600px){.lab-meta{grid-template-columns:1fr}.lab-meta .v{padding-top:0}.lab-meta .k{border-bottom:0;padding-bottom:0}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:7px 0}
+
+  /* interactive panels */
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}
+  .panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}
+  .panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .canvas-wrap{background:var(--cream-2);border:1px solid rgba(27,23,48,.10);border-radius:14px;padding:10px}
+  canvas.chart{width:100%;display:block}
+
+  .slider-row{display:flex;align-items:center;gap:14px;margin-top:16px;flex-wrap:wrap}
+  .slider-row label{font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);min-width:140px}
+  input[type=range]{-webkit-appearance:none;appearance:none;height:7px;border-radius:6px;background:linear-gradient(90deg,var(--mint),var(--amber),var(--coral));flex:1;min-width:160px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  .lam-val{font-family:'JetBrains Mono';font-weight:700;font-size:14px;color:var(--amber-d);min-width:120px;text-align:right}
+
+  .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-top:18px}
+  .sc{background:var(--cream-2);border:1px solid rgba(27,23,48,.10);border-radius:12px;padding:13px 15px;border-top:4px solid var(--violet)}
+  .sc .scl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#6a6088;font-weight:700;font-family:'Archivo'}
+  .sc .scn{font-family:'Archivo';font-weight:900;font-size:24px;color:var(--ink);letter-spacing:-.5px;margin-top:4px;line-height:1.1}
+  .sc.train{border-top-color:var(--mint)}.sc.test{border-top-color:var(--coral)}.sc.norm{border-top-color:var(--amber)}.sc.verdict{border-top-color:var(--violet)}
+  .verdict-txt{font-size:17px}
+
+  .answer{margin-top:14px;background:rgba(157,123,255,.10);border:1px solid rgba(111,79,214,.3);border-left:4px solid var(--violet);border-radius:10px;padding:13px 16px;color:var(--ink)}
+  .answer b{color:var(--violet-d);font-family:'Archivo'}
+
+  /* explainers */
+  .ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.ex-grid{grid-template-columns:1fr}}
+  .exc{background:var(--cream);color:var(--ink);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .exc .eh{display:flex;align-items:center;gap:10px;padding:13px 16px;color:#fff}
+  .exc .eh b{font-family:'Archivo';font-weight:800;font-size:16px}
+  .exc .eh .formula{margin-left:auto;font-family:'JetBrains Mono';font-size:11px;background:rgba(255,255,255,.16);padding:4px 9px;border-radius:6px}
+  .exc .demo{background:var(--cream-2);padding:10px}
+  .exc .txt{padding:13px 16px;font-size:13.5px;color:#3a3358}
+  .exc .txt b{color:var(--ink);font-family:'Archivo'}
+  .e-ls{background:var(--mint-d)}.e-bv{background:var(--coral-d)}
+
+  /* videos */
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .vid{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vid .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+  .vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid .vmeta{padding:13px 16px}
+  .vid .vmeta b{font-family:'Archivo';font-weight:700;font-size:14.5px;display:block}
+  .vid .vmeta span{font-size:12px;color:var(--muted)}
+  .vid .vmeta .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--amber);text-transform:uppercase;letter-spacing:.5px}
+
+  /* code */
+  .code-card{background:var(--code-bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .code-top{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#120d28;border-bottom:1px solid var(--line)}
+  .tl{display:flex;gap:7px}.tl span{width:11px;height:11px;border-radius:50%}
+  .tl span:nth-child(1){background:#ff5f57}.tl span:nth-child(2){background:#febc2e}.tl span:nth-child(3){background:#28c840}
+  .code-top .fname{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);margin-left:6px}
+  .copy{margin-left:auto;font-family:'Inter';font-size:12px;font-weight:600;color:var(--cream);background:var(--bg-3);border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+  .copy:hover{background:var(--violet);border-color:var(--violet);color:#fff}
+  pre{margin:0;padding:18px 20px;overflow-x:auto}
+  code{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;color:#e9e3f5}
+  .tok-kw{color:#c79bff;font-weight:600}.tok-fn{color:#7ee0c8}.tok-str{color:#f0a830}
+  .tok-num{color:#9db4ff}.tok-com{color:#6f6592;font-style:italic}.tok-bi{color:#86c8ff}
+
+  .timeline{position:relative;padding-left:28px}
+  .timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--amber),var(--violet))}
+  .step{position:relative;margin-bottom:18px}
+  .step::before{content:"";position:absolute;left:-23px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px var(--bg)}
+  .step b{font-family:'Archivo';color:var(--amber)}
+
+  .viva details{background:var(--cream);color:var(--ink);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 8px 22px -16px rgba(0,0,0,.6)}
+  .viva summary{cursor:pointer;list-style:none;padding:15px 20px;font-weight:600;font-family:'Archivo';display:flex;align-items:center;gap:12px}
+  .viva summary::-webkit-details-marker{display:none}
+  .viva summary::before{content:"Q";font-family:'JetBrains Mono';font-weight:700;color:#fff;background:var(--violet);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  .viva details[open] summary{background:var(--cream-2)}
+  .viva .ans{padding:0 20px 18px 56px;color:#3a3358}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="dial" aria-hidden="true"></div>
+    <div class="brand"><b>DSA LAB</b><span>Data Science Applications</span></div>
+    <nav class="topnav">
+      <a href="#manual">Manual</a>
+      <a href="#why">Why</a>
+      <a href="#dial">Live demo</a>
+      <a href="#shrink">Ridge vs Lasso</a>
+      <a href="#videos">Videos</a>
+      <a href="#program">Program</a>
+      <a href="#viva">Viva</a>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dial" style="width:16px;height:16px"></span>Experiment&nbsp;03 · CO3</span>
+    <h1>Turning the <span class="hl">Knob</span><br>on Overfitting</h1>
+    <p class="sub">Regularized linear regression — <b>Ridge (L2)</b> and <b>Lasso (L1)</b>. Drag one slider and watch a wiggly, over-fitted curve relax into a clean, general model. The maths runs live in your browser.</p>
+    <div class="meta-row">
+      <div class="chip">Course&nbsp;<b>IT416</b></div>
+      <div class="chip">Outcome&nbsp;<b>CO3</b></div>
+      <div class="chip">Models&nbsp;<b>Ridge · Lasso</b></div>
+      <div class="chip">Knob&nbsp;<b>λ (alpha)</b></div>
+    </div>
+    <div class="dash reveal">
+      <div class="d-top"><h3>The regularization idea</h3><div class="live"><span class="dot-live"></span>LIVE MODEL</div></div>
+      <div class="d-grid">
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Penalty types</div></div>
+        <div class="d-cell"><div class="n" data-count="9">0</div><div class="l">Polynomial degree</div></div>
+        <div class="d-cell"><div class="n" data-count="1">0</div><div class="l">Slider to rule it</div></div>
+        <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">Concept videos</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- LAB MANUAL -->
+<section id="manual">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Lab Manual</h2></div>
+    <div class="card">
+      <div class="lab-meta">
+        <div class="k">Aim</div>
+        <div class="v">To implement regularized linear regression (Ridge / L2 and Lasso / L1) in Python, understand how the regularization parameter controls overfitting, and compare the regularized models against ordinary least squares.</div>
+        <div class="k">Objectives</div>
+        <div class="v"><ul class="clean">
+          <li>Recall ordinary least-squares linear regression and the meaning of overfitting.</li>
+          <li>Add an L2 (Ridge) and L1 (Lasso) penalty to the cost function.</li>
+          <li>Study the effect of the regularization strength α (lambda) on the fit and on the coefficients.</li>
+          <li>Choose α using cross-validation and evaluate with train/test error.</li>
+        </ul></div>
+        <div class="k">Software</div>
+        <div class="v">Python 3.x · Jupyter / Colab · NumPy, Pandas, Matplotlib, scikit-learn.</div>
+        <div class="k">Theory</div>
+        <div class="v">Linear regression minimises the sum of squared residuals. A flexible model (e.g. a high-degree polynomial) can fit the noise — <i>overfitting</i>. Regularization adds a penalty on the size of the coefficients, discouraging extreme weights. Ridge penalises Σwⱼ² (L2); Lasso penalises Σ|wⱼ| (L1), which can drive some coefficients to exactly zero.</div>
+        <div class="k">Outcome</div>
+        <div class="v">CO3 — building and comparing regression models on a dataset.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">02</span><h2>The Cost Function, in Words</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:6px">Plain linear regression</h3>
+        <p style="color:#3a3358;margin-top:0">Find weights <b>w</b> that make predictions close to reality — minimise the squared error:</p>
+        <div style="background:var(--cream-2);border-radius:10px;padding:14px;font-family:'JetBrains Mono';font-size:13px;color:var(--ink);border:1px solid rgba(27,23,48,.1)">
+          cost = Σ (yᵢ − ŷᵢ)²
+        </div>
+        <p style="color:#3a3358;font-size:13.5px">With enough flexibility, this chases every wiggle in the training data — including the noise.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:6px">+ Regularization penalty</h3>
+        <p style="color:#3a3358;margin-top:0">Add a "keep the weights small" term. λ (alpha) sets how strict you are:</p>
+        <div style="background:var(--cream-2);border-radius:10px;padding:14px;font-family:'JetBrains Mono';font-size:13px;color:var(--ink);border:1px solid rgba(27,23,48,.1);line-height:1.9">
+          <span style="color:var(--violet-d)">Ridge:</span> Σ(yᵢ−ŷᵢ)² + λ·Σ wⱼ²<br>
+          <span style="color:var(--coral-d)">Lasso:</span> Σ(yᵢ−ŷᵢ)² + λ·Σ |wⱼ|
+        </div>
+        <p style="color:#3a3358;font-size:13.5px"><b>λ = 0</b> → ordinary regression. <b>λ → ∞</b> → weights crushed to ~0 (a flat line).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE REGULARIZATION DIAL -->
+<section id="dial">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">03</span><h2>The Regularization Dial</h2></div>
+    <p class="reveal" style="max-width:760px;color:#ddd5f5;margin-top:-12px">A degree-9 polynomial is fit to noisy points with a <b>real Ridge solver</b> running live. Slide λ from left (no penalty) to right (strong penalty) and watch the purple curve go from <span style="color:var(--coral)">over-fitted &amp; wiggly</span> → <span style="color:var(--mint)">smooth &amp; general</span> → too flat. Green dots are training data, red rings are unseen test points.</p>
+
+    <div class="panel reveal">
+      <div class="ph"><b>Ridge fit · degree 9</b><span class="hint">drag the slider ↓</span></div>
+      <div class="pbody">
+        <div class="canvas-wrap"><canvas class="chart" id="dialCanvas" height="300"></canvas></div>
+        <div class="slider-row">
+          <label for="lamSlider">Regularization λ</label>
+          <input type="range" id="lamSlider" min="0" max="100" value="6">
+          <span class="lam-val" id="lamVal">λ = 0.0002</span>
+        </div>
+        <div class="stat-cards">
+          <div class="sc train"><div class="scl">Train error</div><div class="scn" id="vTrain">—</div></div>
+          <div class="sc test"><div class="scl">Test error</div><div class="scn" id="vTest">—</div></div>
+          <div class="sc norm"><div class="scl">Weight size ‖w‖</div><div class="scn" id="vNorm">—</div></div>
+          <div class="sc verdict"><div class="scl">Diagnosis</div><div class="scn verdict-txt" id="vVerdict">—</div></div>
+        </div>
+        <div class="answer" id="dialMsg"><b>Watch the gap:</b> when the train error is tiny but the test error is large, the model has memorised noise — that's overfitting. The right λ makes the test error smallest.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLAINERS -->
+<section id="explain">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">03a</span><h2>Two Ideas Behind It</h2></div>
+    <div class="ex-grid">
+      <div class="exc">
+        <div class="eh e-ls"><b>Least squares &amp; residuals</b><span class="formula">Σ residual²</span></div>
+        <div class="demo"><canvas class="chart" data-chart="ex-ls" height="155"></canvas></div>
+        <div class="txt"><b>Residual</b> = gap between a point and the line. Regression picks the line with the smallest total <i>squared</i> residual. Regularization then nudges that line to be simpler.</div>
+      </div>
+      <div class="exc">
+        <div class="eh e-bv"><b>Bias–variance trade-off</b><span class="formula">U-curve</span></div>
+        <div class="demo"><canvas class="chart" data-chart="ex-bv" height="155"></canvas></div>
+        <div class="txt">As complexity rises, <span style="color:var(--mint-d);font-weight:700">train error</span> keeps falling but <span style="color:var(--coral-d);font-weight:700">test error</span> dips then rises. λ moves you along this curve — the sweet spot is the bottom of the U.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RIDGE VS LASSO SHRINKAGE -->
+<section id="shrink">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">04</span><h2>Ridge vs Lasso: the Big Difference</h2></div>
+    <p class="reveal" style="max-width:760px;color:#ddd5f5;margin-top:-12px">Both shrink coefficients as λ grows — but <b>Lasso can hit exactly zero</b>, dropping a feature entirely (automatic feature selection). Ridge only gets <i>close</i> to zero. Slide λ and watch the bars. (Shown for the clean orthonormal case, where the formulas are exact.)</p>
+    <div class="panel reveal">
+      <div class="ph"><b>Coefficient shrinkage</b><span class="hint">grey bar = coefficient removed (=0)</span></div>
+      <div class="pbody">
+        <div class="canvas-wrap"><canvas class="chart" id="shrinkCanvas" height="240"></canvas></div>
+        <div class="slider-row">
+          <label for="shrSlider">Regularization λ</label>
+          <input type="range" id="shrSlider" min="0" max="100" value="20">
+          <span class="lam-val" id="shrVal">λ = 0.20</span>
+        </div>
+        <div class="answer" id="shrMsg"><b>Notice:</b> as you push λ right, Lasso's smaller coefficients snap to zero one by one, while Ridge's bars merely get shorter — never disappearing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">05</span><h2>Watch the Concepts</h2></div>
+    <p style="max-width:760px;color:#ddd5f5;margin-top:-12px">Three short, beginner-friendly explainers from <b>StatQuest with Josh Starmer</b> — widely used in classrooms. Watch in order for a complete picture.</p>
+    <div class="vid-grid">
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/Q81RR3yKn30" title="Regularization Part 1: Ridge (L2) Regression" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest · Part 1</span><b>Ridge (L2) Regression</b><span>How the L2 penalty desensitises the model to training data.</span></div>
+      </div>
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/NGf0voTMlcs" title="Regularization Part 2: Lasso (L1) Regression" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest · Part 2</span><b>Lasso (L1) Regression</b><span>The L1 penalty and how it removes useless variables.</span></div>
+      </div>
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/Xm2C_gTAl8c" title="Ridge vs Lasso Regression, Visualized" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest · Visualized</span><b>Ridge vs Lasso, Visualized</b><span>Why Lasso can set parameters to 0 and Ridge cannot.</span></div>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:12.5px;margin-top:14px">Videos are embedded from YouTube and belong to their creators. If a frame is blank, your network may block YouTube — open the titles on youtube.com directly.</p>
+  </div>
+</section>
+
+<!-- PROGRAM -->
+<section id="program">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">06</span><h2>The Program</h2></div>
+    <p style="max-width:720px;color:#ddd5f5;margin-top:-12px">Implemented with scikit-learn. Swap in any dataset CSV (here a built-in one is used so it runs anywhere).</p>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">1 — data &amp; split.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> numpy <span class="tok-kw">as</span> np
+<span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+<span class="tok-kw">from</span> sklearn.datasets <span class="tok-kw">import</span> load_diabetes
+<span class="tok-kw">from</span> sklearn.model_selection <span class="tok-kw">import</span> train_test_split
+<span class="tok-kw">from</span> sklearn.preprocessing <span class="tok-kw">import</span> StandardScaler
+
+X, y = <span class="tok-fn">load_diabetes</span>(return_X_y=<span class="tok-kw">True</span>)   <span class="tok-com"># or pd.read_csv("data.csv")</span>
+X_tr, X_te, y_tr, y_te = <span class="tok-fn">train_test_split</span>(X, y, test_size=<span class="tok-num">0.2</span>, random_state=<span class="tok-num">1</span>)
+
+<span class="tok-com"># Always scale features before regularizing!</span>
+sc = <span class="tok-fn">StandardScaler</span>().<span class="tok-fn">fit</span>(X_tr)
+X_tr, X_te = sc.<span class="tok-fn">transform</span>(X_tr), sc.<span class="tok-fn">transform</span>(X_te)</code></pre>
+    </div>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">2 — ridge_and_lasso.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">from</span> sklearn.linear_model <span class="tok-kw">import</span> LinearRegression, Ridge, Lasso
+<span class="tok-kw">from</span> sklearn.metrics <span class="tok-kw">import</span> mean_squared_error, r2_score
+
+models = {
+  <span class="tok-str">"OLS"</span>:   <span class="tok-fn">LinearRegression</span>(),
+  <span class="tok-str">"Ridge"</span>: <span class="tok-fn">Ridge</span>(alpha=<span class="tok-num">1.0</span>),     <span class="tok-com"># L2 penalty</span>
+  <span class="tok-str">"Lasso"</span>: <span class="tok-fn">Lasso</span>(alpha=<span class="tok-num">0.1</span>),     <span class="tok-com"># L1 penalty</span>
+}
+<span class="tok-kw">for</span> name, m <span class="tok-kw">in</span> models.<span class="tok-fn">items</span>():
+    m.<span class="tok-fn">fit</span>(X_tr, y_tr)
+    pred = m.<span class="tok-fn">predict</span>(X_te)
+    <span class="tok-bi">print</span>(name, <span class="tok-str">"MSE:"</span>, <span class="tok-fn">round</span>(<span class="tok-fn">mean_squared_error</span>(y_te, pred),<span class="tok-num">1</span>),
+              <span class="tok-str">"R2:"</span>, <span class="tok-fn">round</span>(<span class="tok-fn">r2_score</span>(y_te, pred),<span class="tok-num">3</span>))
+    <span class="tok-bi">print</span>(<span class="tok-str">"  non-zero coefs:"</span>, np.<span class="tok-fn">sum</span>(m.coef_ != <span class="tok-num">0</span>))</code></pre>
+    </div>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">3 — choose_alpha_cv.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-com"># Pick the best alpha automatically with cross-validation</span>
+<span class="tok-kw">from</span> sklearn.linear_model <span class="tok-kw">import</span> RidgeCV, LassoCV
+
+ridge_cv = <span class="tok-fn">RidgeCV</span>(alphas=np.<span class="tok-fn">logspace</span>(-<span class="tok-num">3</span>, <span class="tok-num">3</span>, <span class="tok-num">50</span>)).<span class="tok-fn">fit</span>(X_tr, y_tr)
+lasso_cv = <span class="tok-fn">LassoCV</span>(cv=<span class="tok-num">5</span>).<span class="tok-fn">fit</span>(X_tr, y_tr)
+
+<span class="tok-bi">print</span>(<span class="tok-str">"best Ridge alpha:"</span>, ridge_cv.alpha_)
+<span class="tok-bi">print</span>(<span class="tok-str">"best Lasso alpha:"</span>, lasso_cv.alpha_)</code></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">4 — plot_coefficients.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> matplotlib.pyplot <span class="tok-kw">as</span> plt
+
+<span class="tok-com"># See how coefficients shrink as alpha grows</span>
+alphas = np.<span class="tok-fn">logspace</span>(-<span class="tok-num">2</span>, <span class="tok-num">3</span>, <span class="tok-num">30</span>)
+coefs = [<span class="tok-fn">Ridge</span>(alpha=a).<span class="tok-fn">fit</span>(X_tr, y_tr).coef_ <span class="tok-kw">for</span> a <span class="tok-kw">in</span> alphas]
+
+plt.<span class="tok-fn">plot</span>(alphas, coefs)
+plt.<span class="tok-fn">xscale</span>(<span class="tok-str">"log"</span>); plt.<span class="tok-fn">xlabel</span>(<span class="tok-str">"alpha (λ)"</span>); plt.<span class="tok-fn">ylabel</span>(<span class="tok-str">"coefficient"</span>)
+plt.<span class="tok-fn">title</span>(<span class="tok-str">"Ridge coefficient shrinkage"</span>); plt.<span class="tok-fn">show</span>()</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- PROCEDURE & RESULT -->
+<section id="procedure">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Procedure &amp; Result</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:14px">Steps followed</h3>
+        <div class="timeline">
+          <div class="step"><b>1 · Load &amp; split</b><br>Read the data, split into train/test.</div>
+          <div class="step"><b>2 · Scale</b><br>Standardise features (mean 0, std 1).</div>
+          <div class="step"><b>3 · Baseline</b><br>Fit ordinary least squares (OLS).</div>
+          <div class="step"><b>4 · Regularize</b><br>Fit Ridge and Lasso with a chosen α.</div>
+          <div class="step"><b>5 · Tune</b><br>Use RidgeCV / LassoCV to pick α.</div>
+          <div class="step"><b>6 · Compare</b><br>Report MSE, R², and non-zero coefficients.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:14px">Result</h3>
+        <p style="color:#3a3358;margin-top:0">Regularized linear regression was implemented using scikit-learn. Ridge and Lasso reduced overfitting compared with plain OLS, giving lower test error at a suitable α. Lasso additionally set several coefficients to exactly zero, performing automatic feature selection. This demonstrates CO3.</p>
+        <div class="answer" style="margin-top:8px"><b>Conclusion:</b> Regularization trades a little extra bias for a large drop in variance, producing models that generalise better to unseen data. λ is the control knob: too small overfits, too large underfits, and cross-validation finds the balance. Choose Ridge to keep all (correlated) features, Lasso when you also want a sparse, interpretable model.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIVA -->
+<section id="viva" class="viva">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">08</span><h2>Viva Questions</h2></div>
+    <details><summary>What is regularization and why do we need it?</summary>
+      <div class="ans">Regularization adds a penalty on the size of the model's coefficients to the cost function. It discourages overly complex models that fit noise, reducing overfitting and improving generalisation to new data.</div></details>
+    <details><summary>Difference between Ridge (L2) and Lasso (L1)?</summary>
+      <div class="ans">Ridge adds λ·Σwⱼ² (squared coefficients) and shrinks all weights toward — but never exactly to — zero. Lasso adds λ·Σ|wⱼ| (absolute values) and can set some weights exactly to zero, performing feature selection.</div></details>
+    <details><summary>What does the parameter α / λ control? What happens at the extremes?</summary>
+      <div class="ans">It controls the strength of the penalty. λ = 0 reduces to ordinary least squares (may overfit); as λ → ∞ the coefficients are driven toward zero, giving an under-fitted, nearly flat model.</div></details>
+    <details><summary>Why does Lasso produce sparse models but Ridge does not?</summary>
+      <div class="ans">The L1 penalty has a corner (diamond-shaped constraint) at the axes, so the optimal solution often lands exactly on an axis where a coefficient is zero. The L2 penalty is circular/smooth, so solutions rarely hit zero exactly.</div></details>
+    <details><summary>Why must features be standardised before regularization?</summary>
+      <div class="ans">The penalty depends on coefficient magnitude, which depends on each feature's scale. Without standardisation, features measured in large units would be penalised differently, biasing the result.</div></details>
+    <details><summary>What is the bias–variance trade-off?</summary>
+      <div class="ans">Simple models have high bias but low variance; complex models have low bias but high variance. Total error is minimised at an intermediate complexity — exactly what tuning λ helps you find.</div></details>
+    <details><summary>How do you choose the best α?</summary>
+      <div class="ans">By cross-validation — e.g. <code style="font-family:JetBrains Mono;font-size:12px">RidgeCV</code> / <code style="font-family:JetBrains Mono;font-size:12px">LassoCV</code> try a range of α values and select the one with the lowest validation error.</div></details>
+    <details><summary>What is Elastic Net?</summary>
+      <div class="ans">A model that combines both penalties: λ₁·Σ|wⱼ| + λ₂·Σwⱼ². It gets Lasso's feature selection plus Ridge's stability with correlated features.</div></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    DSA Lab · Experiment 03 · Regularized Linear Regression — Course IT416 (R23) · CO3<br>
+    <span style="opacity:.7">The live demos use representative data and the closed-form orthonormal case for shrinkage, to make the ideas visible; real fits use scikit-learn as in the program above.</span>
+  </div>
+</footer>
+
+<script>
+/* reveal + count-up */
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,s=el.dataset.suffix||'',d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e)+s;if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+
+/* canvas helpers */
+const REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const C={ink:'#1b1730',amber:'#f0a830',amberD:'#bf7f17',violet:'#9d7bff',violetD:'#6f4fd6',mint:'#3fd0a8',mintD:'#1f9c79',coral:'#f0615a',coralD:'#bf3a34',grid:'rgba(27,23,48,.12)',mut:'#6a6088'};
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+const easeOut=t=>1-Math.pow(1-t,3);
+function animate(dur,draw){if(REDUCE){draw(1);return;}const t0=performance.now();(function l(n){const p=Math.min(1,(n-t0)/dur);draw(easeOut(p));if(p<1)requestAnimationFrame(l);})(performance.now());}
+
+/* ============================================================
+   Linear algebra: solve A x = b (Gaussian elimination, pivoting)
+============================================================ */
+function solve(A,b){
+  const n=b.length, M=A.map((r,i)=>r.concat(b[i]));
+  for(let col=0;col<n;col++){
+    let piv=col;for(let r=col+1;r<n;r++)if(Math.abs(M[r][col])>Math.abs(M[piv][col]))piv=r;
+    [M[col],M[piv]]=[M[piv],M[col]];
+    const d=M[col][col]||1e-12;
+    for(let r=0;r<n;r++){if(r===col)continue;const f=M[r][col]/d;for(let c=col;c<=n;c++)M[r][c]-=f*M[col][c];}
+  }
+  return M.map((r,i)=>r[n]/(M[i][i]||1e-12));
+}
+/* Ridge polynomial fit. xs in [-1,1]. degree D. returns weights length D+1 */
+function ridgeFit(xs,ys,D,lambda){
+  const n=xs.length, m=D+1;
+  // design matrix
+  const X=xs.map(x=>{const row=[];let p=1;for(let j=0;j<m;j++){row.push(p);p*=x;}return row;});
+  // A = X^T X + lambda*I (don't penalize intercept j=0)
+  const A=Array.from({length:m},()=>Array(m).fill(0));
+  const b=Array(m).fill(0);
+  for(let i=0;i<m;i++){
+    for(let k=0;k<m;k++){let s=0;for(let r=0;r<n;r++)s+=X[r][i]*X[r][k];A[i][k]=s;}
+    A[i][i]+=(i===0?0:lambda);
+    let sb=0;for(let r=0;r<n;r++)sb+=X[r][i]*ys[r];b[i]=sb;
+  }
+  return solve(A,b);
+}
+function polyEval(w,x){let s=0,p=1;for(let j=0;j<w.length;j++){s+=w[j]*p;p*=x;}return s;}
+
+/* ============================================================
+   REGULARIZATION DIAL
+============================================================ */
+// fixed noisy data from y = sin(2*pi*t), t in [0,1]; x scaled to [-1,1]
+const RAW=[[0.02,0.18],[0.09,0.66],[0.17,0.92],[0.24,0.88],[0.33,0.55],[0.40,0.18],
+           [0.50,-0.08],[0.57,-0.52],[0.66,-0.95],[0.74,-0.88],[0.82,-0.62],[0.90,-0.28],[0.97,0.20]];
+// split train/test
+const TEST_IDX=new Set([2,6,9,11]);
+const DEG=9;
+function scaleX(t){return 2*t-1;}
+function lamFromSlider(v){return Math.pow(10,-4+(v/100)*5);} // 1e-4 .. 1e1
+
+const DIAL={cv:document.getElementById('dialCanvas'),w:null};
+function fitDial(lambda){
+  const tr=RAW.filter((_,i)=>!TEST_IDX.has(i)), te=RAW.filter((_,i)=>TEST_IDX.has(i));
+  const xs=tr.map(p=>scaleX(p[0])), ys=tr.map(p=>p[1]);
+  const w=ridgeFit(xs,ys,DEG,lambda);
+  const mse=(arr)=>arr.reduce((s,p)=>{const e=polyEval(w,scaleX(p[0]))-p[1];return s+e*e;},0)/arr.length;
+  const norm=Math.sqrt(w.slice(1).reduce((s,v)=>s+v*v,0));
+  return {w,trainMSE:mse(tr),testMSE:mse(te),norm};
+}
+function drawDial(){
+  const {ctx,W,H}=setup(DIAL.cv);
+  const padL=34,padR=14,padT=12,padB=24;
+  const X=t=>padL+(W-padL-padR)*t;            // t in [0,1]
+  const yMin=-1.45,yMax=1.45;
+  const Y=v=>padT+(H-padT-padB)*(1-(v-yMin)/(yMax-yMin));
+  ctx.clearRect(0,0,W,H);
+  // grid + zero line
+  ctx.strokeStyle=C.grid;ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=padT+(H-padT-padB)*i/4;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();}
+  ctx.strokeStyle='rgba(27,23,48,.25)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(W-padR,Y(0));ctx.stroke();ctx.setLineDash([]);
+  // true function (faint)
+  ctx.strokeStyle='rgba(63,208,168,.45)';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let i=0;i<=120;i++){const t=i/120;const yy=Math.sin(2*Math.PI*t);i?ctx.lineTo(X(t),Y(yy)):ctx.moveTo(X(t),Y(yy));}ctx.stroke();
+  // fitted polynomial
+  const w=DIAL.w;
+  ctx.strokeStyle=C.violet;ctx.lineWidth=3;ctx.lineJoin='round';ctx.beginPath();
+  for(let i=0;i<=200;i++){const t=i/200;let yy=polyEval(w,scaleX(t));yy=Math.max(yMin-1,Math.min(yMax+1,yy));i?ctx.lineTo(X(t),Y(yy)):ctx.moveTo(X(t),Y(yy));}
+  ctx.save();ctx.beginPath();ctx.rect(padL,0,W-padL-padR,H);ctx.clip();ctx.stroke();ctx.restore();
+  // points
+  RAW.forEach((p,i)=>{
+    const isTest=TEST_IDX.has(i);
+    ctx.beginPath();ctx.arc(X(p[0]),Y(p[1]),5,0,Math.PI*2);
+    if(isTest){ctx.fillStyle='rgba(240,97,90,.15)';ctx.fill();ctx.strokeStyle=C.coral;ctx.lineWidth=2.2;ctx.stroke();}
+    else{ctx.fillStyle=C.mintD;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.stroke();}
+  });
+  // legend
+  ctx.font='10px Inter';ctx.textAlign='left';
+  ctx.fillStyle=C.mintD;ctx.fillText('● train',padL+2,H-6);
+  ctx.fillStyle=C.coral;ctx.fillText('◎ test',padL+52,H-6);
+  ctx.fillStyle=C.violetD;ctx.fillText('— model',padL+96,H-6);
+  ctx.fillStyle=C.mintD;ctx.fillText('— true',padL+150,H-6);
+}
+function fmt(n,d=4){return Number.isFinite(n)?(+n.toFixed(d)).toString():'—';}
+function updateDial(){
+  const lam=lamFromSlider(+document.getElementById('lamSlider').value);
+  document.getElementById('lamVal').textContent='λ = '+(lam<0.001?lam.toExponential(1):lam.toFixed(lam<1?4:2));
+  const r=fitDial(lam);DIAL.w=r.w;drawDial();
+  document.getElementById('vTrain').textContent=fmt(r.trainMSE,4);
+  document.getElementById('vTest').textContent=fmt(r.testMSE,4);
+  document.getElementById('vNorm').textContent=fmt(r.norm,1);
+  // diagnosis
+  let verdict,color,msg;
+  if(r.trainMSE>0.05){verdict='Underfit';color=C.amberD;msg='<b>Underfitting:</b> λ is so large the curve is nearly flat — it can\'t even follow the training data. Both errors are high. Decrease λ.';}
+  else if(r.trainMSE<0.02 && r.testMSE>2.2*r.trainMSE){verdict='Overfit';color=C.coralD;msg='<b>Overfitting:</b> tiny train error but a much larger test error — the wiggly curve is chasing noise. Increase λ to smooth it.';}
+  else{verdict='Good fit';color=C.mintD;msg='<b>Good fit:</b> the curve tracks the true signal and the test error is near its minimum. This balance is exactly what regularization is built to find.';}
+  const ve=document.getElementById('vVerdict');ve.textContent=verdict;ve.style.color=color;
+  document.getElementById('dialMsg').innerHTML=msg;
+}
+document.getElementById('lamSlider').addEventListener('input',updateDial);
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){updateDial();ob.disconnect();}})},{threshold:.3}).observe(DIAL.cv);
+
+/* ============================================================
+   RIDGE vs LASSO SHRINKAGE (orthonormal closed form)
+============================================================ */
+const COEFS=[0.95,-0.70,0.45,-0.25,0.12];  // original OLS coefficients
+const SHR={cv:document.getElementById('shrinkCanvas')};
+function shrVal(v){return (v/100)*1.0;} // lambda 0..1
+function ridgeShrink(w,lam){return w/(1+lam);}
+function lassoShrink(w,lam){const s=Math.sign(w),a=Math.abs(w)-lam;return a>0?s*a:0;}
+function drawShrink(){
+  const {ctx,W,H}=setup(SHR.cv);
+  const lam=shrVal(+document.getElementById('shrSlider').value);
+  document.getElementById('shrVal').textContent='λ = '+lam.toFixed(2);
+  ctx.clearRect(0,0,W,H);
+  const n=COEFS.length;
+  const groupW=(W-40)/n, midY=H/2, maxBar=midY-30, scale=maxBar/1.0;
+  // center axis
+  ctx.strokeStyle='rgba(27,23,48,.25)';ctx.lineWidth=1.4;ctx.beginPath();ctx.moveTo(20,midY);ctx.lineTo(W-20,midY);ctx.stroke();
+  ctx.font='10px Inter';ctx.fillStyle=C.mut;ctx.textAlign='left';
+  ctx.fillText('Ridge (left bar)  vs  Lasso (right bar) — per feature',20,14);
+  let dropped=0;
+  COEFS.forEach((w,i)=>{
+    const cx=20+groupW*i+groupW/2, bw=groupW*0.30;
+    const rW=ridgeShrink(w,lam), lW=lassoShrink(w,lam);
+    // ridge bar (violet) on left
+    const rh=rW*scale, lh=lW*scale;
+    ctx.fillStyle=C.violet;
+    ctx.fillRect(cx-bw-3, rh>=0?midY-rh:midY, bw, Math.abs(rh));
+    // lasso bar (amber or grey if zero) on right
+    if(lW===0){dropped++;ctx.fillStyle='rgba(27,23,48,.18)';ctx.fillRect(cx+3,midY-6,bw,12);}
+    else{ctx.fillStyle=C.amber;ctx.fillRect(cx+3, lh>=0?midY-lh:midY, bw, Math.abs(lh));}
+    // original (faint outline)
+    const oh=w*scale;ctx.strokeStyle='rgba(27,23,48,.30)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+    ctx.strokeRect(cx-bw-3, oh>=0?midY-oh:midY, bw, Math.abs(oh));
+    ctx.strokeRect(cx+3, oh>=0?midY-oh:midY, bw, Math.abs(oh));ctx.setLineDash([]);
+    // label
+    ctx.fillStyle=C.ink;ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText('w'+(i+1),cx,H-6);
+  });
+  // legend chips
+  ctx.textAlign='left';ctx.font='10px Inter';
+  ctx.fillStyle=C.violet;ctx.fillText('■ Ridge',W-150,14);
+  ctx.fillStyle=C.amberD;ctx.fillText('■ Lasso',W-92,14);
+  document.getElementById('shrMsg').innerHTML = dropped>0
+    ? '<b>'+dropped+' feature'+(dropped>1?'s':'')+' removed by Lasso</b> (grey bars = coefficient is exactly 0). Ridge\'s purple bars only shrank — none vanished. That\'s why Lasso doubles as a feature selector.'
+    : '<b>Notice:</b> push λ further right and Lasso\'s smaller coefficients will snap to zero one by one, while Ridge\'s bars merely get shorter — never disappearing.';
+}
+document.getElementById('shrSlider').addEventListener('input',drawShrink);
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawShrink();ob.disconnect();}})},{threshold:.3}).observe(SHR.cv);
+
+/* ============================================================
+   EXPLAINERS
+============================================================ */
+function exLS(cv){
+  const {ctx,W,H}=setup(cv);
+  const pts=[[0.1,0.7],[0.28,0.5],[0.45,0.62],[0.62,0.38],[0.8,0.3],[0.92,0.18]];
+  const X=t=>26+(W-46)*t, Y=v=>14+(H-40)*(1-v);
+  // best-fit-ish line
+  const m=-0.55,b=0.74; const ly=t=>b+m*t;
+  animate(1300,p=>{ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle=C.grid;ctx.lineWidth=1;for(let i=0;i<=3;i++){const y=14+(H-40)*i/3;ctx.beginPath();ctx.moveTo(20,y);ctx.lineTo(W-14,y);ctx.stroke();}
+    // line
+    ctx.strokeStyle=C.violet;ctx.lineWidth=2.4;ctx.beginPath();ctx.moveTo(X(0),Y(ly(0)));ctx.lineTo(X(1),Y(ly(1)));ctx.stroke();
+    pts.forEach((pt,i)=>{const dp=Math.max(0,Math.min(1,p*pts.length-i));if(dp<=0)return;
+      // residual
+      ctx.strokeStyle='rgba(240,97,90,.7)';ctx.lineWidth=1.6;ctx.beginPath();ctx.moveTo(X(pt[0]),Y(pt[1]));ctx.lineTo(X(pt[0]),Y(ly(pt[0])));ctx.stroke();
+      ctx.beginPath();ctx.arc(X(pt[0]),Y(pt[1]),4.5,0,Math.PI*2);ctx.fillStyle=C.mintD;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=1.3;ctx.stroke();
+    });
+    if(p>.9){ctx.fillStyle=C.coralD;ctx.font='700 10px Inter';ctx.textAlign='left';ctx.fillText('red = residual',24,H-6);}
+  });
+}
+function exBV(cv){
+  const {ctx,W,H}=setup(cv);
+  const padL=24,padR=14,padT=14,padB=22;
+  const X=c=>padL+(W-padL-padR)*c, Y=v=>padT+(H-padT-padB)*(1-v);
+  const bias=c=>0.78*Math.exp(-3*c), varc=c=>0.06+0.85*Math.pow(c,2.4);
+  const train=c=>0.04+0.62*Math.exp(-3.2*c);
+  const test=c=>Math.min(1,bias(c)+varc(c)+0.02);
+  // find min test
+  let bestC=0,bestV=9;for(let i=0;i<=100;i++){const c=i/100;if(test(c)<bestV){bestV=test(c);bestC=c;}}
+  animate(1400,p=>{ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle=C.grid;ctx.lineWidth=1;for(let i=0;i<=3;i++){const y=padT+(H-padT-padB)*i/3;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();}
+    const N=Math.floor(p*100);
+    const curve=(f,col)=>{ctx.strokeStyle=col;ctx.lineWidth=2.4;ctx.beginPath();for(let i=0;i<=N;i++){const c=i/100;i?ctx.lineTo(X(c),Y(f(c))):ctx.moveTo(X(c),Y(f(c)));}ctx.stroke();};
+    curve(train,C.mintD); curve(test,C.coralD);
+    if(p>=1){const x=X(bestC),y=Y(test(bestC));
+      ctx.setLineDash([3,3]);ctx.strokeStyle=C.violetD;ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,H-padB);ctx.stroke();ctx.setLineDash([]);
+      ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=C.violet;ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle=C.violetD;ctx.font='700 10px Inter';ctx.textAlign='center';ctx.fillText('sweet spot',x,padT+10);
+    }
+    ctx.fillStyle=C.mut;ctx.font='9px Inter';ctx.textAlign='left';ctx.fillText('← simple        complexity        complex →',padL,H-5);
+  });
+}
+const EXC={'ex-ls':exLS,'ex-bv':exBV};
+const drawnE=new WeakSet();
+const eObs=new IntersectionObserver((es)=>{es.forEach(e=>{const k=e.target.dataset.chart;if(e.isIntersecting&&EXC[k]&&!drawnE.has(e.target)){requestAnimationFrame(()=>EXC[k](e.target));drawnE.add(e.target);eObs.unobserve(e.target);}})},{threshold:.4});
+document.querySelectorAll('canvas[data-chart]').forEach(c=>eObs.observe(c));
+
+/* copy + resize */
+document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const pre=b.closest('.code-card').querySelector('pre');const t=pre?pre.innerText:'';navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied ✓';setTimeout(()=>b.textContent=o,1300);});});});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{if(DIAL.w)drawDial();drawShrink();document.querySelectorAll('canvas[data-chart]').forEach(c=>{const k=c.dataset.chart;if(drawnE.has(c)&&EXC[k])EXC[k](c);});},220);});
+</script>
+</body>
+</html>

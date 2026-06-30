@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit II — Data Mining &amp; Preprocessing | DWDM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0f2420;--bg-2:#163530;--bg-3:#1f4a42;--cream:#eef5f2;--cream-2:#f8fcfb;--ac:#34d199;--ac-d:#1f9a72;--gold:#e8b54a;--ok:#46c08a;--no:#e8615a;--ink:#10231e;--muted:#9bc2b6;--line:rgba(238,245,242,.12);--code-bg:#0a1a16;--shadow:0 18px 50px -22px rgba(0,0,0,.8);--maxw:1080px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);background:radial-gradient(1100px 560px at 84% -10%, rgba(232,181,74,.08), transparent 60%),radial-gradient(900px 520px at -8% 16%, rgba(52,209,153,.12), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}a{color:var(--gold)}::selection{background:var(--ac);color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(15,36,32,.85);border-bottom:1px solid var(--line)}.topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}.logo::after{content:"⛏️"}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}.topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}.topnav a:hover{background:var(--bg-3);opacity:1}
+  .hero{padding:58px 0 30px}.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--ac);font-weight:700;border:1px solid var(--ac-d);border-radius:100px;padding:6px 14px;background:rgba(52,209,153,.06)}
+  .hero h1{font-size:clamp(34px,6.4vw,68px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}.hero h1 .hl{color:var(--ac)}.hero .sub{font-size:clamp(16px,2.2vw,20px);color:#cfe6df;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}.chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}.chip b{color:var(--ac);font-family:'JetBrains Mono';font-weight:700}
+  .dash{margin-top:30px;background:linear-gradient(180deg,#0a1a16,#0f2420);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}.d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ac);font-family:'JetBrains Mono'}.dot-live{width:9px;height:9px;border-radius:50%;background:var(--ac);animation:blink 1.3s infinite}@keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}.d-cell{background:#0a1a16;border:1px solid var(--line);border-radius:12px;padding:14px}.d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--ac);letter-spacing:-1px}.d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+  section{padding:44px 0;border-top:1px solid var(--line)}.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:24px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--ac);font-size:14px;letter-spacing:1px;border:1px solid var(--ac-d);border-radius:8px;padding:5px 10px;background:rgba(52,209,153,.08)}.sec-head h2{font-size:clamp(23px,3.6vw,33px);font-weight:800;letter-spacing:-.6px}
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:24px 26px;box-shadow:var(--shadow)}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:6px 0}
+  .kdd{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}@media(max-width:760px){.kdd{grid-template-columns:1fr 1fr}}
+  .kstep{background:var(--cream);color:var(--ink);border-radius:13px;padding:15px 14px;box-shadow:var(--shadow);border-top:4px solid var(--ac);position:relative}
+  .kstep .kn{font-family:'JetBrains Mono';font-size:10px;color:var(--ac-d);font-weight:700}.kstep b{font-family:'Archivo';font-size:14px;display:block;margin:3px 0 4px}.kstep span{font-size:12px;color:#4a5b54}
+  .kstep:nth-child(2){border-top-color:var(--gold)}.kstep:nth-child(3){border-top-color:#3f8fd0}.kstep:nth-child(4){border-top-color:#b07bff}.kstep:nth-child(5){border-top-color:var(--ac)}
+  .concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .cc{background:var(--cream);color:var(--ink);border-radius:13px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--ac)}.cc b{font-family:'Archivo';font-size:15px;display:block;margin-bottom:4px}.cc p{margin:0;font-size:13px;color:#4a5b54}.cc:nth-child(even){border-top-color:var(--gold)}
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}.panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}.panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .plot{background:var(--cream-2);border:1px solid rgba(16,35,30,.1);border-radius:14px;padding:8px}canvas.chart{width:100%;display:block}
+  .ops{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.ops button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(16,35,30,.2);padding:8px 13px;border-radius:9px;cursor:pointer}.ops button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .opinfo{margin-top:14px;background:rgba(52,209,153,.1);border:1px solid rgba(31,154,114,.3);border-left:4px solid var(--ac);border-radius:10px;padding:13px 16px;color:var(--ink)}.opinfo b{font-family:'Archivo'}
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+  .linkcard{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}.linkcard .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--ac);text-transform:uppercase;letter-spacing:.5px}.linkcard b{font-family:'Archivo';font-size:15px}.linkcard span{font-size:12.5px;color:var(--muted)}.linkcard a{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:8px;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);background:var(--ac);padding:9px 14px;border-radius:9px}
+  .quiz{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .quiz .qh{padding:18px 24px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.quiz .qh b{font-family:'Archivo';font-size:18px}.quiz .qh .scorepill{margin-left:auto;font-family:'JetBrains Mono';font-weight:700;font-size:13px;background:rgba(255,255,255,.12);padding:6px 12px;border-radius:8px}
+  .qbody{padding:20px 24px}.qitem{padding:16px 0;border-bottom:1px solid rgba(16,35,30,.1)}.qitem:last-of-type{border-bottom:0}
+  .qitem .qq{font-family:'Archivo';font-weight:700;font-size:15px;margin-bottom:10px;display:flex;gap:10px}.qitem .qq .qn{color:var(--ac-d);flex:none}
+  .opt{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid rgba(16,35,30,.18);border-radius:9px;margin:6px 0;cursor:pointer;font-size:13.5px;transition:.12s;background:var(--cream-2)}.opt:hover{border-color:var(--ac)}.opt.sel{border-color:var(--ink);background:#e8f8f1}.opt.correct{border-color:var(--ok);background:rgba(70,192,138,.14)}.opt.wrong{border-color:var(--no);background:rgba(232,97,90,.12)}
+  .opt .mk{width:20px;height:20px;border-radius:50%;border:2px solid rgba(16,35,30,.3);flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}.opt.correct .mk{background:var(--ok);border-color:var(--ok);color:#fff}.opt.wrong .mk{background:var(--no);border-color:var(--no);color:#fff}
+  .ex{font-size:12.5px;color:#4a5b54;margin-top:8px;padding:9px 12px;background:rgba(52,209,153,.08);border-radius:8px;display:none}.ex.show{display:block}
+  .qactions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}.btn{font-family:'Archivo';font-weight:700;font-size:14px;padding:11px 20px;border-radius:10px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:#fff}.btn:hover{background:var(--ac);border-color:var(--ac);color:var(--ink)}.btn.ghost{background:transparent;color:var(--ink)}
+  .result{margin-top:16px;padding:16px 18px;border-radius:12px;font-family:'Archivo';font-weight:800;font-size:17px;display:none}.result.show{display:block}.result.pass{background:rgba(70,192,138,.14);color:#1f8f5f;border:1px solid var(--ok)}.result.fail{background:rgba(232,181,74,.14);color:#9a7a1a;border:1px solid var(--gold)}
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="logo" aria-hidden="true"></div><div class="brand"><b>DWDM</b><span>Data Warehousing &amp; Mining</span></div>
+  <nav class="topnav"><a href="index.html">All units</a><a href="#overview">Overview</a><a href="#kdd">KDD</a><a href="#prep">Preprocessing</a><a href="#concepts">Concepts</a><a href="#videos">Videos</a><a href="#quiz">Quiz</a></nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow"><span class="logo" style="width:16px;height:16px;font-size:9px"></span>Unit&nbsp;II · CO2</span>
+  <h1>Mining the <span class="hl">Raw Ore</span></h1>
+  <p class="sub">Data mining finds patterns in data — but raw data is messy. Learn the data-mining functionalities and the <b>preprocessing</b> that makes data ready: cleaning, integration, transformation, reduction and discretization, with a live normalization playground.</p>
+  <div class="meta-row"><div class="chip">Course&nbsp;<b>IT314 B</b></div><div class="chip">Outcome&nbsp;<b>CO2</b></div><div class="chip">Lectures&nbsp;<b>9</b></div><div class="chip">Focus&nbsp;<b>Preprocessing</b></div></div>
+  <div class="dash reveal"><div class="d-top"><h3>What this unit covers</h3><div class="live"><span class="dot-live"></span>INTERACTIVE</div></div>
+    <div class="d-grid">
+      <div class="d-cell"><div class="n" data-count="5">0</div><div class="l">KDD steps</div></div>
+      <div class="d-cell"><div class="n" data-count="5">0</div><div class="l">Preprocessing tasks</div></div>
+      <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">Normalizations</div></div>
+      <div class="d-cell"><div class="n" data-count="10">0</div><div class="l">Quiz questions</div></div>
+    </div></div>
+</div></header>
+
+<section id="overview"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>What Is Data Mining?</h2></div>
+  <div class="card">
+    <p style="margin-top:0;color:#3f5048">Data mining is the process of discovering interesting, previously unknown and useful <b>patterns</b> from large amounts of data — it's the core analysis step of the broader <b>KDD (Knowledge Discovery in Databases)</b> process.</p>
+    <p style="color:#3f5048;margin-bottom:0"><b>Functionalities</b> describe what can be mined: <i>characterization &amp; discrimination</i>, <i>association &amp; correlation</i>, <i>classification &amp; regression (prediction)</i>, <i>cluster analysis</i>, and <i>outlier analysis</i>. These split into <b>descriptive</b> (summarise the data) and <b>predictive</b> (forecast unknown values) tasks.</p>
+  </div>
+</div></section>
+
+<section id="kdd"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">02</span><h2>The KDD Process</h2></div>
+  <p style="max-width:740px;color:#cfe6df;margin-top:-12px">Mining is one step in a pipeline. Most of the effort lives in preparing the data.</p>
+  <div class="kdd">
+    <div class="kstep"><div class="kn">STEP 1</div><b>Selection</b><span>Pick the relevant data from sources/warehouse.</span></div>
+    <div class="kstep"><div class="kn">STEP 2</div><b>Preprocessing</b><span>Clean: handle missing values and noise.</span></div>
+    <div class="kstep"><div class="kn">STEP 3</div><b>Transformation</b><span>Integrate, normalize, reduce, discretize.</span></div>
+    <div class="kstep"><div class="kn">STEP 4</div><b>Data Mining</b><span>Apply algorithms to find patterns.</span></div>
+    <div class="kstep"><div class="kn">STEP 5</div><b>Evaluation</b><span>Interpret &amp; present the knowledge.</span></div>
+  </div>
+</div></section>
+
+<section id="prep"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>Normalization Playground</h2></div>
+  <p class="reveal" style="max-width:760px;color:#cfe6df;margin-top:-12px">Different features come in different ranges; many algorithms need them on a common scale. Pick a method and watch the same seven values rescale — the bars and the numbers update live with the real formula.</p>
+  <div class="panel reveal"><div class="ph"><b>Data transformation — normalization</b><span class="hint">choose a method</span></div>
+    <div class="pbody">
+      <div class="ops">
+        <button data-m="raw" class="on">Raw values</button>
+        <button data-m="minmax">Min-Max [0,1]</button>
+        <button data-m="z">Z-score</button>
+        <button data-m="dec">Decimal scaling</button>
+      </div>
+      <div class="plot"><canvas class="chart" id="normCanvas" height="240"></canvas></div>
+      <div class="opinfo" id="normInfo"></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="concepts"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Key Concepts</h2></div>
+  <div class="concepts">
+    <div class="cc"><b>DM functionalities</b><p>Characterization, association, classification, clustering, outlier &amp; evolution analysis.</p></div>
+    <div class="cc"><b>Descriptive vs predictive</b><p>Describe patterns in current data vs predict unknown/future values.</p></div>
+    <div class="cc"><b>Task primitives</b><p>What to mine: data set, knowledge type, background knowledge, interestingness measures, presentation.</p></div>
+    <div class="cc"><b>DM system integration</b><p>No-coupling, loose, semi-tight, tight coupling with a DB/DW system.</p></div>
+    <div class="cc"><b>Major issues</b><p>Methodology, user interaction, efficiency &amp; scalability, diversity of data, applications &amp; social impact.</p></div>
+    <div class="cc"><b>Data cleaning</b><p>Fill missing values, smooth noisy data (binning, regression), remove outliers, fix inconsistencies.</p></div>
+    <div class="cc"><b>Data integration</b><p>Combine multiple sources; resolve schema/entity conflicts and redundancy (correlation tests).</p></div>
+    <div class="cc"><b>Data transformation</b><p>Normalization, aggregation, generalization, attribute construction.</p></div>
+    <div class="cc"><b>Data reduction</b><p>Dimensionality reduction (PCA), numerosity reduction, data compression — smaller yet representative.</p></div>
+    <div class="cc"><b>Discretization &amp; hierarchy</b><p>Turn continuous values into intervals; build concept hierarchies (city→state→country).</p></div>
+  </div>
+</div></section>
+
+<section id="videos"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Watch &amp; Learn</h2></div>
+  <div class="vid-grid">
+    <div class="linkcard"><span class="src">Concept · KDD</span><b>Data mining &amp; the KDD process</b><span>Functionalities, descriptive vs predictive, and major issues.</span><a href="https://www.youtube.com/results?search_query=data+mining+KDD+process+functionalities+explained" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+    <div class="linkcard"><span class="src">Concept · preprocessing</span><b>Data preprocessing in data mining</b><span>Cleaning, integration, transformation, reduction, discretization.</span><a href="https://www.youtube.com/results?search_query=data+preprocessing+in+data+mining+cleaning+normalization" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+    <div class="linkcard"><span class="src">Concept · normalization</span><b>Min-Max &amp; Z-score normalization</b><span>How the formulas rescale features for mining.</span><a href="https://www.youtube.com/results?search_query=min+max+z+score+normalization+data+mining" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+  </div>
+</div></section>
+
+<section id="quiz"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Unit II Quiz — 10 Questions</h2></div>
+  <div class="quiz"><div class="qh"><b>Test yourself: Mining &amp; Preprocessing</b><span class="scorepill" id="scorePill">0 / 10</span></div>
+    <div class="qbody"><div id="qhost"></div>
+      <div class="qactions"><button class="btn" id="checkBtn">Check answers</button><button class="btn ghost" id="resetBtn">Reset</button></div>
+      <div class="result" id="result"></div></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">DWDM · Unit II · Data Mining &amp; Preprocessing — Course IT314 B (R20) · CO2<br><span style="opacity:.7">Interactive learning material. Keep all unit files in one folder so the navigation links work.</span></div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=900,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+const AC='#34d199',ACD='#1f9a72',INK='#10231e',MUT='#5a6b64';
+
+/* normalization */
+const DATA=[12,45,78,23,56,90,34];
+const NORM={cv:document.getElementById('normCanvas'),m:'raw'};
+function transform(m){
+  const min=Math.min(...DATA),max=Math.max(...DATA),mean=DATA.reduce((a,b)=>a+b,0)/DATA.length;
+  const sd=Math.sqrt(DATA.reduce((s,v)=>s+(v-mean)**2,0)/DATA.length);
+  const j=Math.ceil(Math.log10(Math.max(...DATA.map(Math.abs))+1));
+  if(m==='minmax')return {vals:DATA.map(v=>(v-min)/(max-min)),fmt:v=>v.toFixed(2),lo:0,hi:1,
+    info:'<b>Min-Max:</b> v\u2032 = (v \u2212 min) / (max \u2212 min). Rescales every value into [0, 1]. min='+min+', max='+max+'. Sensitive to outliers.'};
+  if(m==='z')return {vals:DATA.map(v=>(v-mean)/sd),fmt:v=>v.toFixed(2),lo:-2,hi:2,
+    info:'<b>Z-score:</b> v\u2032 = (v \u2212 \u03BC) / \u03C3. Centres on mean 0 with unit std. \u03BC='+mean.toFixed(1)+', \u03C3='+sd.toFixed(1)+'. Good when range is unknown / has outliers.'};
+  if(m==='dec')return {vals:DATA.map(v=>v/Math.pow(10,j)),fmt:v=>v.toFixed(2),lo:0,hi:1,
+    info:'<b>Decimal scaling:</b> v\u2032 = v / 10^j, where j makes max(|v\u2032|)&lt;1. Here j='+j+', so divide by '+Math.pow(10,j)+'.'};
+  return {vals:DATA.slice(),fmt:v=>v.toFixed(0),lo:0,hi:Math.max(...DATA),
+    info:'<b>Raw values:</b> the original feature, ranging '+min+' to '+max+'. Different features on different scales can bias distance-based algorithms \u2014 normalize first.'};
+}
+function drawNorm(){
+  const {ctx,W,H}=setup(NORM.cv);ctx.clearRect(0,0,W,H);
+  const t=transform(NORM.m);const padL=34,padR=12,padT=14,padB=34;
+  const lo=Math.min(t.lo,...t.vals),hi=Math.max(t.hi,...t.vals);
+  const Y=v=>padT+(H-padT-padB)*(1-(v-lo)/(hi-lo));
+  // zero/grid
+  ctx.strokeStyle='rgba(16,35,30,.1)';ctx.lineWidth=1;for(let i=0;i<=4;i++){const y=padT+(H-padT-padB)*i/4;ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(W-padR,y);ctx.stroke();}
+  if(lo<0){ctx.strokeStyle='rgba(16,35,30,.3)';ctx.beginPath();ctx.moveTo(padL,Y(0));ctx.lineTo(W-padR,Y(0));ctx.stroke();}
+  const n=t.vals.length,bw=(W-padL-padR)/n*0.62,gap=(W-padL-padR)/n;
+  t.vals.forEach((v,i)=>{const x=padL+gap*i+gap*0.19;const y0=Y(Math.max(0,lo<0?0:lo)),y1=Y(v);
+    ctx.fillStyle=AC;ctx.globalAlpha=.85;ctx.beginPath();ctx.roundRect(x,Math.min(y0,y1),bw,Math.abs(y1-y0)||2,4);ctx.fill();ctx.globalAlpha=1;
+    ctx.fillStyle=INK;ctx.font='700 10px JetBrains Mono';ctx.textAlign='center';ctx.fillText(t.fmt(v),x+bw/2,(v<0?y1+12:y1-5));
+    ctx.fillStyle=MUT;ctx.font='9px JetBrains Mono';ctx.fillText(DATA[i],x+bw/2,H-padB+14);});
+  ctx.fillStyle=MUT;ctx.font='9px Inter';ctx.textAlign='center';ctx.fillText('original value →',W/2,H-6);
+  document.getElementById('normInfo').innerHTML=t.info;
+}
+document.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>{NORM.m=b.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.classList.remove('on'));b.classList.add('on');drawNorm();}));
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawNorm();ob.disconnect();}})},{threshold:.2}).observe(NORM.cv);
+
+/* QUIZ */
+const QUIZ=[
+ {q:"Data mining is best described as the process of:",o:["Storing data in a warehouse","Discovering useful patterns from large data","Backing up databases","Encrypting sensitive data"],a:1,ex:"Data mining = discovering interesting, useful, previously unknown patterns from data."},
+ {q:"Data mining is one step in the broader process called:",o:["ETL","KDD (Knowledge Discovery in Databases)","OLAP","DBMS"],a:1,ex:"Mining is the core analysis step inside the KDD process."},
+ {q:"Which is a PREDICTIVE data-mining task?",o:["Clustering","Association rule mining","Classification","Characterization"],a:2,ex:"Classification/regression predict unknown values (predictive); clustering and association are descriptive."},
+ {q:"Handling missing values and smoothing noisy data is part of:",o:["Data cleaning","Data reduction","Data integration","Discretization"],a:0,ex:"Data cleaning fills missing values, smooths noise and fixes inconsistencies."},
+ {q:"Combining data from multiple sources and resolving conflicts is:",o:["Transformation","Integration","Reduction","Selection"],a:1,ex:"Data integration merges multiple sources and resolves schema/entity/redundancy conflicts."},
+ {q:"Min-Max normalization of value v uses the formula:",o:["(v−μ)/σ","v/10^j","(v−min)/(max−min)","log(v)"],a:2,ex:"Min-Max: (v−min)/(max−min) maps values into [0,1]. (v−μ)/σ is z-score."},
+ {q:"Reducing the number of attributes while keeping information (e.g. PCA) is:",o:["Numerosity reduction","Dimensionality reduction","Discretization","Smoothing"],a:1,ex:"Dimensionality reduction (e.g. PCA) reduces the number of attributes/features."},
+ {q:"Converting continuous values into a small number of intervals is called:",o:["Normalization","Aggregation","Discretization","Integration"],a:2,ex:"Discretization turns continuous attributes into discrete intervals/bins."},
+ {q:"A concept hierarchy such as city → state → country is used in:",o:["Data cleaning","Concept hierarchy generation","Outlier detection","Sampling"],a:1,ex:"Concept hierarchies generalise low-level values to higher-level concepts."},
+ {q:"Which is a MAJOR issue in data mining?",o:["Choosing a font","Efficiency and scalability of algorithms","Monitor resolution","Keyboard layout"],a:1,ex:"Key issues include mining methodology, user interaction, efficiency & scalability, and data diversity."}
+];
+const qhost=document.getElementById('qhost');let answered={},checked=false;
+function renderQuiz(){qhost.innerHTML='';QUIZ.forEach((item,qi)=>{const d=document.createElement('div');d.className='qitem';let opts='';item.o.forEach((o,oi)=>{opts+='<div class="opt" data-q="'+qi+'" data-o="'+oi+'"><span class="mk"></span><span>'+o+'</span></div>';});d.innerHTML='<div class="qq"><span class="qn">Q'+(qi+1)+'.</span><span>'+item.q+'</span></div>'+opts+'<div class="ex" id="ex'+qi+'">'+item.ex+'</div>';qhost.appendChild(d);});
+  qhost.querySelectorAll('.opt').forEach(op=>op.addEventListener('click',()=>{if(checked)return;const qi=op.dataset.q;qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(x=>x.classList.remove('sel'));op.classList.add('sel');answered[qi]=+op.dataset.o;document.getElementById('scorePill').textContent=Object.keys(answered).length+' / 10 answered';}));}
+document.getElementById('checkBtn').addEventListener('click',()=>{if(checked)return;checked=true;let score=0;QUIZ.forEach((item,qi)=>{const sel=answered[qi];document.getElementById('ex'+qi).classList.add('show');qhost.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(op=>{const oi=+op.dataset.o;if(oi===item.a){op.classList.add('correct');op.querySelector('.mk').textContent='✓';}if(oi===sel&&sel!==item.a){op.classList.add('wrong');op.querySelector('.mk').textContent='✗';}});if(sel===item.a)score++;});document.getElementById('scorePill').textContent=score+' / 10';const r=document.getElementById('result');r.classList.add('show');r.classList.add(score>=6?'pass':'fail');r.textContent=(score>=6?'Well done! ':'Keep revising — ')+'You scored '+score+' / 10'+(score>=6?'. You understand preprocessing well.':'. Review the KDD and preprocessing sections.');});
+document.getElementById('resetBtn').addEventListener('click',()=>{answered={};checked=false;document.getElementById('result').className='result';document.getElementById('scorePill').textContent='0 / 10';renderQuiz();});
+renderQuiz();
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>drawNorm(),200);});
+</script>
+</body>
+</html>

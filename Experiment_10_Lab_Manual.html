@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment 10 — Time Series Analysis &amp; Forecasting | DSA Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#10142a; --bg-2:#1a2042; --bg-3:#262e5c;
+    --cream:#eef0f7; --cream-2:#f9faff;
+    --cyan:#36cfe0; --cyan-d:#1f97a6;   /* accent / actual series */
+    --trend:#e8b54a; --trend-d:#b58a26;  /* trend */
+    --fcast:#9d7bff; --fcast-d:#6f4fd6;  /* forecast */
+    --season:#41cf8e;
+    --ink:#141832; --muted:#9aa3cf;
+    --line:rgba(238,240,247,.12);
+    --code-bg:#0d1126;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.8);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:radial-gradient(1100px 560px at 84% -10%, rgba(157,123,255,.12), transparent 60%),
+               radial-gradient(900px 520px at -8% 16%, rgba(54,207,224,.10), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}a{color:var(--cyan)}
+  ::selection{background:var(--cyan);color:var(--ink)}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(16,20,42,.85);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 0 2px rgba(255,255,255,.08)}.logo::after{content:"📈"}
+  .brand b{font-family:'Archivo';font-weight:800;font-size:15px}.brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}.topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}.topnav a:hover{background:var(--bg-3);opacity:1}
+  .hero{padding:60px 0 32px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);font-weight:700;border:1px solid var(--cyan-d);border-radius:100px;padding:6px 14px;background:rgba(54,207,224,.06)}
+  .hero h1{font-size:clamp(36px,6.6vw,72px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}.hero h1 .hl{color:var(--cyan)}
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:#d6daf0;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}.chip b{color:var(--cyan);font-family:'JetBrains Mono';font-weight:700}
+  .dash{margin-top:32px;background:linear-gradient(180deg,#0c0f22,#10142a);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}
+  .d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--fcast);font-family:'JetBrains Mono'}
+  .dot-live{width:9px;height:9px;border-radius:50%;background:var(--fcast);animation:blink 1.3s infinite}@keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+  .d-cell{background:#0c0f22;border:1px solid var(--line);border-radius:12px;padding:14px}.d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--cyan);letter-spacing:-1px}.d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--cyan);font-size:14px;letter-spacing:1px;border:1px solid var(--cyan-d);border-radius:8px;padding:5px 10px;background:rgba(54,207,224,.08)}
+  .sec-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:800;letter-spacing:-.6px}
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .lab-meta{display:grid;grid-template-columns:160px 1fr;gap:0}
+  .lab-meta .k{font-weight:700;font-family:'Archivo';padding:12px 0;border-bottom:1px solid rgba(20,24,50,.10);color:var(--fcast-d)}
+  .lab-meta .v{padding:12px 0;border-bottom:1px solid rgba(20,24,50,.10)}
+  @media(max-width:600px){.lab-meta{grid-template-columns:1fr}.lab-meta .v{padding-top:0}.lab-meta .k{border-bottom:0;padding-bottom:0}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:7px 0}
+  .comp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}@media(max-width:680px){.comp-grid{grid-template-columns:1fr}}
+  .comp{background:var(--cream);color:var(--ink);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);border-top:4px solid var(--cyan)}
+  .comp:nth-child(2){border-top-color:var(--trend)}.comp:nth-child(3){border-top-color:var(--season)}
+  .comp b{font-family:'Archivo';font-size:15px;display:block;margin-bottom:4px}.comp p{color:#4a4e6a;font-size:13px;margin:0}
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}.panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}.panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+  .plot{background:var(--cream-2);border:1px solid rgba(20,24,50,.1);border-radius:14px;padding:10px}
+  canvas.chart{width:100%;display:block}
+  .sl{margin:11px 0}.sl .top{display:flex;justify-content:space-between;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);margin-bottom:5px}.sl .top .v{font-family:'JetBrains Mono';color:var(--cyan-d)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:6px;background:var(--bg-3);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+  .toggles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .toggles button{font-family:'Inter';font-size:12.5px;font-weight:600;color:var(--ink);background:var(--cream-2);border:1px solid rgba(20,24,50,.2);padding:7px 12px;border-radius:8px;cursor:pointer}
+  .toggles button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .answer{margin-top:14px;background:rgba(157,123,255,.1);border:1px solid rgba(111,79,214,.3);border-left:4px solid var(--fcast);border-radius:10px;padding:13px 16px;color:var(--ink)}.answer b{color:var(--fcast-d);font-family:'Archivo'}
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  .linkcard{display:flex;flex-direction:column;justify-content:center;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow)}
+  .linkcard .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--cyan);text-transform:uppercase;letter-spacing:.5px}
+  .linkcard b{font-family:'Archivo';font-size:15px}.linkcard span{font-size:12.5px;color:var(--muted)}
+  .linkcard a{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:8px;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);background:var(--cyan);padding:9px 14px;border-radius:9px}
+  .code-card{background:var(--code-bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .code-top{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#0a0e20;border-bottom:1px solid var(--line)}
+  .tl{display:flex;gap:7px}.tl span{width:11px;height:11px;border-radius:50%}.tl span:nth-child(1){background:#ff5f57}.tl span:nth-child(2){background:#febc2e}.tl span:nth-child(3){background:#28c840}
+  .code-top .fname{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);margin-left:6px}
+  .copy{margin-left:auto;font-family:'Inter';font-size:12px;font-weight:600;color:var(--cream);background:var(--bg-3);border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer}.copy:hover{background:var(--cyan);border-color:var(--cyan);color:var(--ink)}
+  pre{margin:0;padding:18px 20px;overflow-x:auto}code{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;color:#e7e9f5}
+  .tok-kw{color:#8fb6ff;font-weight:600}.tok-fn{color:#6fd8e0}.tok-str{color:#e8b54a}.tok-num{color:#c3b0ff}.tok-com{color:#6b7099;font-style:italic}.tok-bi{color:#7fe0d8}
+  .timeline{position:relative;padding-left:28px}.timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--cyan),var(--fcast))}
+  .step{position:relative;margin-bottom:18px}.step::before{content:"";position:absolute;left:-23px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px var(--bg)}.step b{font-family:'Archivo';color:var(--cyan-d)}
+  .viva details{background:var(--cream);color:var(--ink);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 8px 22px -16px rgba(0,0,0,.6)}
+  .viva summary{cursor:pointer;list-style:none;padding:15px 20px;font-weight:600;font-family:'Archivo';display:flex;align-items:center;gap:12px}.viva summary::-webkit-details-marker{display:none}
+  .viva summary::before{content:"Q";font-family:'JetBrains Mono';font-weight:700;color:#fff;background:var(--cyan-d);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  .viva details[open] summary{background:var(--cream-2)}.viva .ans{padding:0 20px 18px 56px;color:#4a4e6a}
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="logo" aria-hidden="true"></div>
+  <div class="brand"><b>DSA LAB</b><span>Data Science Applications</span></div>
+  <nav class="topnav"><a href="#manual">Manual</a><a href="#parts">Components</a><a href="#demo">Forecast demo</a><a href="#videos">Videos</a><a href="#program">Program</a><a href="#viva">Viva</a></nav>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow"><span class="logo" style="width:16px;height:16px;font-size:9px"></span>Experiment&nbsp;10 · CO1</span>
+  <h1>Reading the<br><span class="hl">Future</span> in Data</h1>
+  <p class="sub">Time-series analysis splits a signal into <b>trend</b>, <b>seasonality</b> and <b>noise</b> — then extends them to <b>forecast</b> what comes next. Tune each component and watch the forecast and its confidence band respond.</p>
+  <div class="meta-row">
+    <div class="chip">Course&nbsp;<b>IT416</b></div><div class="chip">Outcome&nbsp;<b>CO1</b></div>
+    <div class="chip">Method&nbsp;<b>Decomposition</b></div><div class="chip">Goal&nbsp;<b>Forecast</b></div>
+  </div>
+  <div class="dash reveal"><div class="d-top"><h3>Signal → forecast</h3><div class="live"><span class="dot-live"></span>LIVE FORECAST</div></div>
+    <div class="d-grid">
+      <div class="d-cell"><div class="n" data-count="3">0</div><div class="l">Components</div></div>
+      <div class="d-cell"><div class="n" data-count="48">0</div><div class="l">Observations</div></div>
+      <div class="d-cell"><div class="n" data-count="12">0</div><div class="l">Forecast steps</div></div>
+      <div class="d-cell"><div class="n" data-count="1">0</div><div class="l">Course outcome</div></div>
+    </div></div>
+</div></header>
+
+<section id="manual"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Lab Manual</h2></div>
+  <div class="card"><div class="lab-meta">
+    <div class="k">Problem</div><div class="v">Perform time-series analysis and forecast the behaviour of a time series over a period of time, using statistical methods to identify patterns, trends and seasonality in the data.</div>
+    <div class="k">Aim</div><div class="v">To analyse a time series by decomposing it into trend, seasonal and residual components, and to forecast future values with a statistical model.</div>
+    <div class="k">Objectives</div><div class="v"><ul class="clean">
+      <li>Plot and inspect a time series; check for trend and seasonality.</li>
+      <li>Test/achieve stationarity (differencing) where needed.</li>
+      <li>Decompose the series into trend + seasonal + residual.</li>
+      <li>Fit a forecasting model (e.g. ARIMA/SARIMA) and predict ahead with intervals.</li></ul></div>
+    <div class="k">Software</div><div class="v">Python 3.x · Jupyter / Colab · Pandas, statsmodels, Matplotlib.</div>
+    <div class="k">Theory</div><div class="v">A time series is data indexed in time order. Classical analysis models it as level + <b>trend</b> (long-run direction) + <b>seasonality</b> (repeating cycle) + <b>residual</b> (noise). Forecasting extends the estimated trend and seasonal pattern forward; uncertainty grows with the horizon, shown as a widening confidence band.</div>
+    <div class="k">Outcome</div><div class="v">CO1 — analysing a real problem and producing a forecast for decision-making.</div>
+  </div></div>
+</div></section>
+
+<section id="parts"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Three Pieces of Every Series</h2></div>
+  <div class="comp-grid">
+    <div class="comp"><b style="color:var(--cyan-d)">Trend</b><p>The long-run rise or fall — sales growing year on year, temperatures drifting up. Captured by a smooth line through the data.</p></div>
+    <div class="comp"><b style="color:var(--trend-d)">Seasonality</b><p>A pattern that repeats on a fixed cycle — higher every December, busier every weekend. Same shape, again and again.</p></div>
+    <div class="comp"><b style="color:#2f9c68">Residual (noise)</b><p>What's left after removing trend and season — random wobble. Good models leave residuals that look like pure noise.</p></div>
+  </div>
+</div></section>
+
+<section id="demo"><div class="wrap">
+  <div class="sec-head reveal"><span class="sec-num">03</span><h2>Build a Series, Forecast It</h2></div>
+  <p class="reveal" style="max-width:760px;color:#d6daf0;margin-top:-12px">The <span style="color:var(--cyan-d)">cyan line</span> is the observed series. The model fits a <span style="color:var(--trend-d)">trend</span> and a repeating seasonal pattern, then projects them forward as a <span style="color:var(--fcast-d)">forecast</span> with a shaded confidence band. Tune the components and horizon, or toggle the trend/season lines on the chart.</p>
+  <div class="panel reveal"><div class="ph"><b>Trend + Seasonality + Forecast</b><span class="hint">shaded purple = forecast uncertainty</span></div>
+    <div class="pbody">
+      <div class="toggles">
+        <button data-t="trend" class="on">Show trend</button>
+        <button data-t="season" class="on">Show seasonal fit</button>
+        <button data-t="band" class="on">Show confidence band</button>
+      </div>
+      <div class="plot"><canvas class="chart" id="tsCanvas" height="280"></canvas></div>
+      <div class="grid2" style="margin-top:14px;gap:14px">
+        <div>
+          <div class="sl"><div class="top"><span>Trend slope</span><span class="v" id="vSlope">0.4</span></div><input type="range" id="sSlope" min="-60" max="100" value="40"></div>
+          <div class="sl"><div class="top"><span>Seasonal amplitude</span><span class="v" id="vAmp">8</span></div><input type="range" id="sAmp" min="0" max="20" value="8"></div>
+        </div>
+        <div>
+          <div class="sl"><div class="top"><span>Noise level</span><span class="v" id="vNoise">3</span></div><input type="range" id="sNoise" min="0" max="12" value="3"></div>
+          <div class="sl"><div class="top"><span>Forecast horizon</span><span class="v" id="vH">12</span></div><input type="range" id="sH" min="3" max="20" value="12"></div>
+        </div>
+      </div>
+      <div class="answer" id="tsMsg"><b>Watch the band:</b> the purple forecast continues the trend and repeats the seasonal shape, but its confidence band <i>widens</i> the further ahead you predict — honest forecasting always shows growing uncertainty. Crank up the noise and the band balloons.</div>
+    </div>
+  </div>
+</div></section>
+
+<section id="videos"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Watch the Concepts</h2></div>
+  <p style="max-width:760px;color:#d6daf0;margin-top:-12px">Two starting points to understand decomposition and ARIMA forecasting. These open YouTube searches so you can pick the explainer that suits you.</p>
+  <div class="vid-grid">
+    <div class="linkcard"><span class="src">Concept · decomposition</span>
+      <b>Time-series components &amp; stationarity</b><span>Trend, seasonality, residuals and why we make a series stationary before modelling.</span>
+      <a href="https://www.youtube.com/results?search_query=time+series+decomposition+trend+seasonality+stationarity+explained" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+    <div class="linkcard"><span class="src">Method · forecasting</span>
+      <b>ARIMA / SARIMA forecasting</b><span>How AR, differencing and MA terms combine to forecast — with prediction intervals.</span>
+      <a href="https://www.youtube.com/results?search_query=ARIMA+SARIMA+time+series+forecasting+clearly+explained" target="_blank" rel="noopener">Open on YouTube ↗</a></div>
+  </div>
+  <p style="color:var(--muted);font-size:12.5px;margin-top:14px">These are YouTube search links (not embeds), so you can choose a current, high-quality explainer for your level.</p>
+</div></section>
+
+<section id="program"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">05</span><h2>The Program</h2></div>
+  <p style="max-width:720px;color:#d6daf0;margin-top:-12px">Load the series, decompose it, check stationarity, fit a model and forecast with intervals.</p>
+  <div class="code-card" style="margin-bottom:20px">
+    <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">1 — load_decompose.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+<span class="tok-kw">import</span> matplotlib.pyplot <span class="tok-kw">as</span> plt
+<span class="tok-kw">from</span> statsmodels.tsa.seasonal <span class="tok-kw">import</span> seasonal_decompose
+
+s = pd.<span class="tok-fn">read_csv</span>(<span class="tok-str">"series.csv"</span>, index_col=<span class="tok-str">"date"</span>, parse_dates=<span class="tok-kw">True</span>)[<span class="tok-str">"value"</span>]
+
+<span class="tok-com"># Split into trend + seasonal + residual</span>
+result = <span class="tok-fn">seasonal_decompose</span>(s, model=<span class="tok-str">"additive"</span>, period=<span class="tok-num">12</span>)
+result.<span class="tok-fn">plot</span>(); plt.<span class="tok-fn">show</span>()</code></pre>
+  </div>
+  <div class="code-card" style="margin-bottom:20px">
+    <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">2 — stationarity.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">from</span> statsmodels.tsa.stattools <span class="tok-kw">import</span> adfuller
+
+<span class="tok-kw">def</span> <span class="tok-fn">adf</span>(x):
+    stat, p = <span class="tok-fn">adfuller</span>(x)[:<span class="tok-num">2</span>]
+    <span class="tok-bi">print</span>(<span class="tok-str">"ADF p-value:"</span>, <span class="tok-fn">round</span>(p,4),
+          <span class="tok-str">"-&gt; stationary"</span> <span class="tok-kw">if</span> p &lt; <span class="tok-num">0.05</span> <span class="tok-kw">else</span> <span class="tok-str">"-&gt; non-stationary"</span>)
+
+<span class="tok-fn">adf</span>(s)
+<span class="tok-fn">adf</span>(s.<span class="tok-fn">diff</span>().<span class="tok-fn">dropna</span>())     <span class="tok-com"># difference to remove trend</span></code></pre>
+  </div>
+  <div class="code-card">
+    <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">3 — forecast_arima.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">from</span> statsmodels.tsa.statespace.sarimax <span class="tok-kw">import</span> SARIMAX
+
+model = <span class="tok-fn">SARIMAX</span>(s, order=(<span class="tok-num">1</span>,<span class="tok-num">1</span>,<span class="tok-num">1</span>),
+                seasonal_order=(<span class="tok-num">1</span>,<span class="tok-num">1</span>,<span class="tok-num">1</span>,<span class="tok-num">12</span>)).<span class="tok-fn">fit</span>()
+
+fc = model.<span class="tok-fn">get_forecast</span>(steps=<span class="tok-num">12</span>)
+mean = fc.<span class="tok-fn">predicted_mean</span>
+ci   = fc.<span class="tok-fn">conf_int</span>()              <span class="tok-com"># prediction interval</span>
+
+mean.<span class="tok-fn">plot</span>(label=<span class="tok-str">"forecast"</span>)
+plt.<span class="tok-fn">fill_between</span>(ci.index, ci.iloc[:,<span class="tok-num">0</span>], ci.iloc[:,<span class="tok-num">1</span>], alpha=<span class="tok-num">.3</span>)
+plt.<span class="tok-fn">legend</span>(); plt.<span class="tok-fn">show</span>()</code></pre>
+  </div>
+</div></section>
+
+<section id="procedure"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Procedure &amp; Result</h2></div>
+  <div class="grid2">
+    <div class="card"><h3 style="margin-bottom:14px">Steps followed</h3><div class="timeline">
+      <div class="step"><b>1 · Plot</b><br>Visualise the series; spot trend/seasonality.</div>
+      <div class="step"><b>2 · Decompose</b><br>Separate trend, seasonal, residual.</div>
+      <div class="step"><b>3 · Stationarity</b><br>ADF test; difference if needed.</div>
+      <div class="step"><b>4 · Model</b><br>Fit ARIMA/SARIMA (choose p,d,q).</div>
+      <div class="step"><b>5 · Forecast</b><br>Predict ahead with intervals.</div>
+      <div class="step"><b>6 · Validate</b><br>Check residuals look like noise.</div>
+    </div></div>
+    <div class="card"><h3 style="margin-bottom:14px">Result</h3>
+      <p style="color:#4a4e6a;margin-top:0">The time series was decomposed into trend, seasonal and residual parts; stationarity was checked and addressed by differencing; and a SARIMA model produced a forecast with prediction intervals, identifying the patterns and projecting future behaviour — demonstrating CO1.</p>
+      <div class="answer" style="margin-top:8px"><b>Conclusion:</b> Forecasting is pattern + honesty. By isolating trend and seasonality we capture the structure, and by showing a widening confidence band we admit that the future is uncertain. The further ahead we look, the less precise — a forecast without intervals hides its own risk.</div>
+    </div>
+  </div>
+</div></section>
+
+<section id="viva" class="viva"><div class="wrap reveal">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Viva Questions</h2></div>
+  <details><summary>What is a time series?</summary><div class="ans">A sequence of observations recorded at successive, usually equally spaced, points in time — e.g. monthly sales or daily temperature. Order matters, because each value can depend on previous ones.</div></details>
+  <details><summary>What are the components of a time series?</summary><div class="ans">Level, trend (long-run direction), seasonality (fixed repeating cycle), and residual/irregular noise. Additive or multiplicative decomposition separates them.</div></details>
+  <details><summary>What is stationarity and why does it matter?</summary><div class="ans">A stationary series has constant mean, variance and autocorrelation over time. Many models (like ARIMA) assume stationarity, so we difference or transform the data to achieve it first.</div></details>
+  <details><summary>What does ARIMA stand for?</summary><div class="ans">AutoRegressive (AR, past values) Integrated (I, differencing for stationarity) Moving Average (MA, past errors). Parameters (p,d,q) set the order of each part; SARIMA adds seasonal terms.</div></details>
+  <details><summary>How do you test for stationarity?</summary><div class="ans">Plot the series and rolling statistics, and run the Augmented Dickey-Fuller (ADF) test — a small p-value indicates stationarity. ACF/PACF plots also help choose model orders.</div></details>
+  <details><summary>What is the difference between trend and seasonality?</summary><div class="ans">Trend is a long-term, non-repeating movement up or down. Seasonality is a regular pattern that repeats over a fixed period (daily, weekly, yearly).</div></details>
+  <details><summary>Why do forecast confidence intervals widen with the horizon?</summary><div class="ans">Uncertainty accumulates: each step ahead adds error, and errors compound. So the further into the future you predict, the wider the prediction interval becomes.</div></details>
+</div></section>
+
+<footer><div class="wrap">DSA Lab · Experiment 10 · Time Series Analysis &amp; Forecasting — Course IT416 (R23) · CO1<br>
+<span style="opacity:.7">The demo fits a least-squares trend plus an averaged seasonal pattern and projects them forward with a horizon-growing band, all in your browser, to illustrate forecasting. The program uses statsmodels SARIMA on your data.</span></div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e);if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+
+const C={ink:'#141832',cyan:'#36cfe0',cyanD:'#1f97a6',trend:'#e8b54a',trendD:'#b58a26',fcast:'#9d7bff',fcastD:'#6f4fd6',season:'#41cf8e',grid:'rgba(20,24,50,.1)',mut:'#6b7099'};
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+
+const TS={cv:document.getElementById('tsCanvas'),show:{trend:true,season:true,band:true},seed:42};
+const PERIOD=12, NOBS=48, LEVEL=50;
+function genSeries(){
+  const slope=(+document.getElementById('sSlope').value)/100;
+  const amp=+document.getElementById('sAmp').value;
+  const noise=+document.getElementById('sNoise').value;
+  const r=mulberry32(TS.seed);const y=[];
+  for(let t=0;t<NOBS;t++){y.push(LEVEL+slope*t+amp*Math.sin(2*Math.PI*t/PERIOD)+gauss(r)*noise);}
+  return {y,slope,amp,noise};
+}
+function fitTrend(y){const n=y.length;let sx=0,sy=0,sxx=0,sxy=0;for(let t=0;t<n;t++){sx+=t;sy+=y[t];sxx+=t*t;sxy+=t*y[t];}
+  const b=(n*sxy-sx*sy)/(n*sxx-sx*sx),a=(sy-b*sx)/n;return {a,b};}
+function seasonalProfile(y,tr){const sums=Array(PERIOD).fill(0),cnt=Array(PERIOD).fill(0);
+  for(let t=0;t<y.length;t++){const res=y[t]-(tr.a+tr.b*t);sums[t%PERIOD]+=res;cnt[t%PERIOD]++;}
+  const prof=sums.map((s,i)=>s/(cnt[i]||1));const m=prof.reduce((a,b)=>a+b,0)/PERIOD;return prof.map(v=>v-m);}
+function drawTS(){
+  const {ctx,W,H}=setup(TS.cv);const padL=32,padR=14,padT=14,padB=24;
+  const {y,noise}=genSeries();const tr=fitTrend(y);const prof=seasonalProfile(y,tr);
+  const H_=+document.getElementById('sH').value;
+  // residual std for band
+  let ss=0;for(let t=0;t<y.length;t++){const fit=tr.a+tr.b*t+prof[t%PERIOD];ss+=(y[t]-fit)**2;}
+  const resSd=Math.sqrt(ss/y.length);
+  // forecast
+  const fc=[];for(let h=1;h<=H_;h++){const t=NOBS-1+h;fc.push(tr.a+tr.b*t+prof[t%PERIOD]);}
+  const total=NOBS+H_;
+  const allV=y.concat(fc);let lo=Math.min(...allV)-resSd*2.2-4,hi=Math.max(...allV)+resSd*2.2+4;
+  const X=t=>padL+(W-padL-padR)*t/(total-1), Y=v=>padT+(H-padT-padB)*(1-(v-lo)/(hi-lo));
+  ctx.clearRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle=C.grid;ctx.lineWidth=1;for(let i=0;i<=4;i++){const yy=padT+(H-padT-padB)*i/4;ctx.beginPath();ctx.moveTo(padL,yy);ctx.lineTo(W-padR,yy);ctx.stroke();}
+  // divider now
+  const nowX=X(NOBS-1);ctx.strokeStyle='rgba(20,24,50,.25)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(nowX,padT);ctx.lineTo(nowX,H-padB);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle=C.mut;ctx.font='9px Inter';ctx.textAlign='center';ctx.fillText('now',nowX,H-padB+13);ctx.fillText('forecast →',X(NOBS+H_/2),H-padB+13);
+  // confidence band
+  if(TS.show.band){
+    ctx.beginPath();let started=false;
+    for(let h=1;h<=H_;h++){const t=NOBS-1+h;const w=resSd*1.96*Math.sqrt(h);const px=X(t),py=Y(fc[h-1]+w);if(!started){ctx.moveTo(px,py);started=true;}else ctx.lineTo(px,py);}
+    for(let h=H_;h>=1;h--){const t=NOBS-1+h;const w=resSd*1.96*Math.sqrt(h);ctx.lineTo(X(t),Y(fc[h-1]-w));}
+    ctx.closePath();ctx.fillStyle='rgba(157,123,255,.16)';ctx.fill();
+  }
+  // trend line
+  if(TS.show.trend){ctx.strokeStyle=C.trend;ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();
+    for(let t=0;t<total;t++){const v=tr.a+tr.b*t;t?ctx.lineTo(X(t),Y(v)):ctx.moveTo(X(t),Y(v));}ctx.stroke();ctx.setLineDash([]);}
+  // seasonal fit (trend+season over observed)
+  if(TS.show.season){ctx.strokeStyle='rgba(65,207,142,.85)';ctx.lineWidth=1.6;ctx.beginPath();
+    for(let t=0;t<NOBS;t++){const v=tr.a+tr.b*t+prof[t%PERIOD];t?ctx.lineTo(X(t),Y(v)):ctx.moveTo(X(t),Y(v));}ctx.stroke();}
+  // observed
+  ctx.strokeStyle=C.cyan;ctx.lineWidth=2.4;ctx.beginPath();
+  for(let t=0;t<NOBS;t++){t?ctx.lineTo(X(t),Y(y[t])):ctx.moveTo(X(t),Y(y[t]));}ctx.stroke();
+  for(let t=0;t<NOBS;t+=1){ctx.beginPath();ctx.arc(X(t),Y(y[t]),1.8,0,Math.PI*2);ctx.fillStyle=C.cyanD;ctx.fill();}
+  // forecast line
+  ctx.strokeStyle=C.fcast;ctx.lineWidth=2.6;ctx.beginPath();ctx.moveTo(X(NOBS-1),Y(y[NOBS-1]));
+  for(let h=1;h<=H_;h++){ctx.lineTo(X(NOBS-1+h),Y(fc[h-1]));}ctx.stroke();
+  for(let h=1;h<=H_;h++){ctx.beginPath();ctx.arc(X(NOBS-1+h),Y(fc[h-1]),2.6,0,Math.PI*2);ctx.fillStyle=C.fcast;ctx.fill();}
+  // legend
+  ctx.textAlign='left';ctx.font='10px Inter';
+  ctx.fillStyle=C.cyanD;ctx.fillText('— observed',padL+2,padT+2);
+  ctx.fillStyle=C.trendD;ctx.fillText('— trend',padL+72,padT+2);
+  ctx.fillStyle=C.fcastD;ctx.fillText('— forecast',padL+128,padT+2);
+  // message
+  document.getElementById('tsMsg').innerHTML='<b>'+(tr.b>0.05?'Upward':tr.b<-0.05?'Downward':'Flat')+' trend, seasonal swing \u00B1'+document.getElementById('sAmp').value+'.</b> The forecast extends both '+H_+' steps ahead; its band spans roughly \u00B1'+(resSd*1.96*Math.sqrt(H_)).toFixed(0)+' at the horizon \u2014 wider with more noise or a longer horizon.';
+}
+['sSlope','sAmp','sNoise','sH'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{
+  document.getElementById('vSlope').textContent=((+document.getElementById('sSlope').value)/100).toFixed(2);
+  document.getElementById('vAmp').textContent=document.getElementById('sAmp').value;
+  document.getElementById('vNoise').textContent=document.getElementById('sNoise').value;
+  document.getElementById('vH').textContent=document.getElementById('sH').value;
+  drawTS();}));
+document.querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>{TS.show[b.dataset.t]=!TS.show[b.dataset.t];b.classList.toggle('on');drawTS();}));
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){drawTS();ob.disconnect();}})},{threshold:.2}).observe(TS.cv);
+
+document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const pre=b.closest('.code-card').querySelector('pre');const t=pre?pre.innerText:'';navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied \u2713';setTimeout(()=>b.textContent=o,1300);});});});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>drawTS(),200);});
+</script>
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Experiment 7 — Loan Eligibility Classification | DSA Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#15191e;   --bg-2:#1d232b;  --bg-3:#28313b;
+    --cream:#f0f1ee; --cream-2:#fafbf8;
+    --gold:#e6b84a;  --gold-d:#b58e26;     /* accent — money */
+    --ok:#2ecc8f;    --ok-d:#1e9a69;        /* approve */
+    --bad:#e8615a;   --bad-d:#bd3e38;       /* reject */
+    --ink:#181d22;   --muted:#9fb0bf;
+    --line:rgba(240,241,238,.13);
+    --code-bg:#10141a;
+    --shadow:0 18px 50px -22px rgba(0,0,0,.8);
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:radial-gradient(1100px 560px at 84% -10%, rgba(230,184,74,.10), transparent 60%),
+               radial-gradient(900px 520px at -8% 16%, rgba(46,204,143,.08), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3,h4{font-family:'Archivo',sans-serif;line-height:1.08;margin:0}
+  a{color:var(--gold)}
+  ::selection{background:var(--gold);color:var(--ink)}
+
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(21,25,30,.85);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:14px;height:58px}
+  .logo{width:34px;height:34px;border-radius:9px;flex:none;background:var(--bg-3);position:relative;box-shadow:0 0 0 2px rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:16px}
+  .logo::after{content:"🏦"}
+  .brand b{font-family:'Archivo';font-weight:800;letter-spacing:.3px}
+  .brand span{display:block;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .topnav a{font-size:12.5px;font-weight:600;color:var(--cream);text-decoration:none;padding:7px 11px;border-radius:8px;opacity:.85}
+  .topnav a:hover{background:var(--bg-3);opacity:1}
+
+  .hero{padding:62px 0 34px}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;border:1px solid var(--gold-d);border-radius:100px;padding:6px 14px;background:rgba(230,184,74,.06)}
+  .hero h1{font-size:clamp(36px,6.6vw,72px);font-weight:900;letter-spacing:-1.5px;margin:18px 0 6px}
+  .hero h1 .hl{color:var(--gold)}
+  .hero .sub{font-size:clamp(16px,2.2vw,20px);color:#d6dee6;max-width:710px}
+  .meta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .chip{font-size:12.5px;font-weight:600;background:var(--bg-2);border:1px solid var(--line);padding:8px 13px;border-radius:10px;display:flex;gap:8px;align-items:center}
+  .chip b{color:var(--gold);font-family:'JetBrains Mono';font-weight:700}
+
+  .dash{margin-top:34px;background:linear-gradient(180deg,#10141a,#15191e);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .dash .d-top{display:flex;justify-content:space-between;align-items:center;border-bottom:1px dashed var(--line);padding-bottom:12px;margin-bottom:14px}
+  .d-top h3{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok);font-family:'JetBrains Mono'}
+  .dot-live{width:9px;height:9px;border-radius:50%;background:var(--ok);animation:blink 1.3s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .d-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:14px}
+  .d-cell{background:#10141a;border:1px solid var(--line);border-radius:12px;padding:14px}
+  .d-cell .n{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--gold);letter-spacing:-1px}
+  .d-cell .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-weight:600;margin-top:2px}
+
+  section{padding:46px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:26px}
+  .sec-num{font-family:'JetBrains Mono';font-weight:700;color:var(--gold);font-size:14px;letter-spacing:1px;border:1px solid var(--gold-d);border-radius:8px;padding:5px 10px;background:rgba(230,184,74,.08)}
+  .sec-head h2{font-size:clamp(24px,3.6vw,34px);font-weight:800;letter-spacing:-.6px}
+
+  .card{background:var(--cream);color:var(--ink);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow)}
+  .card h3{color:var(--ink)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr}}
+  .lab-meta{display:grid;grid-template-columns:160px 1fr;gap:0}
+  .lab-meta .k{font-weight:700;font-family:'Archivo';padding:12px 0;border-bottom:1px solid rgba(24,29,34,.10);color:var(--ok-d)}
+  .lab-meta .v{padding:12px 0;border-bottom:1px solid rgba(24,29,34,.10)}
+  @media(max-width:600px){.lab-meta{grid-template-columns:1fr}.lab-meta .v{padding-top:0}.lab-meta .k{border-bottom:0;padding-bottom:0}}
+  ul.clean{margin:0;padding-left:20px}ul.clean li{margin:7px 0}
+
+  /* why-model cards */
+  .wm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:680px){.wm-grid{grid-template-columns:1fr}}
+  .wm{background:var(--cream);color:var(--ink);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .wm.glass{border-top:4px solid var(--ok)}.wm.black{border-top:4px solid var(--bad)}
+  .wm b{font-family:'Archivo';font-size:16px;display:block;margin-bottom:6px}
+  .wm.glass b{color:var(--ok-d)}.wm.black b{color:var(--bad-d)}
+  .wm p{color:#46535e;font-size:13.5px;margin:0}
+
+  .panel{background:var(--cream);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+  .panel .ph{display:flex;align-items:center;gap:12px;padding:16px 22px;background:linear-gradient(90deg,var(--bg-2),var(--bg-3));color:var(--cream);flex-wrap:wrap}
+  .panel .ph b{font-family:'Archivo';font-weight:800;font-size:17px}
+  .panel .ph .hint{font-size:12px;color:var(--muted);margin-left:auto}
+  .panel .pbody{padding:18px 22px 22px}
+
+  .loan-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;align-items:start}
+  @media(max-width:820px){.loan-grid{grid-template-columns:1fr}}
+  .plot{background:var(--cream-2);border:1px solid rgba(24,29,34,.1);border-radius:14px;padding:8px}
+  canvas.chart{width:100%;display:block}
+
+  .sliders .sl{margin:13px 0}
+  .sliders .sl .top{display:flex;justify-content:space-between;font-family:'Archivo';font-weight:700;font-size:13px;color:var(--ink);margin-bottom:5px}
+  .sliders .sl .top .v{font-family:'JetBrains Mono';color:var(--gold-d)}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:7px;border-radius:6px;background:var(--bg-3);outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;cursor:pointer}
+
+  .verdict{margin-top:14px;font-family:'Archivo';font-weight:900;font-size:19px;padding:14px 18px;border-radius:12px;text-align:center}
+  .verdict.ok{background:rgba(46,204,143,.16);color:var(--ok-d);border:1px solid var(--ok)}
+  .verdict.bad{background:rgba(232,97,90,.16);color:var(--bad-d);border:1px solid var(--bad)}
+
+  .trace{margin-top:14px;background:var(--cream-2);border:1px solid rgba(24,29,34,.1);border-radius:12px;padding:14px 16px}
+  .trace .tt{font-family:'Archivo';font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:#5a6772;margin-bottom:8px}
+  .trace ol{margin:0;padding-left:20px}
+  .trace li{font-size:13px;margin:5px 0;color:#33404a}
+  .trace li .pass{color:var(--ok-d);font-weight:700}
+  .trace li .fail{color:var(--bad-d);font-weight:700}
+
+  .answer{margin-top:14px;background:rgba(230,184,74,.1);border:1px solid rgba(181,142,38,.3);border-left:4px solid var(--gold);border-radius:10px;padding:13px 16px;color:var(--ink)}
+  .answer b{color:var(--bad-d);font-family:'Archivo'}
+
+  /* cost / confusion */
+  .cm{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px;max-width:420px}
+  .cm div{padding:11px 9px;border-radius:8px;text-align:center;font-family:'JetBrains Mono';font-size:11.5px}
+  .cm .h{background:var(--bg-2);color:var(--cream);font-weight:700}
+  .cm .good{background:rgba(46,204,143,.18);color:var(--ok-d);font-weight:600}
+  .cm .costly{background:rgba(232,97,90,.22);color:var(--bad-d);font-weight:700}
+  .cm .mild{background:rgba(230,184,74,.2);color:var(--gold-d);font-weight:600}
+
+  /* videos */
+  .vid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+  .vid{background:var(--bg-2);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vid .frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+  .vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid .vmeta{padding:13px 16px}
+  .vid .vmeta b{font-family:'Archivo';font-weight:700;font-size:14.5px;display:block}
+  .vid .vmeta span{font-size:12px;color:var(--muted)}
+  .vid .vmeta .src{font-family:'JetBrains Mono';font-size:10.5px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px}
+
+  /* code */
+  .code-card{background:var(--code-bg);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+  .code-top{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#0c1015;border-bottom:1px solid var(--line)}
+  .tl{display:flex;gap:7px}.tl span{width:11px;height:11px;border-radius:50%}
+  .tl span:nth-child(1){background:#ff5f57}.tl span:nth-child(2){background:#febc2e}.tl span:nth-child(3){background:#28c840}
+  .code-top .fname{font-family:'JetBrains Mono';font-size:12px;color:var(--muted);margin-left:6px}
+  .copy{margin-left:auto;font-family:'Inter';font-size:12px;font-weight:600;color:var(--cream);background:var(--bg-3);border:1px solid var(--line);padding:6px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+  .copy:hover{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+  pre{margin:0;padding:18px 20px;overflow-x:auto}
+  code{font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.75;color:#e6ebf0}
+  .tok-kw{color:#7fd0ff;font-weight:600}.tok-fn{color:#79e0b0}.tok-str{color:#e6b84a}
+  .tok-num{color:#b6c6ff}.tok-com{color:#647585;font-style:italic}.tok-bi{color:#7fe0d0}
+
+  .timeline{position:relative;padding-left:28px}
+  .timeline::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--gold),var(--ok))}
+  .step{position:relative;margin-bottom:18px}
+  .step::before{content:"";position:absolute;left:-23px;top:5px;width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px var(--bg)}
+  .step b{font-family:'Archivo';color:var(--gold-d)}
+
+  .viva details{background:var(--cream);color:var(--ink);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:0 8px 22px -16px rgba(0,0,0,.6)}
+  .viva summary{cursor:pointer;list-style:none;padding:15px 20px;font-weight:600;font-family:'Archivo';display:flex;align-items:center;gap:12px}
+  .viva summary::-webkit-details-marker{display:none}
+  .viva summary::before{content:"Q";font-family:'JetBrains Mono';font-weight:700;color:#fff;background:var(--ok-d);width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+  .viva details[open] summary{background:var(--cream-2)}
+  .viva .ans{padding:0 20px 18px 56px;color:#46535e}
+
+  footer{padding:40px 0 60px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="logo" aria-hidden="true"></div>
+    <div class="brand"><b>DSA LAB</b><span>Data Science Applications</span></div>
+    <nav class="topnav">
+      <a href="#manual">Manual</a>
+      <a href="#why">Why a tree</a>
+      <a href="#tree">Decision tree</a>
+      <a href="#cost">Errors</a>
+      <a href="#videos">Videos</a>
+      <a href="#program">Program</a>
+      <a href="#viva">Viva</a>
+    </nav>
+  </div>
+</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="logo" style="width:16px;height:16px;font-size:9px"></span>Experiment&nbsp;07 · CO3</span>
+    <h1>Approve or <span class="hl">Reject?</span></h1>
+    <p class="sub">A bank classifies loan applicants as eligible or not from income, credit score and repayment history. We choose an <b>interpretable model — a decision tree</b> — and, crucially, can <b>explain every decision</b>. Move the sliders and trace the path an applicant takes.</p>
+    <div class="meta-row">
+      <div class="chip">Course&nbsp;<b>IT416</b></div>
+      <div class="chip">Outcome&nbsp;<b>CO3</b></div>
+      <div class="chip">Model&nbsp;<b>Decision Tree</b></div>
+      <div class="chip">Key&nbsp;<b>Explainability</b></div>
+    </div>
+    <div class="dash reveal">
+      <div class="d-top"><h3>Why this model wins for banking</h3><div class="live"><span class="dot-live"></span>TRACEABLE</div></div>
+      <div class="d-grid">
+        <div class="d-cell"><div class="n" data-count="4">0</div><div class="l">Decision rules</div></div>
+        <div class="d-cell"><div class="n" data-count="100" data-suffix="%">0</div><div class="l">Explainable</div></div>
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Error types</div></div>
+        <div class="d-cell"><div class="n" data-count="2">0</div><div class="l">Concept videos</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- LAB MANUAL -->
+<section id="manual">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Lab Manual</h2></div>
+    <div class="card">
+      <div class="lab-meta">
+        <div class="k">Problem</div>
+        <div class="v">A bank needs to classify loan applicants as eligible or not eligible based on details such as income, credit score and repayment history. Study the dataset, select an appropriate classification algorithm, build the model, and justify why it is suitable for decision-making.</div>
+        <div class="k">Aim</div>
+        <div class="v">To build a classification model that decides loan eligibility, and to justify the choice of an interpretable algorithm (decision tree / logistic regression) for high-stakes, regulated decisions.</div>
+        <div class="k">Objectives</div>
+        <div class="v"><ul class="clean">
+          <li>Study the dataset and identify predictive features.</li>
+          <li>Select a suitable, explainable classification algorithm.</li>
+          <li>Train the model and read off the decision rules.</li>
+          <li>Evaluate it and weigh the two kinds of error (approving a defaulter vs rejecting a good applicant).</li>
+        </ul></div>
+        <div class="k">Software</div>
+        <div class="v">Python 3.x · Jupyter / Colab · Pandas, scikit-learn, Matplotlib.</div>
+        <div class="k">Dataset</div>
+        <div class="v">A loan-application dataset (e.g. the Kaggle "Loan Prediction" or UCI "German Credit" data) — income, credit history, loan amount, term, employment, with an eligibility label.</div>
+        <div class="k">Outcome</div>
+        <div class="v">CO3 — building a classification model and justifying it for decision-making.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY A TREE -->
+<section id="why">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Why Pick a Decision Tree?</h2></div>
+    <p style="max-width:740px;color:#d6dee6;margin-top:-12px">For loans, the model isn't just predicting — it must <b>justify</b>. A rejected customer is legally owed a reason. So we prefer a transparent ("white-box") model whose logic anyone can follow.</p>
+    <div class="wm-grid">
+      <div class="wm glass">
+        <b>✓ White-box: Decision Tree / Logistic Regression</b>
+        <p>Every decision is a short chain of human-readable rules ("credit &lt; 650 → reject"). Easy to explain to customers and regulators, audit for fairness, and turn into a policy. Handles mixed numeric/categorical features with little preprocessing.</p>
+      </div>
+      <div class="wm black">
+        <b>✗ Black-box: deep nets, large ensembles</b>
+        <p>Often slightly more accurate, but their reasoning is opaque. Hard to justify a single rejection, hard to audit, and risky where "adverse action" explanations are legally required. Usually not worth the loss of trust for lending.</p>
+      </div>
+    </div>
+    <div class="answer" style="margin-top:16px"><b>The trade-off:</b> we accept a little less raw accuracy in exchange for transparency, fairness and accountability. In regulated decision-making, an explainable model you can defend beats a black box you can't.</div>
+  </div>
+</section>
+
+<!-- INTERACTIVE DECISION TREE -->
+<section id="tree">
+  <div class="wrap">
+    <div class="sec-head reveal"><span class="sec-num">03</span><h2>The Decision, Traced</h2></div>
+    <p class="reveal" style="max-width:760px;color:#d6dee6;margin-top:-12px">Describe an applicant with the sliders. The tree lights up the exact path taken and lands on a leaf — <span style="color:var(--ok)">Approve</span> or <span style="color:var(--bad)">Reject</span> — and the trace below spells out the reason, rule by rule. This is the explainability a bank needs.</p>
+
+    <div class="panel reveal">
+      <div class="ph"><b>Loan eligibility decision tree</b><span class="hint">an applicant must clear every gate to be approved</span></div>
+      <div class="pbody">
+        <div class="loan-grid">
+          <div class="plot"><canvas class="chart" id="treeCanvas" height="360"></canvas></div>
+          <div>
+            <div class="sliders">
+              <div class="sl"><div class="top"><span>Credit score</span><span class="v" id="vCredit">700</span></div>
+                <input type="range" id="sCredit" min="300" max="850" value="700"></div>
+              <div class="sl"><div class="top"><span>Annual income</span><span class="v" id="vIncome">₹8.0L</span></div>
+                <input type="range" id="sIncome" min="100000" max="2000000" value="800000" step="50000"></div>
+              <div class="sl"><div class="top"><span>Debt-to-income (DTI)</span><span class="v" id="vDti">30%</span></div>
+                <input type="range" id="sDti" min="0" max="80" value="30"></div>
+              <div class="sl"><div class="top"><span>Loan amount</span><span class="v" id="vLoan">₹25.0L</span></div>
+                <input type="range" id="sLoan" min="100000" max="10000000" value="2500000" step="100000"></div>
+            </div>
+            <div class="verdict ok" id="verdict">—</div>
+          </div>
+        </div>
+        <div class="trace"><div class="tt">Decision trace — the bank's justification</div><ol id="traceList"></ol></div>
+        <div class="answer" id="treeMsg"><b>Try it:</b> drop the credit score below 650 and the very first gate rejects the applicant — one clear, defensible reason. Raise debt-to-income above 45% and watch a strong applicant get stopped at the debt gate.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COST OF ERRORS -->
+<section id="cost">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">03a</span><h2>Two Errors, Two Costs</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:12px">Confusion matrix for lending</h3>
+        <div class="cm">
+          <div style="background:transparent"></div><div class="h">Predicted Approve</div><div class="h">Predicted Reject</div>
+          <div class="h">Truly good</div><div class="good">✓ good loan</div><div class="mild">lost customer</div>
+          <div class="h">Truly risky</div><div class="costly">✗ defaults!</div><div class="good">✓ avoided</div>
+        </div>
+        <p style="color:#46535e;font-size:13px;margin-top:14px">A <b>false approve</b> (approving someone who defaults) usually costs far more than a <b>false reject</b> (turning away a good customer). So a bank may tune the model toward fewer false approves.</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:12px">So how do we judge it?</h3>
+        <p style="color:#46535e;margin-top:0">Accuracy alone is not enough. Banks look at:</p>
+        <ul class="clean" style="color:#46535e;font-size:13.5px">
+          <li><b>Precision</b> on "approve" — of approved loans, how many were truly safe.</li>
+          <li><b>Recall</b> on "risky" — how many actual defaulters we caught.</li>
+          <li><b>ROC-AUC</b> — performance across all decision thresholds.</li>
+          <li><b>Fairness</b> — similar decisions across protected groups.</li>
+        </ul>
+        <div class="answer" style="margin-top:8px"><b>Decision-making:</b> set the approval threshold by the cost of each error, not by accuracy. An explainable tree makes that policy visible and auditable.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">04</span><h2>Watch the Concepts</h2></div>
+    <p style="max-width:760px;color:#d6dee6;margin-top:-12px">Two clear explainers from <b>StatQuest with Josh Starmer</b> — how a decision tree is built, and how we measure its mistakes.</p>
+    <div class="vid-grid">
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/_L39rN6gz7Y" title="Decision and Classification Trees, Clearly Explained" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest</span><b>Decision &amp; Classification Trees</b><span>How a tree chooses questions and splits to classify — the model used here.</span></div>
+      </div>
+      <div class="vid">
+        <div class="frame"><iframe loading="lazy" src="https://www.youtube-nocookie.com/embed/Kdsp6soqA7o" title="Machine Learning Fundamentals: The Confusion Matrix" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <div class="vmeta"><span class="src">StatQuest</span><b>The Confusion Matrix</b><span>Where false approves and false rejects come from, and the metrics they feed.</span></div>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:12.5px;margin-top:14px">Videos are embedded from YouTube and belong to their creators. If a frame is blank, your network may block YouTube — search the titles on youtube.com.</p>
+  </div>
+</section>
+
+<!-- PROGRAM -->
+<section id="program">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">05</span><h2>The Program</h2></div>
+    <p style="max-width:720px;color:#d6dee6;margin-top:-12px">Train a decision tree, then read its rules — that readability is exactly why we chose it. A logistic-regression comparison is included for justification.</p>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">1 — load_prepare.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+<span class="tok-kw">from</span> sklearn.model_selection <span class="tok-kw">import</span> train_test_split
+
+df = pd.<span class="tok-fn">read_csv</span>(<span class="tok-str">"loan.csv"</span>)
+df = df.<span class="tok-fn">dropna</span>()                       <span class="tok-com"># handle missing values</span>
+df = pd.<span class="tok-fn">get_dummies</span>(df, drop_first=<span class="tok-kw">True</span>)  <span class="tok-com"># encode categoricals</span>
+
+X = df.<span class="tok-fn">drop</span>(columns=[<span class="tok-str">"Loan_Approved"</span>])
+y = df[<span class="tok-str">"Loan_Approved"</span>]
+X_tr, X_te, y_tr, y_te = <span class="tok-fn">train_test_split</span>(X, y, test_size=<span class="tok-num">0.25</span>, random_state=<span class="tok-num">1</span>)</code></pre>
+    </div>
+
+    <div class="code-card" style="margin-bottom:20px">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">2 — decision_tree.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">from</span> sklearn.tree <span class="tok-kw">import</span> DecisionTreeClassifier, plot_tree, export_text
+<span class="tok-kw">from</span> sklearn.metrics <span class="tok-kw">import</span> accuracy_score, confusion_matrix, classification_report
+<span class="tok-kw">import</span> matplotlib.pyplot <span class="tok-kw">as</span> plt
+
+tree = <span class="tok-fn">DecisionTreeClassifier</span>(max_depth=<span class="tok-num">4</span>, random_state=<span class="tok-num">1</span>)
+tree.<span class="tok-fn">fit</span>(X_tr, y_tr)
+pred = tree.<span class="tok-fn">predict</span>(X_te)
+
+<span class="tok-bi">print</span>(<span class="tok-str">"Accuracy:"</span>, <span class="tok-fn">accuracy_score</span>(y_te, pred))
+<span class="tok-bi">print</span>(<span class="tok-fn">confusion_matrix</span>(y_te, pred))
+<span class="tok-bi">print</span>(<span class="tok-fn">classification_report</span>(y_te, pred))
+
+<span class="tok-com"># The whole point: read the rules the bank will follow</span>
+<span class="tok-bi">print</span>(<span class="tok-fn">export_text</span>(tree, feature_names=<span class="tok-bi">list</span>(X.columns)))
+<span class="tok-fn">plot_tree</span>(tree, feature_names=X.columns, class_names=[<span class="tok-str">"Reject"</span>,<span class="tok-str">"Approve"</span>], filled=<span class="tok-kw">True</span>)
+plt.<span class="tok-fn">show</span>()</code></pre>
+    </div>
+
+    <div class="code-card">
+      <div class="code-top"><div class="tl"><span></span><span></span><span></span></div><span class="fname">3 — justify_choice.py</span><button class="copy">Copy</button></div>
+<pre><code><span class="tok-kw">from</span> sklearn.linear_model <span class="tok-kw">import</span> LogisticRegression
+
+<span class="tok-com"># Compare with another interpretable model</span>
+lr = <span class="tok-fn">LogisticRegression</span>(max_iter=<span class="tok-num">1000</span>).<span class="tok-fn">fit</span>(X_tr, y_tr)
+<span class="tok-bi">print</span>(<span class="tok-str">"LogReg acc:"</span>, lr.<span class="tok-fn">score</span>(X_te, y_te))
+
+<span class="tok-com"># Which features drive the decision? (justification)</span>
+<span class="tok-kw">import</span> pandas <span class="tok-kw">as</span> pd
+imp = pd.<span class="tok-fn">Series</span>(tree.feature_importances_, index=X.columns)
+<span class="tok-bi">print</span>(imp.<span class="tok-fn">sort_values</span>(ascending=<span class="tok-kw">False</span>).<span class="tok-fn">head</span>())
+<span class="tok-com"># Pick the decision tree: comparable accuracy, fully explainable rules.</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- PROCEDURE & RESULT -->
+<section id="procedure">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">06</span><h2>Procedure &amp; Result</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <h3 style="margin-bottom:14px">Steps followed</h3>
+        <div class="timeline">
+          <div class="step"><b>1 · Study data</b><br>Inspect features, missing values, class balance.</div>
+          <div class="step"><b>2 · Prepare</b><br>Clean, encode categoricals, split train/test.</div>
+          <div class="step"><b>3 · Select model</b><br>Choose an interpretable classifier (decision tree).</div>
+          <div class="step"><b>4 · Train</b><br>Fit the tree; cap depth to avoid overfitting.</div>
+          <div class="step"><b>5 · Read rules</b><br>Export the tree and feature importances.</div>
+          <div class="step"><b>6 · Evaluate &amp; justify</b><br>Accuracy, confusion matrix, cost of errors.</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:14px">Result</h3>
+        <p style="color:#46535e;margin-top:0">A decision-tree classifier was built to predict loan eligibility from applicant details. It achieved good accuracy while producing a small set of human-readable rules, and was compared with logistic regression. The tree was recommended because it is fully explainable — essential for fair, auditable lending decisions, demonstrating CO3.</p>
+        <div class="answer" style="margin-top:8px"><b>Conclusion:</b> For high-stakes decisions like loans, the best model is not always the most accurate one — it's the one whose decisions you can explain, defend and audit. A shallow decision tree gives competitive accuracy plus a transparent rule for every applicant, which is exactly what responsible decision-making requires.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VIVA -->
+<section id="viva" class="viva">
+  <div class="wrap reveal">
+    <div class="sec-head"><span class="sec-num">07</span><h2>Viva Questions</h2></div>
+    <details><summary>Why is a decision tree well suited to loan decisions?</summary>
+      <div class="ans">It produces simple, human-readable if-then rules, so every approval or rejection can be explained and audited. It also handles mixed feature types and needs little preprocessing — important for transparent, regulated decisions.</div></details>
+    <details><summary>What are the root, internal nodes and leaves of a tree?</summary>
+      <div class="ans">The root is the first test (top of the tree); internal nodes are further tests on features; leaves are the final outputs — here "Approve" or "Reject".</div></details>
+    <details><summary>How does a decision tree decide where to split?</summary>
+      <div class="ans">It picks the feature and threshold that most reduce impurity (Gini impurity or entropy/information gain), making the resulting groups as pure (single-class) as possible.</div></details>
+    <details><summary>How do you prevent a decision tree from overfitting?</summary>
+      <div class="ans">Limit depth (max_depth), require a minimum number of samples per split/leaf, prune the tree, or use cross-validation to choose these settings.</div></details>
+    <details><summary>Why might accuracy be the wrong metric for loan approval?</summary>
+      <div class="ans">Classes are usually imbalanced and the two errors have very different costs. Approving a defaulter (false approve) is far costlier than rejecting a good applicant, so precision, recall and cost-sensitive metrics matter more.</div></details>
+    <details><summary>White-box vs black-box models — what's the difference and why does it matter here?</summary>
+      <div class="ans">White-box models (trees, logistic regression) expose their reasoning; black-box models (deep nets, large ensembles) don't. Lending often legally requires an explanation for rejections, so explainability can outweigh a small accuracy gain.</div></details>
+    <details><summary>What is feature importance and how is it useful?</summary>
+      <div class="ans">It measures how much each feature contributes to the model's decisions. It helps justify and communicate which factors (e.g. credit score, DTI) drive eligibility, and can flag unfair or irrelevant features.</div></details>
+    <details><summary>How would you check the model is fair?</summary>
+      <div class="ans">Compare error rates and approval rates across protected groups, remove or audit sensitive proxies, and use fairness metrics. The tree's transparency makes such audits straightforward.</div></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    DSA Lab · Experiment 07 · Loan Eligibility Classification — Course IT416 (R23) · CO3<br>
+    <span style="opacity:.7">The interactive tree uses an illustrative rule set to show how a decision tree explains each decision; a real tree is learned from data by the program above.</span>
+  </div>
+</footer>
+
+<script>
+/* reveal + count-up */
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+function countUp(el){const t=+el.dataset.count,s=el.dataset.suffix||'',d=1000,t0=performance.now();(function k(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,3);el.textContent=Math.round(t*e)+s;if(p<1)requestAnimationFrame(k);})(performance.now());}
+const sbObs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){countUp(e.target);sbObs.unobserve(e.target);}})},{threshold:.6});
+document.querySelectorAll('.d-cell .n').forEach(el=>sbObs.observe(el));
+
+const REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const C={ink:'#181d22',gold:'#e6b84a',goldD:'#b58e26',ok:'#2ecc8f',okD:'#1e9a69',bad:'#e8615a',badD:'#bd3e38',mut:'#7a8794',box:'#ffffff',boxBorder:'rgba(24,29,34,.25)'};
+function setup(cv){const dpr=Math.max(1,devicePixelRatio||1),w=cv.clientWidth,h=cv.height;cv.width=w*dpr;cv.height=h*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return{ctx:x,W:w,H:h};}
+function rr(ctx,x,y,w,h,r){r=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+/* read inputs */
+function inputs(){return{
+  credit:+document.getElementById('sCredit').value,
+  income:+document.getElementById('sIncome').value,
+  dti:+document.getElementById('sDti').value,
+  loan:+document.getElementById('sLoan').value};}
+
+/* the 4 gates (illustrative rule set) */
+function gates(v){
+  return [
+    {key:'Credit \u2265 650', pass:v.credit>=650, detail:'Score '+v.credit+(v.credit>=650?' \u2265 650':' < 650'), reason:'low credit score'},
+    {key:'Income \u2265 \u20B96L', pass:v.income>=600000, detail:'Income \u20B9'+(v.income/100000).toFixed(1)+'L'+(v.income>=600000?' \u2265 \u20B96L':' < \u20B96L'), reason:'income below requirement'},
+    {key:'DTI \u2264 45%', pass:v.dti<=45, detail:'DTI '+v.dti+'%'+(v.dti<=45?' \u2264 45%':' > 45%'), reason:'debt-to-income too high'},
+    {key:'Loan \u2264 5\u00D7 income', pass:v.loan<=5*v.income, detail:'Loan '+(v.loan/v.income).toFixed(1)+'\u00D7 income'+(v.loan<=5*v.income?' \u2264 5\u00D7':' > 5\u00D7'), reason:'loan exceeds repayment capacity'}
+  ];
+}
+/* evaluate: index of gate that failed, or 4 = approved */
+function evaluate(g){for(let i=0;i<g.length;i++)if(!g[i].pass)return i;return g.length;}
+
+const TREE={cv:document.getElementById('treeCanvas')};
+function drawTree(){
+  const {ctx,W,H}=setup(TREE.cv);
+  ctx.clearRect(0,0,W,H);
+  const v=inputs(); const g=gates(v); const failAt=evaluate(g);
+  // node layout: 4 decision nodes down the left, reject leaves to the right, approve at bottom
+  const dec=[], rej=[];
+  const bx=Math.min(168,W*0.42), bh=38;
+  const decX=W*0.05, rejX=W*0.55;
+  const ys=[H*0.04,H*0.27,H*0.50,H*0.73];
+  for(let i=0;i<4;i++){dec.push({x:decX,y:ys[i],w:bx,h:bh});rej.push({x:rejX,y:ys[i],w:bx,h:bh});}
+  const approve={x:decX,y:H*0.92,w:bx,h:bh};
+  // connectors
+  ctx.lineWidth=2;
+  function edge(x1,y1,x2,y2,active){ctx.strokeStyle=active?C.gold:'rgba(24,29,34,.18)';ctx.lineWidth=active?3:1.6;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+  for(let i=0;i<4;i++){
+    const reached=i<=failAt; // node i is on the path if all earlier gates passed
+    // edge to reject (No)
+    const noActive=(failAt===i);
+    edge(dec[i].x+dec[i].w,dec[i].y+bh/2, rej[i].x,rej[i].y+bh/2, noActive);
+    // edge to next decision or approve (Yes)
+    const yesActive=(failAt>i);
+    if(i<3) edge(dec[i].x+18,dec[i].y+bh, dec[i+1].x+18,dec[i+1].y, yesActive);
+    else edge(dec[i].x+18,dec[i].y+bh, approve.x+18,approve.y, yesActive);
+  }
+  // draw a node box
+  function node(n,label,sub,kind,active){
+    rr(ctx,n.x,n.y,n.w,n.h,9);
+    ctx.fillStyle = kind==='approve'?(active?'rgba(46,204,143,.95)':'rgba(46,204,143,.25)')
+                  : kind==='reject'?(active?'rgba(232,97,90,.95)':'rgba(232,97,90,.18)')
+                  : (active?'#fff':'rgba(255,255,255,.65)');
+    ctx.fill();
+    ctx.lineWidth=active?2.6:1.2;
+    ctx.strokeStyle = kind==='approve'?C.okD : kind==='reject'?C.badD : (active?C.goldD:C.boxBorder);
+    ctx.stroke();
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle = (kind==='approve'&&active)?'#06351f' : (kind==='reject'&&active)?'#3a0d0b' : C.ink;
+    ctx.font='700 12px Archivo, sans-serif';
+    ctx.fillText(label, n.x+n.w/2, n.y+ (sub?bh/2-7:bh/2));
+    if(sub){ctx.font='10px JetBrains Mono, monospace';ctx.fillStyle=active?(kind==='other'?C.goldD:'rgba(0,0,0,.6)'):'rgba(24,29,34,.5)';ctx.fillText(sub,n.x+n.w/2,n.y+bh/2+9);}
+  }
+  // decision nodes
+  for(let i=0;i<4;i++){
+    const reached=i<=failAt;
+    node(dec[i], g[i].key, reached?g[i].detail:'', 'other', reached);
+    node(rej[i], 'Reject', '', 'reject', failAt===i);
+  }
+  node(approve, '\u2705 Approve', '', 'approve', failAt===4);
+}
+
+function updateTree(){
+  const v=inputs();
+  document.getElementById('vCredit').textContent=v.credit;
+  document.getElementById('vIncome').textContent='\u20B9'+(v.income/100000).toFixed(1)+'L';
+  document.getElementById('vDti').textContent=v.dti+'%';
+  document.getElementById('vLoan').textContent='\u20B9'+(v.loan/100000).toFixed(1)+'L';
+  const g=gates(v), failAt=evaluate(g);
+  // verdict
+  const vd=document.getElementById('verdict');
+  if(failAt===4){vd.className='verdict ok';vd.textContent='\u2705 APPROVE — applicant cleared all gates';}
+  else{vd.className='verdict bad';vd.textContent='\u274C REJECT — '+g[failAt].reason;}
+  // trace
+  const ol=document.getElementById('traceList');ol.innerHTML='';
+  for(let i=0;i<=Math.min(failAt,3);i++){
+    const li=document.createElement('li');
+    if(i<failAt||failAt===4) li.innerHTML=g[i].detail+' <span class="pass">\u2713 pass</span>';
+    else li.innerHTML=g[i].detail+' <span class="fail">\u2717 fail \u2192 reject</span>';
+    ol.appendChild(li);
+  }
+  if(failAt===4){const li=document.createElement('li');li.innerHTML='All gates cleared <span class="pass">\u2192 APPROVE</span>';ol.appendChild(li);}
+  drawTree();
+}
+['sCredit','sIncome','sDti','sLoan'].forEach(id=>document.getElementById(id).addEventListener('input',updateTree));
+new IntersectionObserver((es,ob)=>{es.forEach(e=>{if(e.isIntersecting){updateTree();ob.disconnect();}})},{threshold:.2}).observe(TREE.cv);
+
+/* copy + resize */
+document.querySelectorAll('.copy').forEach(b=>{b.addEventListener('click',()=>{const pre=b.closest('.code-card').querySelector('pre');const t=pre?pre.innerText:'';navigator.clipboard.writeText(t).then(()=>{const o=b.textContent;b.textContent='Copied \u2713';setTimeout(()=>b.textContent=o,1300);});});});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>drawTree(),200);});
+</script>
+</body>
+</html>
