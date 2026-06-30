@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Lab — Interactive Lab Manuals | Data Science Applications</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0f14;       --bg-2:#141923;   --bg-3:#1d2533;
+    --cream:#eef1f4;    --muted:#8d9bb0;
+    --line:rgba(238,241,244,.12);
+    --shadow:0 22px 60px -26px rgba(0,0,0,.85);
+    --maxw:1140px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:
+      radial-gradient(900px 480px at 10% -8%, rgba(29,158,117,.12), transparent 55%),
+      radial-gradient(900px 480px at 90% -4%, rgba(157,123,255,.12), transparent 55%),
+      radial-gradient(900px 600px at 50% 110%, rgba(63,182,196,.10), transparent 55%),
+      var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.05;margin:0}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:#9d7bff;color:#0c0f14}
+
+  /* top */
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(12,15,20,.8);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:13px;height:60px}
+  .mark{width:36px;height:36px;border-radius:10px;flex:none;background:conic-gradient(from 210deg,#1d9e75,#3fb6c4,#9d7bff,#e2607a,#e6b84a,#1d9e75);position:relative}
+  .mark::after{content:"";position:absolute;inset:6px;border-radius:6px;background:var(--bg)}
+  .brand b{font-family:'Archivo';font-weight:800;letter-spacing:.3px;font-size:16px}
+  .brand span{display:block;font-size:10.5px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topbar .rt{margin-left:auto;font-family:'JetBrains Mono';font-size:12px;color:var(--muted);font-weight:600}
+
+  /* hero */
+  .hero{padding:74px 0 30px;text-align:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#cdb6ff;font-weight:700;border:1px solid rgba(157,123,255,.4);border-radius:100px;padding:7px 16px;background:rgba(157,123,255,.07)}
+  .hero h1{font-size:clamp(42px,8vw,86px);font-weight:900;letter-spacing:-2px;margin:22px 0 10px}
+  .hero h1 .g{background:linear-gradient(100deg,#3fb6c4,#9d7bff 45%,#e6b84a);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:clamp(16px,2.2vw,20px);color:#c2cbd6;max-width:640px;margin:0 auto}
+  .stat-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .stat{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:14px 22px;min-width:120px}
+  .stat .n{font-family:'Archivo';font-weight:900;font-size:30px;letter-spacing:-1px}
+  .stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.3px;font-weight:600;margin-top:2px}
+  .stat.a .n{color:#3fb6c4}.stat.b .n{color:#9d7bff}.stat.c .n{color:#e6b84a}.stat.d .n{color:#1d9e75}
+
+  /* filter */
+  .filters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:38px 0 26px}
+  .filters button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--cream);background:var(--bg-2);border:1px solid var(--line);padding:9px 16px;border-radius:10px;cursor:pointer;transition:.15s}
+  .filters button:hover{border-color:rgba(255,255,255,.3)}
+  .filters button.on{background:var(--cream);color:#0c0f14;border-color:var(--cream)}
+
+  /* cards grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;padding-bottom:30px}
+  .exp{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .25s ease,border-color .25s ease;border-top:4px solid var(--c)}
+  .exp:hover{transform:translateY(-5px);border-color:var(--c)}
+  .exp.dim{display:none}
+  .exp .top{padding:20px 22px 0;display:flex;align-items:flex-start;gap:14px}
+  .exp .num{font-family:'Archivo';font-weight:900;font-size:30px;color:var(--c);line-height:1;flex:none;width:50px;height:50px;border-radius:12px;background:color-mix(in srgb,var(--c) 16%,transparent);display:flex;align-items:center;justify-content:center;border:1px solid color-mix(in srgb,var(--c) 35%,transparent)}
+  .exp .co{margin-left:auto;font-family:'JetBrains Mono';font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);padding:4px 9px;border-radius:7px;background:color-mix(in srgb,var(--c) 10%,transparent)}
+  .exp h3{padding:14px 22px 0;font-size:19px;font-weight:800;letter-spacing:-.4px}
+  .exp .desc{padding:8px 22px 0;font-size:13.5px;color:#b3bdc9;flex:1}
+  .exp .tags{padding:14px 22px 0;display:flex;flex-wrap:wrap;gap:6px}
+  .exp .tags span{font-size:11px;font-weight:600;color:#cdd5de;background:var(--bg-3);border:1px solid var(--line);padding:4px 9px;border-radius:7px}
+  .exp .foot{padding:18px 22px 20px;margin-top:6px}
+  .exp .open{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:11px;font-family:'Archivo';font-weight:700;font-size:14px;background:var(--c);color:#0c0f14;transition:.15s;border:1px solid var(--c)}
+  .exp .open:hover{filter:brightness(1.1)}
+  .exp .soon{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:11px;font-family:'Archivo';font-weight:700;font-size:14px;background:transparent;color:var(--muted);border:1px dashed var(--line);cursor:not-allowed}
+  .exp .ribbon{position:absolute;top:14px;right:-32px;transform:rotate(45deg);background:var(--bg-3);color:var(--muted);font-family:'JetBrains Mono';font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 38px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+
+  .note{margin:10px auto 0;max-width:760px;text-align:center;color:var(--muted);font-size:13px;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+  .note b{color:var(--cream);font-family:'Archivo'}
+
+  footer{padding:46px 0 64px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px;margin-top:30px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="mark" aria-hidden="true"></div>
+    <div class="brand"><b>DSA LAB</b><span>Data Science Applications</span></div>
+    <div class="rt">IT416 · R23</div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Interactive Lab Manual Series</span>
+    <h1>Data Science,<br><span class="g">Made Tangible</span></h1>
+    <p>Ten experiments — each an animated, hands-on lab manual you can run in the browser. Drag sliders, watch models fit, read the maths as it happens, and revise with built-in videos and viva questions.</p>
+    <div class="stat-row">
+      <div class="stat a"><div class="n">10</div><div class="l">Experiments</div></div>
+      <div class="stat b"><div class="n">10</div><div class="l">Built &amp; live</div></div>
+      <div class="stat c"><div class="n">12+</div><div class="l">Interactives</div></div>
+      <div class="stat d"><div class="n">3</div><div class="l">Course outcomes</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="filters reveal" id="filters">
+    <button data-f="all" class="on">All</button>
+    <button data-f="CO1">CO1</button>
+    <button data-f="CO2">CO2</button>
+    <button data-f="CO3">CO3</button>
+    <button data-f="ready">Ready to open</button>
+  </div>
+
+  <div class="grid" id="grid">
+
+    <!-- 1 -->
+    <article class="exp reveal" data-co="CO2" data-ready="1" style="--c:#1d9e75">
+      <div class="top"><div class="num">1</div><div class="co">CO2</div></div>
+      <h3>Python Libraries &amp; Data Visualization</h3>
+      <p class="desc">NumPy, Pandas, Matplotlib, Scikit, Bokeh — and six chart types — explored through a Cricket Matches case study. Every chart draws itself.</p>
+      <div class="tags"><span>Self-drawing charts</span><span>Library demos</span><span>Cricket data</span></div>
+      <div class="foot"><a class="open" href="Experiment_1_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 2 -->
+    <article class="exp reveal" data-co="CO2" data-ready="1" style="--c:#3fb6c4">
+      <div class="top"><div class="num">2</div><div class="co">CO2</div></div>
+      <h3>Data Exploration &amp; Summary Statistics</h3>
+      <p class="desc">Mean, median, mode, standard deviation &amp; variance on the Titanic data — with a tap-to-add stats playground and a missing-value cleaner.</p>
+      <div class="tags"><span>Stats playground</span><span>Imputation demo</span><span>Titanic</span></div>
+      <div class="foot"><a class="open" href="Experiment_2_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 3 -->
+    <article class="exp reveal" data-co="CO3" data-ready="1" style="--c:#9d7bff">
+      <div class="top"><div class="num">3</div><div class="co">CO3</div></div>
+      <h3>Regularized Linear Regression</h3>
+      <p class="desc">Ridge &amp; Lasso. A live λ dial runs a real ridge solver — slide from overfit to underfit — plus a Ridge-vs-Lasso shrinkage demo.</p>
+      <div class="tags"><span>Live λ dial</span><span>Shrinkage</span><span>3 videos</span></div>
+      <div class="foot"><a class="open" href="Experiment_3_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 4 -->
+    <article class="exp reveal" data-co="CO3" data-ready="1" style="--c:#e2607a">
+      <div class="top"><div class="num">4</div><div class="co">CO3</div></div>
+      <h3>Naive Bayes Classifier</h3>
+      <p class="desc">Built from a CSV. Pick the weather and watch Bayes' theorem decide step by step, then run a test set for accuracy and a confusion matrix.</p>
+      <div class="tags"><span>Step-by-step classifier</span><span>Accuracy runner</span><span>2 videos</span></div>
+      <div class="foot"><a class="open" href="Experiment_4_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 5 -->
+    <article class="exp reveal" data-co="CO3" data-ready="1" style="--c:#4ea8de">
+      <div class="top"><div class="num">5</div><div class="co">CO3</div></div>
+      <h3>Regression with Residual Plots</h3>
+      <p class="desc">Two linked plots — fit + residuals. Switch data shapes (linear, curved, funnel, outlier) and let the auto-diagnosis read the pattern.</p>
+      <div class="tags"><span>Linked residual plot</span><span>Auto-diagnosis</span><span>Tap to add</span></div>
+      <div class="foot"><a class="open" href="Experiment_5_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 6 -->
+    <article class="exp reveal" data-co="CO1" data-ready="1" style="--c:#2bb5a3">
+      <div class="top"><div class="num">6</div><div class="co">CO1</div></div>
+      <h3>Customer Purchase Prediction</h3>
+      <p class="desc">A retail case study: an RFM purchase predictor with a live decision boundary, plus a five-model leaderboard you can rank by any metric.</p>
+      <div class="tags"><span>Live predictor</span><span>Model leaderboard</span><span>2 videos</span></div>
+      <div class="foot"><a class="open" href="Experiment_6_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 7 -->
+    <article class="exp reveal" data-co="CO3" data-ready="1" style="--c:#e6b84a">
+      <div class="top"><div class="num">7</div><div class="co">CO3</div></div>
+      <h3>Loan Eligibility Classification</h3>
+      <p class="desc">An interactive decision tree that traces <em>why</em> each applicant is approved or rejected — the explainability a bank needs to defend a decision.</p>
+      <div class="tags"><span>Decision tree</span><span>Decision trace</span><span>Cost of errors</span></div>
+      <div class="foot"><a class="open" href="Experiment_7_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 8 -->
+    <article class="exp reveal" data-co="CO3" data-ready="1" style="--c:#ff7a59">
+      <div class="top"><div class="num">8</div><div class="co">CO3</div></div>
+      <h3>Disease Diagnosis (Kernels &amp; SVM)</h3>
+      <p class="desc">Healthcare classification from medical test results. A live kernel playground draws SVM decision regions — switch Linear vs RBF and watch a ring no line can split get separated.</p>
+      <div class="tags"><span>Kernel playground</span><span>Linear vs RBF</span><span>2 videos</span></div>
+      <div class="foot"><a class="open" href="Experiment_8_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 9 -->
+    <article class="exp reveal" data-co="CO3" data-ready="1" style="--c:#6f8fe0">
+      <div class="top"><div class="num">9</div><div class="co">CO3</div></div>
+      <h3>Comparing Machine Means (ANOVA)</h3>
+      <p class="desc">A manufacturing study: do three machines differ? A live ANOVA engine computes a real F-statistic and exact p-value — slide the means apart and watch the verdict flip at p&nbsp;=&nbsp;0.05.</p>
+      <div class="tags"><span>Live F &amp; p-value</span><span>Hypothesis test</span><span>1 video</span></div>
+      <div class="foot"><a class="open" href="Experiment_9_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+    <!-- 10 -->
+    <article class="exp reveal" data-co="CO1" data-ready="1" style="--c:#aed636">
+      <div class="top"><div class="num">10</div><div class="co">CO1</div></div>
+      <h3>Time Series Analysis &amp; Forecasting</h3>
+      <p class="desc">Build a series from trend, seasonality and noise, then forecast it forward with a confidence band that widens with the horizon — honest forecasting you can tune live.</p>
+      <div class="tags"><span>Trend &amp; seasonality</span><span>Live forecast</span><span>Confidence band</span></div>
+      <div class="foot"><a class="open" href="Experiment_10_Lab_Manual.html">Open lab →</a></div>
+    </article>
+
+  </div>
+
+  <div class="note reveal"><b>Tip:</b> keep all the <code style="font-family:JetBrains Mono;font-size:12px">Experiment_*.html</code> files in the same folder as this page so the “Open lab” links work. Each lab is fully self-contained and runs offline (only fonts and the concept videos load from the web).</div>
+</div>
+
+<footer>
+  <div class="wrap">
+    DSA Lab · Data Science Applications · Course IT416 (R23)<br>
+    <span style="opacity:.7">An interactive lab-manual series — all 10 experiments live.</span>
+  </div>
+</footer>
+
+<script>
+/* reveal */
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* filter */
+const cards=[...document.querySelectorAll('.exp')];
+document.querySelectorAll('#filters button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#filters button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    const f=b.dataset.f;
+    cards.forEach(c=>{
+      let show=true;
+      if(f==='ready') show=c.dataset.ready==='1';
+      else if(f!=='all') show=c.dataset.co===f;
+      c.classList.toggle('dim',!show);
+    });
+  });
+});
+</script>
+</body>
+</html>

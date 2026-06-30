@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DWDM — Interactive Learning Hub | Data Warehousing &amp; Data Mining</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0b1020;--bg-2:#141b30;--bg-3:#1e2742;--cream:#eef1f7;--muted:#94a0bd;--line:rgba(238,241,247,.12);--shadow:0 22px 60px -26px rgba(0,0,0,.85);--maxw:1140px;}
+  *{box-sizing:border-box}html{scroll-behavior:smooth}
+  body{margin:0;font-family:'Inter',system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;color:var(--cream);
+    background:radial-gradient(900px 480px at 10% -8%, rgba(79,195,232,.13), transparent 55%),
+      radial-gradient(900px 480px at 90% -4%, rgba(176,123,255,.13), transparent 55%),
+      radial-gradient(900px 600px at 50% 110%, rgba(52,209,153,.10), transparent 55%),var(--bg);}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  h1,h2,h3{font-family:'Archivo',sans-serif;line-height:1.05;margin:0}a{color:inherit;text-decoration:none}
+  ::selection{background:#b07bff;color:#0b1020}
+  .topbar{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);background:rgba(11,16,32,.8);border-bottom:1px solid var(--line)}
+  .topbar .wrap{display:flex;align-items:center;gap:13px;height:60px}
+  .mark{width:36px;height:36px;border-radius:10px;flex:none;background:conic-gradient(from 210deg,#4fc3e8,#34d199,#b07bff,#ef7a59,#e85d9b,#4fc3e8);position:relative}
+  .mark::after{content:"";position:absolute;inset:6px;border-radius:6px;background:var(--bg)}
+  .brand b{font-family:'Archivo';font-weight:800;letter-spacing:.3px;font-size:16px}
+  .brand span{display:block;font-size:10.5px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .topbar .rt{margin-left:auto;font-family:'JetBrains Mono';font-size:12px;color:var(--muted);font-weight:600}
+  .hero{padding:74px 0 30px;text-align:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:'JetBrains Mono';font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:#cdb6ff;font-weight:700;border:1px solid rgba(176,123,255,.4);border-radius:100px;padding:7px 16px;background:rgba(176,123,255,.07)}
+  .hero h1{font-size:clamp(40px,8vw,84px);font-weight:900;letter-spacing:-2px;margin:22px 0 10px}
+  .hero h1 .g{background:linear-gradient(100deg,#4fc3e8,#b07bff 48%,#e85d9b);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero p{font-size:clamp(16px,2.2vw,20px);color:#c2cbde;max-width:660px;margin:0 auto}
+  .stat-row{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:34px}
+  .stat{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:14px 22px;min-width:120px}
+  .stat .n{font-family:'Archivo';font-weight:900;font-size:30px;letter-spacing:-1px}.stat .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.3px;font-weight:600;margin-top:2px}
+  .stat.a .n{color:#4fc3e8}.stat.b .n{color:#34d199}.stat.c .n{color:#b07bff}.stat.d .n{color:#e85d9b}
+  .filters{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:38px 0 26px}
+  .filters button{font-family:'Inter';font-size:13px;font-weight:600;color:var(--cream);background:var(--bg-2);border:1px solid var(--line);padding:9px 16px;border-radius:10px;cursor:pointer;transition:.15s}
+  .filters button:hover{border-color:rgba(255,255,255,.3)}.filters button.on{background:var(--cream);color:#0b1020;border-color:var(--cream)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:20px;padding-bottom:30px}
+  .exp{position:relative;background:var(--bg-2);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .25s ease,border-color .25s ease;border-top:4px solid var(--c)}
+  .exp:hover{transform:translateY(-5px);border-color:var(--c)}.exp.dim{display:none}
+  .exp .top{padding:20px 22px 0;display:flex;align-items:flex-start;gap:14px}
+  .exp .num{font-family:'Archivo';font-weight:900;font-size:17px;color:var(--c);line-height:1;flex:none;width:54px;height:50px;border-radius:12px;background:color-mix(in srgb,var(--c) 16%,transparent);display:flex;align-items:center;justify-content:center;border:1px solid color-mix(in srgb,var(--c) 35%,transparent);letter-spacing:.5px}
+  .exp .co{margin-left:auto;font-family:'JetBrains Mono';font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 40%,transparent);padding:4px 9px;border-radius:7px;background:color-mix(in srgb,var(--c) 10%,transparent)}
+  .exp h3{padding:14px 22px 0;font-size:19px;font-weight:800;letter-spacing:-.4px}
+  .exp .desc{padding:8px 22px 0;font-size:13.5px;color:#b3bdcf;flex:1}
+  .exp .tags{padding:14px 22px 0;display:flex;flex-wrap:wrap;gap:6px}
+  .exp .tags span{font-size:11px;font-weight:600;color:#cdd5e2;background:var(--bg-3);border:1px solid var(--line);padding:4px 9px;border-radius:7px}
+  .exp .foot{padding:18px 22px 20px;margin-top:6px}
+  .exp .open{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:11px;font-family:'Archivo';font-weight:700;font-size:14px;background:var(--c);color:#0b1020;transition:.15s;border:1px solid var(--c)}
+  .exp .open:hover{filter:brightness(1.1)}
+  .note{margin:10px auto 0;max-width:780px;text-align:center;color:var(--muted);font-size:13px;background:var(--bg-2);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+  .note b{color:var(--cream);font-family:'Archivo'}
+  footer{padding:46px 0 64px;border-top:1px solid var(--line);color:var(--muted);text-align:center;font-size:13px;margin-top:30px}
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.7,.2,1)}.reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="wrap">
+  <div class="mark" aria-hidden="true"></div>
+  <div class="brand"><b>DWDM</b><span>Data Warehousing &amp; Data Mining</span></div>
+  <div class="rt">IT314 B · R20</div>
+</div></div>
+
+<header class="hero"><div class="wrap">
+  <span class="eyebrow">Interactive Learning Series</span>
+  <h1>Data Mining,<br><span class="g">Made Visual</span></h1>
+  <p>All five units of the Data Warehousing &amp; Data Mining course — each an animated, hands-on lesson with live demos, concept videos, and a 10-question quiz to test yourself.</p>
+  <div class="stat-row">
+    <div class="stat a"><div class="n">5</div><div class="l">Units</div></div>
+    <div class="stat b"><div class="n">50</div><div class="l">Quiz questions</div></div>
+    <div class="stat c"><div class="n">8+</div><div class="l">Live demos</div></div>
+    <div class="stat d"><div class="n">4</div><div class="l">Course outcomes</div></div>
+  </div>
+</div></header>
+
+<div class="wrap">
+  <div class="filters reveal" id="filters">
+    <button data-f="all" class="on">All units</button>
+    <button data-f="CO1">CO1</button>
+    <button data-f="CO2">CO2</button>
+    <button data-f="CO3">CO3</button>
+  </div>
+  <div class="grid" id="grid">
+
+    <article class="exp reveal" data-co="CO1" style="--c:#4fc3e8">
+      <div class="top"><div class="num">I</div><div class="co">CO1</div></div>
+      <h3>Data Warehouse</h3>
+      <p class="desc">OLTP vs OLAP, ETL and multidimensional modelling. Rotate a live OLAP cube through roll-up, drill-down, slice, dice and pivot, and toggle a star vs snowflake schema.</p>
+      <div class="tags"><span>OLAP cube demo</span><span>Star/Snowflake</span><span>ROLAP·MOLAP·HOLAP</span></div>
+      <div class="foot"><a class="open" href="DWDM_Unit_1_Data_Warehouse.html">Open unit →</a></div>
+    </article>
+
+    <article class="exp reveal" data-co="CO2" style="--c:#34d199">
+      <div class="top"><div class="num">II</div><div class="co">CO2</div></div>
+      <h3>Data Mining &amp; Preprocessing</h3>
+      <p class="desc">Data-mining functionalities, the KDD process and the major issues — then preprocessing: cleaning, integration, reduction, and a live normalization playground (min-max vs z-score).</p>
+      <div class="tags"><span>KDD process</span><span>Normalization demo</span><span>Preprocessing</span></div>
+      <div class="foot"><a class="open" href="DWDM_Unit_2_Data_Mining_Preprocessing.html">Open unit →</a></div>
+    </article>
+
+    <article class="exp reveal" data-co="CO2" style="--c:#b07bff">
+      <div class="top"><div class="num">III</div><div class="co">CO2</div></div>
+      <h3>Association Rules</h3>
+      <p class="desc">Market-basket mining: support, confidence and lift with a live rule calculator, the Apriori principle and algorithm stepped over real transactions, FP-Growth, and maximal/closed itemsets.</p>
+      <div class="tags"><span>Apriori walkthrough</span><span>Support·Confidence·Lift</span><span>FP-Growth</span></div>
+      <div class="foot"><a class="open" href="DWDM_Unit_3_Association_Rules.html">Open unit →</a></div>
+    </article>
+
+    <article class="exp reveal" data-co="CO3" style="--c:#ef7a59">
+      <div class="top"><div class="num">IV</div><div class="co">CO3</div></div>
+      <h3>Classification</h3>
+      <p class="desc">Decision trees with a live Gini/entropy impurity calculator, an interactive KNN classifier, plus Naïve Bayes, belief networks, evaluation metrics and ensembles. Three concept videos.</p>
+      <div class="tags"><span>Impurity calculator</span><span>KNN classifier</span><span>3 videos</span></div>
+      <div class="foot"><a class="open" href="DWDM_Unit_4_Classification.html">Open unit →</a></div>
+    </article>
+
+    <article class="exp reveal" data-co="CO3" style="--c:#e85d9b">
+      <div class="top"><div class="num">V</div><div class="co">CO3</div></div>
+      <h3>Clustering</h3>
+      <p class="desc">Run k-means step by step to convergence, explore agglomerative vs divisive hierarchical clustering and dendrograms, weigh the trade-offs, and detect outliers. Two concept videos.</p>
+      <div class="tags"><span>Live k-means</span><span>Hierarchical</span><span>Outlier detection</span></div>
+      <div class="foot"><a class="open" href="DWDM_Unit_5_Clustering.html">Open unit →</a></div>
+    </article>
+
+  </div>
+  <div class="note reveal"><b>Tip:</b> keep all the <code style="font-family:JetBrains Mono;font-size:12px">DWDM_Unit_*.html</code> files in the same folder as this page so the “Open unit” links work. Each unit is self-contained and runs offline (only fonts and the concept videos load from the web).</div>
+</div>
+
+<footer><div class="wrap">
+  DWDM · Data Warehousing &amp; Data Mining · Course IT314 B (R20)<br>
+  <span style="opacity:.7">Interactive learning series — 5 units · 50 quiz questions · textbook: Han, Kamber &amp; Pei.</span>
+</div></footer>
+
+<script>
+const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const cards=[...document.querySelectorAll('.exp')];
+document.querySelectorAll('#filters button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('#filters button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    const f=b.dataset.f;
+    cards.forEach(c=>{const show=(f==='all')||c.dataset.co===f;c.classList.toggle('dim',!show);});
+  });
+});
+</script>
+</body>
+</html>
